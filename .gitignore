@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Vela local data
+*.db
+*.sqlite
+/drizzle/*.db
+.vela-data/

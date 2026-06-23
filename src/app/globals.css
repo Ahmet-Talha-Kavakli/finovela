@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
+/*
+  VELA design system
+  Koyu sinematik (RockFlow/Bobby damıtması) + light tema.
+  Marka metaforu: yelken / rota / yıldız — mor→cyan denizci-sinematik vurgu.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /*
+    BİREBİR RockFlow renkleri (pixel-örneklendi):
+    AI Portfolios sayfası: #6510f0 (üst) → #543dd9 (orta) → #270e3d (alt)
+    Hero: #31086e. Hiçbir yer beyaz DEĞİL — her zemin doygun mor.
+    Vela = baştan sona koyu-mor sinematik dünya, metin beyaz.
+  */
+  --bg: #1a0a35;          /* ana zemin — derin menekşe */
+  --bg-subtle: #21103f;   /* hafif yükseltilmiş */
+  --bg-elevated: #2a1551; /* kart yüzeyi */
+  --bg-deep: #12061f;     /* en koyu (footer) */
+  --bg-deep-2: #2d1b4e;
+
+  /* RockFlow degrade durakları */
+  --violet-bright: #6510f0;  /* parlak üst */
+  --violet-mid: #543dd9;     /* orta */
+  --violet-deep: #270e3d;    /* koyu alt */
+
+  --border: rgba(168, 130, 255, 0.16);
+  --border-strong: rgba(168, 130, 255, 0.3);
+
+  /* Text — koyu mor zeminde */
+  --fg: #f4eeff;
+  --fg-muted: #c4b3e8;
+  --fg-subtle: #9783c4;
+
+  /* Brand — RockFlow elektrik moru */
+  --brand: #8b5cff;
+  --brand-strong: #a855f7;
+  --brand-cyan: #c084fc;
+  --brand-glow: rgba(139, 92, 255, 0.5);
+
+  /* Semantic */
+  --up: #16a34a;
+  --down: #dc2626;
+  --warn: #d97706;
+
+  /* Radius / shadow */
+  --radius: 0.875rem;
+  --radius-lg: 1.25rem;
+  --shadow-glow: 0 0 40px var(--brand-glow);
+
+  /* shadcn uyumluluk köprüsü (21st.dev componentleri için) — Vela renkleriyle */
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: rgba(168, 130, 255, 0.14);
+  --secondary-foreground: #f4eeff;
+  --muted: rgba(168, 130, 255, 0.12);
+  --muted-foreground: var(--fg-muted);
+  --accent: rgba(168, 130, 255, 0.14);
+  --accent-foreground: #f4eeff;
+  --destructive: var(--down);
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --input: var(--border);
+  --ring: var(--brand);
+  --up: #4ade80;
+  --down: #f87171;
+  --file-tree-bg: var(--bg-subtle);
+  --file-tree-hover: rgba(168, 130, 255, 0.12);
+  --folder-icon: var(--brand);
+}
+
+/* Vela tek tema = koyu mor; .dark aynı değerleri taşır (next-themes default) */
+.dark {
+  --bg: #1a0a35;
+  --bg-subtle: #21103f;
+  --bg-elevated: #2a1551;
+  --bg-deep: #12061f;
+  --fg: #f4eeff;
+  --fg-muted: #c4b3e8;
+  --fg-subtle: #9783c4;
 }
 
 @theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-deep: var(--bg-deep);
+  --color-bg-deep-2: var(--bg-deep-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-warn: var(--warn);
+
+  /* shadcn köprü renkleri — 21st componentleri bunları kullanır */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-file-tree-bg: var(--file-tree-bg);
+  --color-file-tree-hover: var(--file-tree-hover);
+  --color-folder-icon: var(--folder-icon);
+
+  --radius: var(--radius);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+
+  --animate-spin-slow: spin 3s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Başlık fontu — General Sans, sıkı harf aralığı (görseldeki gibi) */
+.font-display {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* Sinematik yardımcılar — RockFlow mor */
+.text-gradient {
+  background: linear-gradient(110deg, #c084fc 0%, #a855f7 45%, #8b5cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+  RockFlow degradeleri — pixel-örneklenmiş durak'lar.
+  "Parlak" bölüm: #6510f0 üst → #270e3d alt (AI Portfolios sayfası).
+  Hero/koyu: #31086e → #1a0a35.
+*/
+
+/* Parlak mor bölüm (RockFlow AI Portfolios gibi) */
+.bg-aurora {
+  background:
+    radial-gradient(80% 60% at 50% -10%, #6510f0 0%, rgba(101, 16, 240, 0) 60%),
+    radial-gradient(70% 60% at 85% 10%, rgba(168, 85, 247, 0.55) 0%, transparent 55%),
+    linear-gradient(180deg, #3a1a8c 0%, #2a1262 45%, #1a0a35 100%);
+}
+
+/* Hero / en sinematik koyu mor */
+.bg-deep-violet {
+  background:
+    radial-gradient(75% 65% at 70% 5%, rgba(139, 92, 255, 0.5) 0%, transparent 55%),
+    radial-gradient(60% 55% at 15% 30%, rgba(101, 16, 240, 0.4) 0%, transparent 60%),
+    linear-gradient(165deg, #31086e 0%, #240a52 50%, #1a0a35 100%);
+}
+
+/* Yumuşak mor geçiş (bölümler arası akış — beyaz YOK) */
+.bg-lilac-fade {
+  background: linear-gradient(180deg, #1a0a35 0%, #241152 50%, #1a0a35 100%);
+}
+
+/* Koyu mor cam (kart/nav) */
+.glass {
+  background: rgba(42, 21, 81, 0.55);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--border);
+}
+
+/* iOS buzlu cam (navigasyon — kullanıcı istedi) */
+.ios-glass {
+  background: rgba(26, 10, 53, 0.5);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.glow-brand {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent),
+    0 8px 40px var(--brand-glow);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
