@@ -17,14 +17,14 @@ const isProduction =
 */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  // Paddle.js (cdn.paddle.com + sandbox) ödeme overlay'i için script izni eklendi.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://cdn.paddle.com https://sandbox-cdn.paddle.com",
-  "style-src 'self' 'unsafe-inline' https://cdn.paddle.com https://sandbox-cdn.paddle.com",
+  // Paddle.js + ProfitWell (Paddle analitiği) ödeme overlay'i için script izni.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://cdn.paddle.com https://sandbox-cdn.paddle.com https://*.paddle.com https://public.profitwell.com https://*.profitwell.com",
+  "style-src 'self' 'unsafe-inline' https://cdn.paddle.com https://sandbox-cdn.paddle.com https://*.paddle.com",
   "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  // Paddle API (live + sandbox) bağlantı izni.
-  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https://*.paddle.com https:",
-  // Paddle checkout overlay (iframe) — buy.paddle.com / sandbox-buy.paddle.com / *.paddle.com.
+  "font-src 'self' data: https://*.paddle.com",
+  // Paddle + ProfitWell API (live + sandbox) bağlantı izni.
+  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https://*.paddle.com https://*.profitwell.com https:",
+  // Paddle checkout overlay (iframe) — *.paddle.com tümünü kapsar.
   "frame-src 'self' https://*.clerk.accounts.dev https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://*.paddle.com https://buy.paddle.com https://sandbox-buy.paddle.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
