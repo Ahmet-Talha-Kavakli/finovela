@@ -271,16 +271,35 @@ export async function setUserPhone(userId: string, phone: string) {
   await db.update(users).set({ phone, phoneVerified: 1 }).where(eq(users.id, userId)).run();
 }
 
-/** Stripe customer ID'sini kaydet (checkout sırasında). */
+/** Stripe customer ID'sini kaydet (eski; geriye uyum). */
 export async function setStripeCustomer(userId: string, stripeCustomerId: string) {
   await ready();
   await db.update(users).set({ stripeCustomerId }).where(eq(users.id, userId)).run();
 }
 
-/** Stripe customer ID'sinden kullanıcıyı bul (webhook'ta). */
+/** Stripe customer ID'sinden kullanıcıyı bul (eski; geriye uyum). */
 export async function getUserByStripeCustomer(stripeCustomerId: string) {
   await ready();
   return db.select().from(users).where(eq(users.stripeCustomerId, stripeCustomerId)).get();
+}
+
+/** Paddle müşteri / abonelik kimliklerini kaydet (checkout & webhook). */
+export async function setPaddleIds(
+  userId: string,
+  ids: { customerId?: string | null; subscriptionId?: string | null },
+) {
+  await ready();
+  const set: Record<string, string | null> = {};
+  if (ids.customerId !== undefined) set.paddleCustomerId = ids.customerId;
+  if (ids.subscriptionId !== undefined) set.paddleSubscriptionId = ids.subscriptionId;
+  if (Object.keys(set).length === 0) return;
+  await db.update(users).set(set).where(eq(users.id, userId)).run();
+}
+
+/** Paddle customer ID'sinden kullanıcıyı bul (webhook'ta userId yoksa). */
+export async function getUserByPaddleCustomer(paddleCustomerId: string) {
+  await ready();
+  return db.select().from(users).where(eq(users.paddleCustomerId, paddleCustomerId)).get();
 }
 
 /** Abonelik durumu + plan'ı birlikte güncelle (webhook'ta). */

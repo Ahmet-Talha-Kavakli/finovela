@@ -1,6 +1,6 @@
-// Stripe entegrasyonu — sunucu tarafı. Anahtarlar YOKSA STRIPE_ENABLED=false olur
-// ve ödeme akışı zarifçe devre dışı kalır (uygulama çalışmaya devam eder).
-// Üretim: STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET + Price ID'leri gir.
+// [KULLANIM DIŞI] Stripe entegrasyonu — ödeme sistemi Paddle'a taşındı (src/lib/paddle.ts).
+// Bu dosya geriye uyum için bırakıldı; hiçbir yerden import EDİLMEMELİ.
+// STRIPE_SECRET_KEY tanımlı olmadığından STRIPE_ENABLED daima false kalır.
 
 import Stripe from "stripe";
 import type { PlanId } from "@/lib/plans";

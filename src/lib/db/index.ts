@@ -113,8 +113,13 @@ CREATE TABLE IF NOT EXISTS kyc (
   doc_front TEXT, doc_back TEXT, status TEXT NOT NULL DEFAULT 'pending',
   submitted_at INTEGER, reviewed_at INTEGER
 );
+CREATE TABLE IF NOT EXISTS usage_daily (
+  id TEXT PRIMARY KEY, user_id TEXT NOT NULL, day TEXT NOT NULL,
+  kind TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL
+);
 CREATE INDEX IF NOT EXISTS idx_decision_user ON decision_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_exconn_user ON exchange_connections(user_id);
+CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_daily(user_id);
 `)
       .then(() => migrateUserColumns())
       .catch((err) => {
@@ -136,6 +141,8 @@ async function migrateUserColumns(): Promise<void> {
     "ALTER TABLE users ADD COLUMN sub_status TEXT",
     "ALTER TABLE users ADD COLUMN phone TEXT",
     "ALTER TABLE users ADD COLUMN phone_verified INTEGER DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN paddle_customer_id TEXT",
+    "ALTER TABLE users ADD COLUMN paddle_subscription_id TEXT",
     "ALTER TABLE kyc ADD COLUMN didit_session_id TEXT",
   ];
   for (const sql of adds) {

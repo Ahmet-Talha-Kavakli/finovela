@@ -4,6 +4,7 @@ import { CommandPalette } from "@/components/dashboard/command-palette";
 import { ConfirmProvider } from "@/components/dashboard/confirm";
 import { SyncProvider } from "@/components/dashboard/sync-provider";
 import { ToastHost } from "@/components/dashboard/toast";
+import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
 import { CLERK_ENABLED } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/current-user";
 import { upsertUser } from "@/lib/db/repo";
@@ -35,6 +36,7 @@ export default async function DashboardLayout({
         <Sidebar />
         <div className="vela-content lg:pl-[248px]">{children}</div>
         <ToastHost />
+        <UpgradeModal />
       </div>
     </ConfirmProvider>
   );

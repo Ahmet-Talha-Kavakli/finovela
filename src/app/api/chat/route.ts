@@ -1,9 +1,10 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { VELA_SYSTEM_PROMPT } from "@/lib/ai/system-prompt";
 import { VELA_TOOLS, runTool } from "@/lib/ai/tools";
 import { requireUserId } from "@/lib/current-user";
 import { hasFeature } from "@/lib/plan-access";
+import { checkAndIncrement } from "@/lib/usage";
 import { rateLimit, rateLimitKey, RATE_LIMITS, tooManyRequests } from "@/lib/ratelimit";
 import { CHAT_CAPS, clampStr, payloadTooLarge } from "@/lib/ai-guard";
 
@@ -212,6 +213,21 @@ export async function POST(req: NextRequest) {
   );
   if (!rl.ok) {
     return tooManyRequests(rl.retryAfterSec);
+  }
+
+  // 2b) Günlük plan limiti (kredi). Free=20/gün; Pro/Unlimited sınırsız.
+  // Limit aşıldıysa 402 (Payment Required) → UI upgrade modalı açar.
+  const usage = await checkAndIncrement(userId, "aiChat", "aiChatsPerDay");
+  if (!usage.ok) {
+    return NextResponse.json(
+      {
+        error: "Günlük AI sohbet hakkın doldu. Sınırsız sohbet için Pro'ya yükselt.",
+        code: "usage_limit",
+        used: usage.used,
+        limit: usage.limit,
+      },
+      { status: 402 },
+    );
   }
 
   const { messages, portfolio, locale, memory, goals, brain, model, tone, attachments } =

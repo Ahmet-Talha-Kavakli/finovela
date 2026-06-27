@@ -3,14 +3,15 @@
 // Pricing sayfası plan CTA'sı — plana göre akıllı yönlendirme:
 //   free       → /app (kayıt/giriş)
 //   pro/unlimited:
-//      girişli  → Stripe Checkout başlat
+//      girişli  → Paddle overlay checkout aç
 //      girişsiz → /sign-up?redirect (giriş sonrası tekrar denesin)
-// Stripe yapılandırılmamışsa checkout 503 döner → kullanıcıya nazik mesaj.
+// Paddle yapılandırılmamışsa checkout 503 döner → kullanıcıya nazik mesaj.
 
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { CLERK_ENABLED } from "@/lib/auth";
 import { GlassButton } from "@/components/ui/glass-button";
+import { startPaddleCheckout } from "@/lib/paddle-client";
 import type { PlanId } from "@/lib/plans";
 
 export function PlanCta({
@@ -52,21 +53,8 @@ function PaidCta({ planId, label, highlight }: { planId: PlanId; label: string; 
     }
     setBusy(true);
     setErr("");
-    try {
-      const res = await fetch("/api/billing/checkout", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
-      });
-      const data = await res.json();
-      if (data.ok && data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      setErr(data.error ?? "Ödeme başlatılamadı.");
-    } catch {
-      setErr("Ağ hatası.");
-    }
+    const error = await startPaddleCheckout(planId as "pro" | "unlimited");
+    if (error) setErr(error);
     setBusy(false);
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Brain, CreditCard, Bell, ShieldCheck, type LucideIcon } from "lucide-react";
+import { User, Brain, CreditCard, Bell, ShieldCheck, SlidersHorizontal, Database, type LucideIcon } from "lucide-react";
 
 /**
  * Didit Settings tab bar — üstte ikon+metin sekmeler, altı çizili aktif.
@@ -9,36 +9,51 @@ import { User, Brain, CreditCard, Bell, ShieldCheck, type LucideIcon } from "luc
  * Tasarım dili: Didit açık tema (business.didit.me Account/Team/Security deseni).
  */
 
-type TabId = "profile" | "memory" | "billing" | "notifications" | "security";
+type TabId =
+  | "profile"
+  | "preferences"
+  | "memory"
+  | "billing"
+  | "notifications"
+  | "security"
+  | "data";
 
 const TABS: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "profile", label: "Profil", icon: User },
+  { id: "preferences", label: "Tercihler", icon: SlidersHorizontal },
   { id: "memory", label: "Hafıza", icon: Brain },
   { id: "billing", label: "Plan", icon: CreditCard },
   { id: "notifications", label: "Bildirimler", icon: Bell },
   { id: "security", label: "Güvenlik", icon: ShieldCheck },
+  { id: "data", label: "Veri & Gizlilik", icon: Database },
 ];
 
 export function SettingsTabs({
   profile,
+  preferences,
   memory,
   billing,
   notifications,
   security,
+  data,
 }: {
   profile: React.ReactNode;
+  preferences: React.ReactNode;
   memory: React.ReactNode;
   billing: React.ReactNode;
   notifications: React.ReactNode;
   security: React.ReactNode;
+  data: React.ReactNode;
 }) {
   const [active, setActive] = useState<TabId>("profile");
   const content: Record<TabId, React.ReactNode> = {
     profile,
+    preferences,
     memory,
     billing,
     notifications,
     security,
+    data,
   };
 
   return (

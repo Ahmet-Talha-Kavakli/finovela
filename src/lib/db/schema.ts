@@ -10,11 +10,27 @@ export const users = sqliteTable("users", {
   name: text("name"),
   plan: text("plan").default("free"),
   riskProfile: text("risk_profile"),
-  stripeCustomerId: text("stripe_customer_id"), // Stripe müşteri kimliği
+  stripeCustomerId: text("stripe_customer_id"), // (eski) Stripe müşteri kimliği
+  paddleCustomerId: text("paddle_customer_id"), // Paddle müşteri kimliği
+  paddleSubscriptionId: text("paddle_subscription_id"), // Paddle abonelik kimliği
   subStatus: text("sub_status"), // active | trialing | past_due | canceled | null
   phone: text("phone"), // E.164 doğrulanmış telefon
   phoneVerified: integer("phone_verified").default(0), // 0/1
   createdAt: integer("created_at").notNull(),
+});
+
+/**
+ * Günlük kullanım sayacı — plan limitlerini (aiChatsPerDay vb.) enforce eder.
+ * Anahtar: userId + day (YYYY-MM-DD UTC) + kind. Her gün doğal olarak sıfırlanır
+ * (yeni gün = yeni satır). kind: "aiChat" | "webResearch" | ... genişletilebilir.
+ */
+export const usageDaily = sqliteTable("usage_daily", {
+  id: text("id").primaryKey(), // `${userId}:${day}:${kind}`
+  userId: text("user_id").notNull(),
+  day: text("day").notNull(), // YYYY-MM-DD (UTC)
+  kind: text("kind").notNull(),
+  count: integer("count").notNull().default(0),
+  updatedAt: integer("updated_at").notNull(),
 });
 
 /** Paper portföy holding'leri. */

@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { AIS_ACCENT } from "@/components/dashboard/ais-kit";
 import { Spinner, ArrowUp, Gear } from "@phosphor-icons/react";
+import { startPaddleCheckout } from "@/lib/paddle-client";
 import type { PlanId } from "@/lib/plans";
 
-/** Plana göre: Free → yükselt (checkout); ücretli → aboneliği yönet (portal). */
+/** Plana göre: Free → yükselt (Paddle overlay); ücretli → aboneliği yönet (portal). */
 export function BillingActions({ planId }: { planId: PlanId }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -13,21 +14,8 @@ export function BillingActions({ planId }: { planId: PlanId }) {
   async function checkout(plan: "pro" | "unlimited") {
     setBusy(true);
     setErr("");
-    try {
-      const res = await fetch("/api/billing/checkout", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ plan }),
-      });
-      const data = await res.json();
-      if (data.ok && data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      setErr(data.error ?? "Başlatılamadı.");
-    } catch {
-      setErr("Ağ hatası.");
-    }
+    const error = await startPaddleCheckout(plan);
+    if (error) setErr(error);
     setBusy(false);
   }
 
@@ -58,7 +46,7 @@ export function BillingActions({ planId }: { planId: PlanId }) {
           style={{ background: "var(--ais-accent-bg)", color: AIS_ACCENT }}
         >
           {busy ? <Spinner size={14} className="animate-spin" /> : <ArrowUp size={14} weight="bold" />}
-          Pro'ya yükselt
+          {"Pro'ya yükselt"}
         </button>
       ) : planId === "pro" ? (
         <div className="flex gap-2">

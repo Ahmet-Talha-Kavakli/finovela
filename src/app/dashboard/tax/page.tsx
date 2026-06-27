@@ -13,6 +13,7 @@ import { fmtUsd } from "@/lib/dashboard/data";
 import { paperStore } from "@/lib/dashboard/paper-store";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import { useConfirm } from "@/components/dashboard/confirm";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import { getUniverseEntry } from "@/lib/market/universe";
 import {
   unrealized,
@@ -129,6 +130,7 @@ export default function TaxPage() {
   return (
     <>
       <Topbar title="Vergi Merkezi" />
+      <PlanGate feature="taxCenter">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -355,6 +357,7 @@ export default function TaxPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

@@ -40,14 +40,17 @@ import {
   Plugs,
   ArrowsLeftRight,
   CreditCard,
+  ClockCounterClockwise,
 } from "@phosphor-icons/react";
 
 const NAV = [
   { href: "/dashboard", label: "Genel Bakış", icon: SquaresFour },
+  { href: "/dashboard/notifications", label: "Bildirimler", icon: BellSimple },
   { href: "/dashboard/chat", label: "Finovela Sohbet", icon: ChatCircleDots, badge: "AI" },
   { href: "/dashboard/brain", label: "Finovela Brain", icon: Brain, badge: "YENİ" },
   { href: "/dashboard/goals", label: "Hedefler", icon: Target, badge: "YENİ" },
   { href: "/dashboard/portfolio", label: "Portföy", icon: ChartPieSlice },
+  { href: "/dashboard/transactions", label: "Geçmiş İşlemler", icon: ClockCounterClockwise },
   { href: "/dashboard/analytics", label: "Analizler", icon: ChartBar },
   { href: "/dashboard/whatif", label: "What-If Stüdyosu", icon: Flask, badge: "YENİ" },
   { href: "/dashboard/markets", label: "Piyasalar", icon: TrendUp },

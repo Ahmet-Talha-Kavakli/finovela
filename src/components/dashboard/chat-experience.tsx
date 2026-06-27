@@ -508,6 +508,22 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
 
         if (!res.ok || !res.body) {
           const err = await res.json().catch(() => ({}));
+          // 402 = günlük kredi bitti → kullanım sayacını tazele + yükseltme modalını aç.
+          if (res.status === 402 || err?.code === "usage_limit") {
+            window.dispatchEvent(new Event("vela:usage-changed"));
+            window.dispatchEvent(
+              new CustomEvent("vela:open-upgrade", { detail: { reason: "limit" } }),
+            );
+            patch((m) => ({
+              ...m,
+              streaming: false,
+              tool: null,
+              text:
+                "Bugünkü ücretsiz yapay zeka hakkın doldu. Sınırsız sohbet için Pro'ya yükseltebilirsin.",
+            }));
+            setBusy(false);
+            return;
+          }
           patch((m) => ({
             ...m,
             streaming: false,
@@ -565,6 +581,8 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
         if (raf) cancelAnimationFrame(raf);
         flush();
         patch((m) => ({ ...m, streaming: false, tool: null, text: full }));
+        // Sohbet tüketildi — kredi halkasını tazele.
+        window.dispatchEvent(new Event("vela:usage-changed"));
       } catch {
         if (raf) cancelAnimationFrame(raf);
         patch((m) => ({ ...m, streaming: false, tool: null, text: "Bağlantı koptu. Tekrar dener misin?" }));

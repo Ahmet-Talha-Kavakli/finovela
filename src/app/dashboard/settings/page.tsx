@@ -4,6 +4,13 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { SettingsTabs } from "@/components/dashboard/settings-tabs";
 import { AiMemoryPanel } from "@/components/dashboard/ai-memory-panel";
 import { SecurityPanel, NotificationPrefs } from "@/components/dashboard/security-panel";
+import {
+  PreferencesPanel,
+  PlanUsageSummary,
+  ConnectionsSummary,
+  DataPrivacyPanel,
+  ProfileManageButton,
+} from "@/components/dashboard/settings-extras";
 import { DangerZone } from "@/components/dashboard/danger-zone";
 import { Sparkles } from "lucide-react";
 import { getCurrentUser, requireUserId } from "@/lib/current-user";
@@ -55,7 +62,7 @@ export default async function SettingsPage() {
                   </p>
                 </div>
                 <div
-                  className="flex items-center gap-4 rounded-xl border p-5"
+                  className="flex flex-wrap items-center gap-4 rounded-xl border p-5"
                   style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
                 >
                   {user.imageUrl ? (
@@ -69,11 +76,23 @@ export default async function SettingsPage() {
                       {initial}
                     </span>
                   )}
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-[14px] font-medium text-[var(--ais-fg)]">{user.name}</p>
-                    <p className="text-[13px] text-[var(--ais-fg-muted)]">{user.email || "—"}</p>
+                    <p className="truncate text-[13px] text-[var(--ais-fg-muted)]">{user.email || "—"}</p>
                   </div>
+                  <ProfileManageButton />
                 </div>
+              </div>
+            }
+            preferences={
+              <div>
+                <div className="mb-5">
+                  <h2 className="d-section">Tercihler</h2>
+                  <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                    Dil, para birimi ve görüntüleme tercihlerin.
+                  </p>
+                </div>
+                <PreferencesPanel />
               </div>
             }
             memory={
@@ -122,6 +141,7 @@ export default async function SettingsPage() {
                     {planId === "free" ? "Yükselt" : "Yönet"}
                   </Link>
                 </div>
+                <PlanUsageSummary />
               </div>
             }
             notifications={
@@ -144,6 +164,19 @@ export default async function SettingsPage() {
                   </p>
                 </div>
                 <SecurityPanel />
+                {/* bağlı borsa hesapları özeti → connections sayfasına köprü */}
+                <ConnectionsSummary />
+              </div>
+            }
+            data={
+              <div>
+                <div className="mb-5">
+                  <h2 className="d-section">Veri & Gizlilik</h2>
+                  <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                    Verilerini dışa aktar, paper hesabını yönet ya da tüm verilerini sıfırla.
+                  </p>
+                </div>
+                <DataPrivacyPanel />
                 {/* paper hesabı sıfırlama — nakit tükenince temiz başlangıç */}
                 <DangerZone />
               </div>

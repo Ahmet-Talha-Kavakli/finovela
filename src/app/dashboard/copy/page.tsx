@@ -4,6 +4,9 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { Sparkline } from "@/components/dashboard/area-chart";
 import { LEADERBOARD, fmtNum } from "@/lib/dashboard/data";
 import { DemoCommunityNotice } from "@/components/dashboard/demo-community-notice";
+import { PlanGate } from "@/components/dashboard/plan-gate";
+import { getUserPlan } from "@/lib/plan-access";
+import { requireUserId } from "@/lib/current-user";
 import { Trophy } from "lucide-react";
 
 /**
@@ -23,11 +26,20 @@ function riskShade(r: number) {
   return `rgba(37,103,255,${0.18 + (r / 10) * 0.62})`;
 }
 
-export default function CopyTradingPage() {
+export default async function CopyTradingPage() {
   const ranked = [...LEADERBOARD].sort((a, b) => b.return1y - a.return1y);
+  // Plan kilidi — Kopya İşlem Pro/Unlimited'a özel (server'da çöz).
+  let planId: "free" | "pro" | "unlimited" = "free";
+  try {
+    const uid = await requireUserId();
+    planId = (await getUserPlan(uid)).id;
+  } catch {
+    /* DB erişilemezse free → kilitli göster */
+  }
   return (
     <>
       <Topbar title="Kopya İşlem" />
+      <PlanGate feature="copyTrading" plan={planId}>
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -178,6 +190,7 @@ export default function CopyTradingPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

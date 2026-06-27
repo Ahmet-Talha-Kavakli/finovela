@@ -3,6 +3,7 @@
 import { CLERK_ENABLED } from "@/lib/auth";
 import { useUser, UserButton, SignOutButton } from "@clerk/nextjs";
 import { useProfile } from "@/lib/dashboard/use-profile";
+import { CreditRing } from "@/components/dashboard/credit-ring";
 import { SignOut } from "@phosphor-icons/react";
 
 /**
@@ -13,9 +14,11 @@ export function UserChip() {
   if (!CLERK_ENABLED) {
     return (
       <div className="flex items-center gap-3 rounded-xl px-3.5 py-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-xs font-bold text-white">
-          A
-        </span>
+        <CreditRing size={38}>
+          <span className="grid h-full w-full place-items-center rounded-full border border-white/15 bg-white/[0.06] text-xs font-bold text-white">
+            A
+          </span>
+        </CreditRing>
         <div className="leading-tight">
           <p className="text-sm font-medium text-white">Alex Morgan</p>
           <p className="flex items-center gap-1.5 text-[11px] text-white/45">
@@ -43,7 +46,9 @@ function ClerkChip() {
 
   return (
     <div className="flex items-center gap-3 rounded-xl px-2.5 py-2.5">
-      <UserButton appearance={{ elements: { avatarBox: "h-8 w-8" } }} />
+      <CreditRing size={38}>
+        <UserButton appearance={{ elements: { avatarBox: "h-full w-full" } }} />
+      </CreditRing>
       <div className="min-w-0 flex-1 leading-tight">
         <p className="truncate text-sm font-medium text-white">
           {isLoaded ? name : "…"}
