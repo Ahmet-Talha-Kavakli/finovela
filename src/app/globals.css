@@ -597,6 +597,12 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 /* PIN gibi geniş harf-aralıklı inputlarda placeholder dağılmasın (girilen rakamlar geniş kalır). */
 .ais .ais-input::placeholder { letter-spacing: normal; }
 
+/* Canlı destek widget açılış animasyonu (sol-alttan yumuşak pop). */
+@keyframes support-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* Modal giriş animasyonu (Vercel/Clerk hissi — backdrop blur fade + kart scale). */
 @keyframes vela-modal-in {
   from { opacity: 0; }

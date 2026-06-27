@@ -23,7 +23,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://*.paddle.com",
   // Paddle + ProfitWell API (live + sandbox) bağlantı izni.
-  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https://*.paddle.com https://*.profitwell.com https:",
+  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https://generativelanguage.googleapis.com https://*.paddle.com https://*.profitwell.com https:",
   // Paddle checkout overlay (iframe) — *.paddle.com tümünü kapsar.
   "frame-src 'self' https://*.clerk.accounts.dev https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://*.paddle.com https://buy.paddle.com https://sandbox-buy.paddle.com",
   "worker-src 'self' blob:",

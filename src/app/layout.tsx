@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SupportWidget } from "@/components/site/support-widget";
 import { ClerkProvider } from "@clerk/nextjs";
 import { CLERK_ENABLED } from "@/lib/auth";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-bg text-fg">
         <ThemeProvider>{children}</ThemeProvider>
+        <SupportWidget />
       </body>
     </html>
   );
