@@ -43,8 +43,9 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
+    // microphone=(self): sohbet + canlı destek sesli giriş (Web Speech API) için.
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    value: "camera=(), microphone=(self), geolocation=()",
   },
   { key: "Content-Security-Policy", value: contentSecurityPolicy },
 ];
