@@ -26,7 +26,7 @@ export default async function CopyTraderPage({
   return (
     <>
       <Topbar title={trader?.name ?? "Yatırımcı"} />
-      <div className="ais min-h-[calc(100vh-64px)]">
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="max-w-7xl px-8 py-10">
           {trader && <CopyTrackRecord trader={trader} />}
         </div>

@@ -10,8 +10,13 @@ import { UNIVERSE, getUniverseEntry } from "@/lib/market/universe";
 import { paperStore } from "@/lib/dashboard/paper-store";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import { useConfirm } from "@/components/dashboard/confirm";
-import { ArrowDown, ArrowUp, Check, UserPlus } from "@phosphor-icons/react";
+import { useCopy, copyStore } from "@/lib/dashboard/use-copy";
+import { ArrowDown, ArrowUp, Check, UserPlus } from "lucide-react";
 import { TickerBadge } from "@/components/dashboard/ticker-badge";
+
+/** Didit açık-tema SVG/inline grafik renkleri (CSS-var değil — <stop>/canvas). */
+const G_UP = "#1f9d57";
+const G_DOWN = "#d93025";
 
 /** Deterministik hash — handle → sayı */
 function hash(seed: string): number {
@@ -84,12 +89,16 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
     [handle],
   );
 
-  const [following, setFollowing] = useState(false);
+  const copy = useCopy();
   const [amount, setAmount] = useState("1000");
   const [stopLoss, setStopLoss] = useState("15");
   const [copyState, setCopyState] = useState<"idle" | "copying" | "done" | "error">("idle");
   const [copyMsg, setCopyMsg] = useState("");
   const confirm = useConfirm();
+
+  // Kalıcı durum (localStorage) — render içinde Date.now() yok, sadece türetilmiş değer.
+  const following = trader ? copy.following.includes(trader.handle) : false;
+  const isCopying = trader ? copy.copying.some((c) => c.handle === trader.handle) : false;
 
   const data = useMemo(() => {
     if (!trader) return null;
@@ -106,13 +115,13 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
     return (
       <div className="p-6">
         <Card>
-          <h2 className="font-display text-lg font-bold text-white">Yatırımcı bulunamadı</h2>
-          <p className="mt-2 text-sm text-white/45">
+          <h2 className="font-display text-lg font-bold text-[var(--ais-fg)]">Yatırımcı bulunamadı</h2>
+          <p className="mt-2 text-sm text-[var(--ais-fg-muted)]">
             Bu kullanıcı adına sahip bir yatırımcı bulamadık.
           </p>
           <Link
             href="/dashboard/copy"
-            className="mt-5 inline-flex rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.06]"
+            className="mt-5 inline-flex rounded-full border border-[var(--ais-line-strong)] px-4 py-2 text-sm font-semibold text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
           >
             Lider tablosuna dön
           </Link>
@@ -149,6 +158,14 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
         if (r.ok) placed++;
       }
       if (placed > 0) {
+        // Kalıcı kopyalama durumunu kaydet (Date.now() event handler'da — render değil).
+        copyStore.startCopy({
+          handle: trader.handle,
+          name: trader.name,
+          amount: usd,
+          stopLoss: Number(stopLoss) || 0,
+          startedAt: Date.now(),
+        });
         notifStore.push("order", `${trader.name} kopyalanmaya başlandı — ${fmtUsd(usd, 0)} ile ${placed} pozisyon yansıtıldı`);
         setCopyState("done");
         setCopyMsg(`${trader.name} kopyalanıyor — ${placed} pozisyon portföyüne eklendi.`);
@@ -166,64 +183,79 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
     <div className="space-y-5 p-6">
       {/* header */}
       <div className="flex flex-wrap items-center gap-4">
-        <span className="grid h-16 w-16 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-xl font-bold text-white">
+        <span className="grid h-16 w-16 place-items-center rounded-full border border-[var(--ais-line-strong)] bg-[var(--ais-surface-2)] text-xl font-bold text-[var(--ais-fg)]">
           {trader.name[0]}
         </span>
         <div className="mr-auto">
-          <h1 className="font-display text-2xl font-bold text-white">{trader.name}</h1>
-          <p className="text-sm text-white/45">
+          <h1 className="font-display text-2xl font-bold text-[var(--ais-fg)]">{trader.name}</h1>
+          <p className="text-sm text-[var(--ais-fg-muted)]">
             {trader.handle} · {trader.style}
           </p>
         </div>
         <button
-          onClick={() => setFollowing((f) => !f)}
-          className="flex items-center gap-2 rounded-full border border-white/12 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/[0.06]"
+          onClick={() => copyStore.toggleFollow(trader.handle)}
+          className="flex items-center gap-2 rounded-full border border-[var(--ais-line-strong)] px-4 py-2.5 text-sm font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
         >
-          {following ? <Check size={16} weight="bold" /> : <UserPlus size={16} />}
+          {following ? <Check size={16} strokeWidth={2.25} /> : <UserPlus size={16} />}
           {following ? "Takip ediliyor" : "Takip et"}
         </button>
         <a
           href="#copy-settings"
-          className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:brightness-105"
+          className="rounded-full bg-[var(--ais-accent)] px-5 py-2.5 text-sm font-bold text-white transition hover:brightness-105"
         >
           Yatırımcıyı kopyala
         </a>
       </div>
+
+      {/* aktif kopyalama rozeti + durdur */}
+      {isCopying && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--ais-line)] bg-[var(--ais-surface)] px-4 py-3">
+          <span className="inline-flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ais-green)" }}>
+            <Check size={15} strokeWidth={2.25} /> Bu yatırımcı kopyalanıyor
+          </span>
+          <button
+            onClick={() => copyStore.stopCopy(trader.handle)}
+            className="rounded-full border border-[var(--ais-line-strong)] px-4 py-2 text-sm font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+          >
+            Kopyalamayı durdur
+          </button>
+        </div>
+      )}
 
       {/* stat row */}
       <div className="grid gap-5 lg:grid-cols-12">
         <Card className="lg:col-span-8">
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
             <div>
-              <p className="text-xs text-white/45">1Y getiri</p>
-              <p className="mt-1 font-display text-2xl font-bold tabular-nums" style={{ color: "#3ecf8e" }}>
+              <p className="text-xs text-[var(--ais-fg-muted)]">1Y getiri</p>
+              <p className="mt-1 font-display text-2xl font-bold tabular-nums" style={{ color: "var(--ais-green)" }}>
                 +{trader.return1y}%
               </p>
             </div>
             <div>
-              <p className="text-xs text-white/45">Kazanma oranı</p>
-              <p className="mt-1 font-display text-2xl font-bold text-white tabular-nums">{trader.win}%</p>
+              <p className="text-xs text-[var(--ais-fg-muted)]">Kazanma oranı</p>
+              <p className="mt-1 font-display text-2xl font-bold text-[var(--ais-fg)] tabular-nums">{trader.win}%</p>
             </div>
             <div>
-              <p className="text-xs text-white/45">Kopyalayan</p>
-              <p className="mt-1 font-display text-2xl font-bold text-white tabular-nums">{fmtNum(trader.copiers)}</p>
+              <p className="text-xs text-[var(--ais-fg-muted)]">Kopyalayan</p>
+              <p className="mt-1 font-display text-2xl font-bold text-[var(--ais-fg)] tabular-nums">{fmtNum(trader.copiers)}</p>
             </div>
             <div>
-              <p className="text-xs text-white/45">AUM</p>
-              <p className="mt-1 font-display text-2xl font-bold text-white tabular-nums">{data.aum}</p>
+              <p className="text-xs text-[var(--ais-fg-muted)]">AUM</p>
+              <p className="mt-1 font-display text-2xl font-bold text-[var(--ais-fg)] tabular-nums">{data.aum}</p>
             </div>
           </div>
-          <div className="mt-5 flex items-center justify-between border-t border-white/[0.08] pt-5">
+          <div className="mt-5 flex items-center justify-between border-t border-[var(--ais-line)] pt-5">
             <div>
-              <p className="text-xs text-white/45">Tarz</p>
-              <p className="mt-1 text-sm font-medium text-white">{trader.style}</p>
+              <p className="text-xs text-[var(--ais-fg-muted)]">Tarz</p>
+              <p className="mt-1 text-sm font-medium text-[var(--ais-fg)]">{trader.style}</p>
             </div>
             <Sparkline seed={trader.handle} up width={120} height={40} />
           </div>
         </Card>
 
         <Card className="grid place-items-center lg:col-span-4">
-          <p className="text-xs uppercase tracking-[0.08em] text-white/45">Risk skoru</p>
+          <p className="text-xs uppercase tracking-[0.08em] text-[var(--ais-fg-muted)]">Risk skoru</p>
           <RadialGauge
             value={trader.risk * 10}
             size={132}
@@ -231,7 +263,7 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
             sublabel="/ 10"
             tone="white"
           />
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-[var(--ais-fg-faint)]">
             {trader.risk <= 3 ? "Temkinli" : trader.risk <= 6 ? "Dengeli" : "Agresif"}
           </p>
         </Card>
@@ -239,7 +271,7 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
 
       {/* performance */}
       <Card>
-        <CardTitle action={<span className="text-sm font-semibold tabular-nums" style={{ color: "#3ecf8e" }}>+{trader.return1y}%</span>}>
+        <CardTitle action={<span className="text-sm font-semibold tabular-nums" style={{ color: "var(--ais-green)" }}>+{trader.return1y}%</span>}>
           Performans · 1Y
         </CardTitle>
         <ChartFrame
@@ -263,23 +295,23 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
                 <Link
                   key={h.symbol}
                   href={`/dashboard/stock/${h.symbol}`}
-                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-white/[0.05]"
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-[var(--ais-surface-2)]"
                 >
                   <TickerBadge symbol={h.symbol} size={34} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2 text-sm">
                       <span className="flex min-w-0 items-baseline gap-2">
-                        <span className="shrink-0 font-semibold text-white">{h.symbol}</span>
-                        <span className="truncate text-xs text-white/40">{h.name}</span>
+                        <span className="shrink-0 font-semibold text-[var(--ais-fg)]">{h.symbol}</span>
+                        <span className="truncate text-xs text-[var(--ais-fg-muted)]">{h.name}</span>
                       </span>
-                      <span className="shrink-0 font-medium text-white tabular-nums">{h.pct}%</span>
+                      <span className="shrink-0 font-medium text-[var(--ais-fg)] tabular-nums">{h.pct}%</span>
                     </div>
-                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--ais-surface-2)]">
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: `${(h.pct / maxPct) * 100}%`,
-                          background: "linear-gradient(90deg, #8ab4f8, rgba(138,180,248,0.4))",
+                          background: "linear-gradient(90deg, var(--ais-accent), var(--ais-accent-bg))",
                         }}
                       />
                     </div>
@@ -296,28 +328,28 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
           <div className="space-y-1">
             {data.trades.map((t, i) => {
               const buy = t.side === "BUY";
-              const col = buy ? "#3ecf8e" : "#ff5c5c";
+              const col = buy ? G_UP : G_DOWN;
               return (
                 <div
                   key={`${t.symbol}-${i}`}
-                  className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/[0.05]"
+                  className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-[var(--ais-surface-2)]"
                 >
                   <span className="relative shrink-0">
                     <TickerBadge symbol={t.symbol} size={34} />
                     <span
-                      className="absolute -bottom-0.5 -right-0.5 grid h-4 w-4 place-items-center rounded-full ring-2 ring-[#0c0c0e]"
-                      style={{ background: col, color: "#06120c" }}
+                      className="absolute -bottom-0.5 -right-0.5 grid h-4 w-4 place-items-center rounded-full ring-2 ring-[var(--ais-surface)]"
+                      style={{ background: col, color: "#fff" }}
                     >
-                      {buy ? <ArrowUp size={9} weight="bold" /> : <ArrowDown size={9} weight="bold" />}
+                      {buy ? <ArrowUp size={9} strokeWidth={2.75} /> : <ArrowDown size={9} strokeWidth={2.75} />}
                     </span>
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-[var(--ais-fg)]">
                       <span style={{ color: col }}>{buy ? "Al" : "Sat"}</span> {t.symbol}
                     </p>
-                    <p className="text-xs text-white/40 tabular-nums">{t.shares} adet</p>
+                    <p className="text-xs text-[var(--ais-fg-muted)] tabular-nums">{t.shares} adet</p>
                   </div>
-                  <span className="text-xs text-white/40 tabular-nums">{t.when}</span>
+                  <span className="text-xs text-[var(--ais-fg-muted)] tabular-nums">{t.when}</span>
                 </div>
               );
             })}
@@ -331,56 +363,67 @@ export function CopyTraderProfile({ handle }: { handle: string }) {
         <CardTitle>Kopyalama ayarları</CardTitle>
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label className="text-xs text-white/45">Ayrılacak tutar</label>
-            <div className="mt-1.5 flex items-center rounded-xl border border-white/[0.1] bg-white/[0.03] px-3 focus-within:border-white/25">
-              <span className="text-sm text-white/40">$</span>
+            <label className="text-xs text-[var(--ais-fg-muted)]">Ayrılacak tutar</label>
+            <div className="mt-1.5 flex items-center rounded-xl border border-[var(--ais-line)] bg-[var(--ais-surface-2)] px-3 focus-within:border-[var(--ais-accent)]">
+              <span className="text-sm text-[var(--ais-fg-muted)]">$</span>
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 inputMode="numeric"
-                className="w-full bg-transparent px-2 py-2.5 text-sm font-medium text-white tabular-nums outline-none placeholder:text-white/30"
+                className="w-full bg-transparent px-2 py-2.5 text-sm font-medium text-[var(--ais-fg)] tabular-nums outline-none placeholder:text-[var(--ais-fg-faint)]"
                 placeholder="1000"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs text-white/45">Kopya stop-loss</label>
-            <div className="mt-1.5 flex items-center rounded-xl border border-white/[0.1] bg-white/[0.03] px-3 focus-within:border-white/25">
+            <label className="text-xs text-[var(--ais-fg-muted)]">Kopya stop-loss</label>
+            <div className="mt-1.5 flex items-center rounded-xl border border-[var(--ais-line)] bg-[var(--ais-surface-2)] px-3 focus-within:border-[var(--ais-accent)]">
               <input
                 value={stopLoss}
                 onChange={(e) => setStopLoss(e.target.value.replace(/[^0-9]/g, ""))}
                 inputMode="numeric"
-                className="w-full bg-transparent px-2 py-2.5 text-sm font-medium text-white tabular-nums outline-none placeholder:text-white/30"
+                className="w-full bg-transparent px-2 py-2.5 text-sm font-medium text-[var(--ais-fg)] tabular-nums outline-none placeholder:text-[var(--ais-fg-faint)]"
                 placeholder="15"
               />
-              <span className="text-sm text-white/40">%</span>
+              <span className="text-sm text-[var(--ais-fg-muted)]">%</span>
             </div>
           </div>
         </div>
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-5">
-          <p className="text-xs text-white/40">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ais-line)] pt-5">
+          <p className="text-xs text-[var(--ais-fg-muted)]">
             {trader.name} kullanıcısının yaptığı her işlemi, ayırdığınız tutara göre ölçeklenerek otomatik yansıtır.
           </p>
-          {copyState === "done" ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#3ecf8e]/15 px-5 py-2.5 text-sm font-semibold text-[#3ecf8e]">
-              <Check size={15} weight="bold" /> Kopyalanıyor
-            </span>
+          {copyState === "done" || isCopying ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <span
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
+                style={{ background: "var(--ais-green-bg)", color: "var(--ais-green)" }}
+              >
+                <Check size={15} strokeWidth={2.25} /> Kopyalanıyor
+              </span>
+              <button
+                onClick={() => copyStore.stopCopy(trader.handle)}
+                className="rounded-full border border-[var(--ais-line-strong)] px-5 py-2.5 text-sm font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+              >
+                Kopyalamayı durdur
+              </button>
+            </div>
           ) : (
             <button
               onClick={startCopy}
               disabled={copyState === "copying"}
-              className="rounded-full bg-white px-6 py-2.5 text-sm font-bold text-black transition hover:brightness-105 disabled:opacity-50"
+              className="rounded-full bg-[var(--ais-accent)] px-6 py-2.5 text-sm font-bold text-white transition hover:brightness-105 disabled:opacity-50"
             >
               {copyState === "copying" ? "Kopyalanıyor…" : `${fmtUsd(Number(amount) || 0, 0)} ile kopyalamaya başla`}
             </button>
           )}
         </div>
         {copyMsg && (
-          <p className="mt-3 text-xs" style={{ color: copyState === "error" ? "#ff5c5c" : "#3ecf8e" }}>
+          <p className="mt-3 text-xs" style={{ color: copyState === "error" ? G_DOWN : "var(--ais-green)" }}>
             {copyMsg}
           </p>
         )}
-        <p className="mt-4 text-xs text-white/30">
+        <p className="mt-4 text-xs text-[var(--ais-fg-faint)]">
           Geçmiş performans gelecekteki sonuçları garanti etmez. Demo işlem.
         </p>
       </Card>

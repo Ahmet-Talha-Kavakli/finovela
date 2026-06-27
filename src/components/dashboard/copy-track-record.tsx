@@ -8,8 +8,12 @@
    ============================================================ */
 
 import { useState } from "react";
-import { SectionCard, Metric, AIS_UP, AIS_DOWN } from "@/components/dashboard/ais-kit";
+import { SectionCard, Metric } from "@/components/dashboard/ais-kit";
 import { TickerBadge } from "@/components/dashboard/ticker-badge";
+
+/** Didit açık-tema inline/SVG grafik renkleri (CSS-var değil — <stop>/canvas/bar fill). */
+const AIS_UP = "#1f9d57";
+const AIS_DOWN = "#d93025";
 import { fmtNum, type Trader } from "@/lib/dashboard/data";
 import { UNIVERSE } from "@/lib/market/universe";
 
@@ -134,12 +138,12 @@ export function CopyTrackRecord({ trader }: { trader: Trader }) {
                   </span>
                   <span className="num shrink-0 font-medium text-[var(--ais-fg)]">{h.pct}%</span>
                 </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/[0.05]">
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--ais-surface-2)]">
                   <div
                     className="h-full rounded-full"
                     style={{
                       width: `${(h.pct / maxPct) * 100}%`,
-                      background: `linear-gradient(90deg, var(--ais-accent), rgba(138,180,248,0.45))`,
+                      background: `linear-gradient(90deg, var(--ais-accent), var(--ais-accent-bg))`,
                     }}
                   />
                 </div>
