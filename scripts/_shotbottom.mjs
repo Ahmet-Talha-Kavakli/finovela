@@ -1,0 +1,10 @@
+import puppeteer from "puppeteer-core";
+const url=process.argv[2],out=process.argv[3];
+const b=await puppeteer.launch({executablePath:"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",headless:"new",args:["--no-sandbox"]});
+const p=await b.newPage(); await p.setViewport({width:1400,height:1000,deviceScaleFactor:2});
+await p.goto(url,{waitUntil:"networkidle0",timeout:60000}); await new Promise(r=>setTimeout(r,1500));
+const full = await p.evaluate(()=>document.body.scrollHeight);
+await p.evaluate(h=>window.scrollTo(0,h), full);
+await new Promise(r=>setTimeout(r,1000));
+await p.screenshot({path:out, clip:{x:240,y:0,width:1160,height:1000}});
+await b.close(); console.log("ok",out,"scrollH",full);

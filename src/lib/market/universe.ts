@@ -2,13 +2,26 @@
 // Gerçekçi taban fiyat/sektör; mock provider bunları deterministik
 // dalgalandırır, finnhub provider ise sadece isim/sektör için referans alır.
 
+export type AssetType =
+  | "stock" // ABD hissesi
+  | "etf"
+  | "crypto" // gerçek spot kripto (CoinGecko)
+  | "bist" // Borsa İstanbul hissesi (Yahoo .IS)
+  | "forex" // döviz çifti (Twelve Data)
+  | "metal" // değerli metal: XAU/XAG + gram altın
+  | "commodity"; // emtia: petrol vb.
+
 export interface UniverseEntry {
   symbol: string;
   name: string;
   sector: string;
   basePrice: number;
   marketCap: number; // USD
-  type: "stock" | "etf" | "crypto";
+  type: AssetType;
+  /** Görüntü para birimi (varsayılan USD; BIST & gram altın TRY). */
+  currency?: string;
+  /** Sağlayıcıya özel kaynak sembolü (CoinGecko id, Yahoo .IS, TwelveData XAU/USD vb.). */
+  providerSymbol?: string;
 }
 
 export const UNIVERSE: UniverseEntry[] = [
@@ -39,11 +52,131 @@ export const UNIVERSE: UniverseEntry[] = [
   { symbol: "VTI", name: "Vanguard Total Stock Market", sector: "ETF", basePrice: 318.44, marketCap: 0, type: "etf" },
   { symbol: "ARKK", name: "ARK Innovation ETF", sector: "ETF", basePrice: 78.21, marketCap: 0, type: "etf" },
 
-  // Crypto
-  { symbol: "BTC", name: "Bitcoin", sector: "Crypto", basePrice: 98420.0, marketCap: 1_940_000_000_000, type: "crypto" },
-  { symbol: "ETH", name: "Ethereum", sector: "Crypto", basePrice: 3842.0, marketCap: 462_000_000_000, type: "crypto" },
-  { symbol: "SOL", name: "Solana", sector: "Crypto", basePrice: 238.5, marketCap: 132_000_000_000, type: "crypto" },
+  // Crypto (gerçek spot — CoinGecko)
+  { symbol: "BTC", name: "Bitcoin", sector: "Crypto", basePrice: 98420.0, marketCap: 1_940_000_000_000, type: "crypto", providerSymbol: "bitcoin" },
+  { symbol: "ETH", name: "Ethereum", sector: "Crypto", basePrice: 3842.0, marketCap: 462_000_000_000, type: "crypto", providerSymbol: "ethereum" },
+  { symbol: "SOL", name: "Solana", sector: "Crypto", basePrice: 238.5, marketCap: 132_000_000_000, type: "crypto", providerSymbol: "solana" },
+  { symbol: "XRP", name: "XRP", sector: "Crypto", basePrice: 2.34, marketCap: 134_000_000_000, type: "crypto", providerSymbol: "ripple" },
+  { symbol: "ADA", name: "Cardano", sector: "Crypto", basePrice: 0.92, marketCap: 33_000_000_000, type: "crypto", providerSymbol: "cardano" },
+  { symbol: "DOGE", name: "Dogecoin", sector: "Crypto", basePrice: 0.38, marketCap: 56_000_000_000, type: "crypto", providerSymbol: "dogecoin" },
+  { symbol: "AVAX", name: "Avalanche", sector: "Crypto", basePrice: 41.2, marketCap: 17_000_000_000, type: "crypto", providerSymbol: "avalanche-2" },
+
+  // BIST — Borsa İstanbul (Yahoo Finance .IS, TRY)
+  { symbol: "THYAO", name: "Türk Hava Yolları", sector: "Ulaştırma", basePrice: 312.5, marketCap: 431_000_000_000, type: "bist", currency: "TRY", providerSymbol: "THYAO.IS" },
+  { symbol: "ASELS", name: "Aselsan", sector: "Savunma", basePrice: 168.2, marketCap: 383_000_000_000, type: "bist", currency: "TRY", providerSymbol: "ASELS.IS" },
+  { symbol: "GARAN", name: "Garanti BBVA", sector: "Bankacılık", basePrice: 142.8, marketCap: 600_000_000_000, type: "bist", currency: "TRY", providerSymbol: "GARAN.IS" },
+  { symbol: "AKBNK", name: "Akbank", sector: "Bankacılık", basePrice: 72.4, marketCap: 376_000_000_000, type: "bist", currency: "TRY", providerSymbol: "AKBNK.IS" },
+  { symbol: "KCHOL", name: "Koç Holding", sector: "Holding", basePrice: 198.6, marketCap: 504_000_000_000, type: "bist", currency: "TRY", providerSymbol: "KCHOL.IS" },
+  { symbol: "TUPRS", name: "Tüpraş", sector: "Enerji", basePrice: 178.9, marketCap: 345_000_000_000, type: "bist", currency: "TRY", providerSymbol: "TUPRS.IS" },
+  { symbol: "BIMAS", name: "BİM Mağazalar", sector: "Perakende", basePrice: 512.0, marketCap: 311_000_000_000, type: "bist", currency: "TRY", providerSymbol: "BIMAS.IS" },
+  { symbol: "EREGL", name: "Ereğli Demir Çelik", sector: "Demir-Çelik", basePrice: 46.8, marketCap: 164_000_000_000, type: "bist", currency: "TRY", providerSymbol: "EREGL.IS" },
+  { symbol: "FROTO", name: "Ford Otosan", sector: "Otomotiv", basePrice: 1024.0, marketCap: 359_000_000_000, type: "bist", currency: "TRY", providerSymbol: "FROTO.IS" },
+  { symbol: "SISE", name: "Şişecam", sector: "Sanayi", basePrice: 38.9, marketCap: 119_000_000_000, type: "bist", currency: "TRY", providerSymbol: "SISE.IS" },
+
+  // Forex (Twelve Data)
+  { symbol: "USDTRY", name: "Dolar / Türk Lirası", sector: "Döviz", basePrice: 42.3, marketCap: 0, type: "forex", currency: "TRY", providerSymbol: "USD/TRY" },
+  { symbol: "EURUSD", name: "Euro / Dolar", sector: "Döviz", basePrice: 1.082, marketCap: 0, type: "forex", currency: "USD", providerSymbol: "EUR/USD" },
+  { symbol: "EURTRY", name: "Euro / Türk Lirası", sector: "Döviz", basePrice: 45.8, marketCap: 0, type: "forex", currency: "TRY", providerSymbol: "EUR/TRY" },
+  { symbol: "GBPUSD", name: "Sterlin / Dolar", sector: "Döviz", basePrice: 1.27, marketCap: 0, type: "forex", currency: "USD", providerSymbol: "GBP/USD" },
+
+  // Değerli metaller (Twelve Data + gram altın sentetik)
+  { symbol: "GRAMALTIN", name: "Gram Altın", sector: "Değerli Metal", basePrice: 4350.0, marketCap: 0, type: "metal", currency: "TRY", providerSymbol: "GRAM_GOLD" },
+  { symbol: "XAUUSD", name: "Altın (ons)", sector: "Değerli Metal", basePrice: 2680.0, marketCap: 0, type: "metal", currency: "USD", providerSymbol: "XAU/USD" },
+  { symbol: "XAGUSD", name: "Gümüş (ons)", sector: "Değerli Metal", basePrice: 31.2, marketCap: 0, type: "metal", currency: "USD", providerSymbol: "XAG/USD" },
+
+  // Emtia (Twelve Data)
+  { symbol: "WTI", name: "Ham Petrol (WTI)", sector: "Emtia", basePrice: 71.4, marketCap: 0, type: "commodity", currency: "USD", providerSymbol: "WTI/USD" },
+  { symbol: "BRENT", name: "Brent Petrol", sector: "Emtia", basePrice: 75.8, marketCap: 0, type: "commodity", currency: "USD", providerSymbol: "BRENT/USD" },
 ];
+
+/**
+ * Sembol → marka domaini. Referans amaçlı tutulur (logo kaynağı artık
+ * sembol-tabanlı CDN'ler; bu harita başka yerlerde kullanılabildiği için korunur).
+ */
+export const SYMBOL_DOMAIN: Record<string, string> = {
+  NVDA: "nvidia.com",
+  AAPL: "apple.com",
+  MSFT: "microsoft.com",
+  GOOGL: "abc.xyz",
+  AMZN: "amazon.com",
+  META: "meta.com",
+  TSLA: "tesla.com",
+  AVGO: "broadcom.com",
+  JPM: "jpmorganchase.com",
+  WFC: "wellsfargo.com",
+  V: "visa.com",
+  UNH: "unitedhealthgroup.com",
+  KO: "coca-cola.com",
+  GE: "geaerospace.com",
+  AMD: "amd.com",
+  SPY: "ssga.com",
+  QQQ: "invesco.com",
+  VTI: "vanguard.com",
+  ARKK: "ark-funds.com",
+  BTC: "bitcoin.org",
+  ETH: "ethereum.org",
+  SOL: "solana.com",
+  XRP: "ripple.com",
+  ADA: "cardano.org",
+  DOGE: "dogecoin.com",
+  AVAX: "avax.network",
+};
+
+/**
+ * Kripto sembol → spothq cryptocurrency-icons ikon adı (lowercase).
+ * Bu CDN anahtarsız ve 200 döner.
+ */
+const CRYPTO_ICON: Record<string, string> = {
+  BTC: "btc",
+  ETH: "eth",
+  SOL: "sol",
+  XRP: "xrp",
+  ADA: "ada",
+  DOGE: "doge",
+  AVAX: "avax",
+};
+
+/**
+ * BIST sembolleri → FMP image-stock için ".IS" uzantılı sembol.
+ * FMP bu hisselerin gerçek kurum logosunu döndürür (örn. THYAO.IS.png).
+ * Listede olmayan BIST sembolü FMP'de boş döneceği için <img onError>
+ * harf-rozetine düşer.
+ */
+const BIST_SYMBOLS = new Set([
+  "THYAO",
+  "ASELS",
+  "GARAN",
+  "AKBNK",
+  "KCHOL",
+  "TUPRS",
+  "BIMAS",
+  "EREGL",
+  "FROTO",
+  "SISE",
+]);
+
+/**
+ * Gerçek logo URL'i — anahtarsız, halka açık CDN'ler:
+ *  - ABD hisse/ETF: Financial Modeling Prep image-stock (sembol-tabanlı PNG, 200).
+ *  - BIST hissesi: FMP image-stock + ".IS" uzantısı (gerçek kurum logosu).
+ *  - Kripto: spothq/cryptocurrency-icons (renkli 128px PNG, 200).
+ * Döviz/metal/emtia gibi logosu olmayan enstrümanlar null döner →
+ * varlık-sınıfına göre zarif tipografik rozete düşer (ticker-badge).
+ */
+export function logoUrl(symbol: string): string | null {
+  const sym = symbol.toUpperCase();
+  const crypto = CRYPTO_ICON[sym];
+  if (crypto) {
+    return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${crypto}.png`;
+  }
+  if (BIST_SYMBOLS.has(sym)) {
+    return `https://financialmodelingprep.com/image-stock/${sym}.IS.png`;
+  }
+  if (SYMBOL_DOMAIN[sym]) {
+    return `https://financialmodelingprep.com/image-stock/${sym}.png`;
+  }
+  return null;
+}
 
 export const BY_SYMBOL = new Map(UNIVERSE.map((e) => [e.symbol, e]));
 

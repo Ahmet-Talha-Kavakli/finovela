@@ -1,62 +1,66 @@
 "use client";
 
 import Image from "next/image";
-import { GlassButton } from "@/components/ui/glass-button";
-import { ChatCircleDots, PlayCircle } from "@phosphor-icons/react";
+import Link from "next/link";
 
 /**
- * Hero — RockFlow birebir kurgu: tam-genişlik sinematik SAHNE zemin
- * (dalga silüeti + yıldızlı mor gök + kayan yıldız + ışıklı yelken),
- * metin sol-üstte, sahne tüm alana yayılır.
- * "Ananas" mantığı: aynı kompozisyon, farklı özne (yelken = Vela).
+ * Hero — RockFlow birebir kopya (rockflow.ai/bobby):
+ * tam-genişlik sahne zemin (yelken + dağ + kayan yıldız),
+ * sol-ortada metin: "Vela" gradient → "Your 24/7 AI Investing Assistant" beyaz,
+ * "Try Vela Free Now: ..." satırı, açık/beyaz "Chat With Vela" pill.
  */
 export function Hero() {
   return (
-    <section className="relative -mt-[76px] min-h-[760px] overflow-hidden bg-[#1a0a35] pt-[76px]">
-      {/* tam-genişlik sinematik sahne zemini */}
+    <section className="relative h-screen min-h-[760px] max-h-[1000px] overflow-hidden bg-[#0a1838]">
+      {/* tam-genişlik sahne zemin */}
       <div className="absolute inset-0">
         <Image
           src="/gen/hero-scene.png"
           alt=""
           fill
           priority
-          className="object-cover object-right"
+          quality={100}
+          className="object-cover object-center"
         />
-        {/* sol koyu degrade — metin okunurluğu (RockFlow gibi) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a0a35] via-[#1a0a35]/70 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#1a0a35]" />
+        {/* üst PARLAK MOR (RockFlow nav bölgesi) — parlak menekşe, yumuşak iniş */}
+        <div className="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-[#3b6dff] via-[#16306b]/45 to-transparent" />
+        {/* sol HAFİF koyu degrade — metin okunurluğu (RockFlow havadar, çok hafif) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1d40]/85 via-[#0c1d40]/30 to-transparent" />
+        {/* alt LİLA SİS (RockFlow dağ üstü açık pus) — belirgin açık lavanta */}
+        <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-[#cfe0ff]/55 via-[#5b8cff]/22 to-transparent" />
+        {/* en alt yumuşak geçiş — açık lavandadan zemine */}
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#0a1838]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[684px] max-w-7xl items-center px-5">
-        <div className="max-w-xl py-16">
-          <p className="font-display text-3xl font-bold text-[#c084fc] sm:text-4xl">
-            Vela
+      {/* metin — sol, dikey ORTALI (RockFlow birebir ölçüldü) */}
+      <div className="relative mx-auto flex h-full max-w-[1400px] items-center px-8 pt-[96px]">
+        <div className="max-w-none">
+          {/* Marka kelimesi — 52px/700, gradient #a5c4ff → #5b8cff (RockFlow ölçüldü) */}
+          <p className="font-display text-[52px] font-bold leading-[72px]">
+            <span className="bg-[linear-gradient(91deg,#a5c4ff_21.75%,#5b8cff_83.42%)] bg-clip-text text-transparent">
+              Finovela
+            </span>
           </p>
-          <h1 className="font-display mt-2 text-[3.25rem] font-bold leading-[1.0] text-white sm:text-6xl lg:text-7xl">
-            Your 24/7 AI
-            <br />
-            investing assistant
+          {/* Başlık — 52px/700, line-height 72px, TEK SATIR (RockFlow ölçüldü) */}
+          <h1 className="font-display whitespace-nowrap text-[52px] font-bold leading-[72px] text-white">
+            7/24 Yapay Zeka Yatırım Asistanın
           </h1>
-          <p className="mt-6 max-w-md text-lg text-white/70">
-            Create an AI portfolio in one sentence. Trade in one click. Vela
-            builds the strategy, automates every buy and sell, and runs it
-            around the clock — so you don&apos;t have to.
+
+          {/* Alt satır — 16px/700, beyaz (RockFlow ölçüldü) */}
+          <p className="mt-8 max-w-[560px] text-base font-bold leading-6 text-white">
+            Claude destekli sohbet: piyasayı webden canlı tarar, yüklediğin
+            grafikleri okur, işlem açar ve dengeler. Risksiz dene — ücretsiz.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <GlassButton size="xl" tone="brand" href="/app">
-              <ChatCircleDots size={20} weight="fill" />
-              Chat with Vela
-            </GlassButton>
-            <button className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3.5 text-[15px] font-medium text-white/85 backdrop-blur-md transition hover:bg-white/5">
-              <PlayCircle size={22} weight="duotone" />
-              Watch demo
-            </button>
+          {/* CTA — 18px/600, h56, gradient #cfe0ff → #e6f0ff, SİYAH metin (RockFlow ölçüldü) */}
+          <div className="mt-10">
+            <Link
+              href="/app"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-[linear-gradient(90deg,#cfe0ff_0%,#e6f0ff_100%)] px-9 text-lg font-semibold text-black shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] transition hover:brightness-105"
+            >
+              Finovela ile Sohbet Et
+            </Link>
           </div>
-
-          <p className="mt-5 text-xs text-white/45">
-            Free to start · Paper-trading demo · No real money required
-          </p>
         </div>
       </div>
     </section>

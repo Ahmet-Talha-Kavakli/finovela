@@ -64,6 +64,18 @@ export interface SearchResult {
   exchange?: string;
 }
 
+export interface EarningsEvent {
+  symbol: string;
+  date: string; // YYYY-MM-DD
+  hour?: string; // "bmo" (açılış öncesi) | "amc" (kapanış sonrası) | ""
+  epsEstimate?: number | null;
+  epsActual?: number | null;
+  revenueEstimate?: number | null;
+  revenueActual?: number | null;
+  quarter?: number;
+  year?: number;
+};
+
 export interface MarketProvider {
   name: string;
   getQuote(symbol: string): Promise<Quote>;
@@ -77,4 +89,6 @@ export interface MarketProvider {
   getProfile(symbol: string): Promise<CompanyProfile>;
   getNews(symbol?: string): Promise<NewsItem[]>;
   search(query: string): Promise<SearchResult[]>;
+  /** Bilanço takvimi (opsiyonel — yalnızca destekleyen sağlayıcı: Finnhub). */
+  getEarnings?(from: string, to: string): Promise<EarningsEvent[]>;
 }

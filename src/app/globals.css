@@ -3,7 +3,7 @@
 /*
   VELA design system
   Koyu sinematik (RockFlow/Bobby damıtması) + light tema.
-  Marka metaforu: yelken / rota / yıldız — mor→cyan denizci-sinematik vurgu.
+  Marka metaforu: yelken / rota / yıldız — mavi→cyan denizci-sinematik vurgu.
 */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -11,34 +11,34 @@
 :root {
   /*
     BİREBİR RockFlow renkleri (pixel-örneklendi):
-    AI Portfolios sayfası: #6510f0 (üst) → #543dd9 (orta) → #270e3d (alt)
-    Hero: #31086e. Hiçbir yer beyaz DEĞİL — her zemin doygun mor.
-    Vela = baştan sona koyu-mor sinematik dünya, metin beyaz.
+    AI Portfolios sayfası: #3b6dff (üst) → #2b5cf0 (orta) → #0c1d40 (alt)
+    Hero: #16306b. Hiçbir yer beyaz DEĞİL — her zemin doygun lacivert.
+    Vela = baştan sona koyu-lacivert sinematik dünya, metin beyaz.
   */
-  --bg: #1a0a35;          /* ana zemin — derin menekşe */
-  --bg-subtle: #21103f;   /* hafif yükseltilmiş */
-  --bg-elevated: #2a1551; /* kart yüzeyi */
-  --bg-deep: #12061f;     /* en koyu (footer) */
-  --bg-deep-2: #2d1b4e;
+  --bg: #0a1838;          /* ana zemin — derin lacivert */
+  --bg-subtle: #0f2148;   /* hafif yükseltilmiş */
+  --bg-elevated: #16306b; /* kart yüzeyi */
+  --bg-deep: #071026;     /* en koyu (footer) */
+  --bg-deep-2: #122a5a;
 
   /* RockFlow degrade durakları */
-  --violet-bright: #6510f0;  /* parlak üst */
-  --violet-mid: #543dd9;     /* orta */
-  --violet-deep: #270e3d;    /* koyu alt */
+  --violet-bright: #2b5cf0;  /* parlak üst */
+  --violet-mid: #3b6dff;     /* orta */
+  --violet-deep: #0c1d40;    /* koyu alt */
 
-  --border: rgba(168, 130, 255, 0.16);
-  --border-strong: rgba(168, 130, 255, 0.3);
+  --border: rgba(91, 140, 255, 0.16);
+  --border-strong: rgba(91, 140, 255, 0.3);
 
-  /* Text — koyu mor zeminde */
-  --fg: #f4eeff;
-  --fg-muted: #c4b3e8;
-  --fg-subtle: #9783c4;
+  /* Text — koyu lacivert zeminde */
+  --fg: #eef3ff;
+  --fg-muted: #aebfdc;
+  --fg-subtle: #7e90b8;
 
-  /* Brand — RockFlow elektrik moru */
-  --brand: #8b5cff;
-  --brand-strong: #a855f7;
-  --brand-cyan: #c084fc;
-  --brand-glow: rgba(139, 92, 255, 0.5);
+  /* Brand — elektrik mavi */
+  --brand: #3b6dff;
+  --brand-strong: #5b8cff;
+  --brand-cyan: #7fb0ff;
+  --brand-glow: rgba(59, 109, 255, 0.5);
 
   /* Semantic */
   --up: #16a34a;
@@ -53,12 +53,12 @@
   /* shadcn uyumluluk köprüsü (21st.dev componentleri için) — Vela renkleriyle */
   --primary: var(--brand);
   --primary-foreground: #ffffff;
-  --secondary: rgba(168, 130, 255, 0.14);
-  --secondary-foreground: #f4eeff;
-  --muted: rgba(168, 130, 255, 0.12);
+  --secondary: rgba(91, 140, 255, 0.14);
+  --secondary-foreground: #eef3ff;
+  --muted: rgba(91, 140, 255, 0.12);
   --muted-foreground: var(--fg-muted);
-  --accent: rgba(168, 130, 255, 0.14);
-  --accent-foreground: #f4eeff;
+  --accent: rgba(91, 140, 255, 0.14);
+  --accent-foreground: #eef3ff;
   --destructive: var(--down);
   --background: var(--bg);
   --foreground: var(--fg);
@@ -67,19 +67,19 @@
   --up: #4ade80;
   --down: #f87171;
   --file-tree-bg: var(--bg-subtle);
-  --file-tree-hover: rgba(168, 130, 255, 0.12);
+  --file-tree-hover: rgba(91, 140, 255, 0.12);
   --folder-icon: var(--brand);
 }
 
 /* Vela tek tema = koyu mor; .dark aynı değerleri taşır (next-themes default) */
 .dark {
-  --bg: #1a0a35;
-  --bg-subtle: #21103f;
-  --bg-elevated: #2a1551;
-  --bg-deep: #12061f;
-  --fg: #f4eeff;
-  --fg-muted: #c4b3e8;
-  --fg-subtle: #9783c4;
+  --bg: #0a1838;
+  --bg-subtle: #0f2148;
+  --bg-elevated: #16306b;
+  --bg-deep: #071026;
+  --fg: #eef3ff;
+  --fg-muted: #aebfdc;
+  --fg-subtle: #7e90b8;
 }
 
 @theme inline {
@@ -119,21 +119,36 @@
   --color-folder-icon: var(--folder-icon);
 
   --radius: var(--radius);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  /* TEK FONT: sans ve mono da Hanken'e (--font-display) bağlı. */
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-display);
   --font-display: var(--font-display);
 
   --animate-spin-slow: spin 3s linear infinite;
 }
 
-/* Başlık fontu — General Sans, sıkı harf aralığı (görseldeki gibi) */
+/* Başlık fontu — Hanken Grotesk. Doğal aralık ferah, hack yok. */
 .font-display {
   font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
 }
 
 * {
   border-color: var(--border);
+}
+
+/* TEK FONT garantisi — hiçbir element farklı fonta kaçmasın.
+   font-sans / font-mono utility'leri ve button/input gibi native öğeler
+   de Hanken Grotesk kullansın (kullanıcı: "her yerde aynı font"). */
+body,
+button,
+input,
+textarea,
+select,
+.font-sans,
+.font-mono,
+[class*="font-"] {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
 }
 
 html {
@@ -143,14 +158,16 @@ html {
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  /* TEK FONT — her yerde Hanken Grotesk (başlık da gövde de küçük etiket de aynı). */
+  font-family: var(--font-display), var(--font-sans), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 /* Sinematik yardımcılar — RockFlow mor */
 .text-gradient {
-  background: linear-gradient(110deg, #c084fc 0%, #a855f7 45%, #8b5cff 100%);
+  background: linear-gradient(110deg, #7fb0ff 0%, #5b8cff 45%, #3b6dff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -158,34 +175,34 @@ body {
 
 /*
   RockFlow degradeleri — pixel-örneklenmiş durak'lar.
-  "Parlak" bölüm: #6510f0 üst → #270e3d alt (AI Portfolios sayfası).
-  Hero/koyu: #31086e → #1a0a35.
+  "Parlak" bölüm: #3b6dff üst → #0c1d40 alt (AI Portfolios sayfası).
+  Hero/koyu: #16306b → #0a1838.
 */
 
 /* Parlak mor bölüm (RockFlow AI Portfolios gibi) */
 .bg-aurora {
   background:
-    radial-gradient(80% 60% at 50% -10%, #6510f0 0%, rgba(101, 16, 240, 0) 60%),
-    radial-gradient(70% 60% at 85% 10%, rgba(168, 85, 247, 0.55) 0%, transparent 55%),
-    linear-gradient(180deg, #3a1a8c 0%, #2a1262 45%, #1a0a35 100%);
+    radial-gradient(80% 60% at 50% -10%, #2b5cf0 0%, rgba(43, 92, 240, 0) 60%),
+    radial-gradient(70% 60% at 85% 10%, rgba(91, 140, 255, 0.55) 0%, transparent 55%),
+    linear-gradient(180deg, #16306b 0%, #102450 45%, #0a1838 100%);
 }
 
-/* Hero / en sinematik koyu mor */
+/* Hero / en sinematik koyu lacivert */
 .bg-deep-violet {
   background:
-    radial-gradient(75% 65% at 70% 5%, rgba(139, 92, 255, 0.5) 0%, transparent 55%),
-    radial-gradient(60% 55% at 15% 30%, rgba(101, 16, 240, 0.4) 0%, transparent 60%),
-    linear-gradient(165deg, #31086e 0%, #240a52 50%, #1a0a35 100%);
+    radial-gradient(75% 65% at 70% 5%, rgba(59, 109, 255, 0.5) 0%, transparent 55%),
+    radial-gradient(60% 55% at 15% 30%, rgba(43, 92, 240, 0.4) 0%, transparent 60%),
+    linear-gradient(165deg, #122a5a 0%, #0c1d40 50%, #0a1838 100%);
 }
 
-/* Yumuşak mor geçiş (bölümler arası akış — beyaz YOK) */
+/* Yumuşak lacivert geçiş (bölümler arası akış — beyaz YOK) */
 .bg-lilac-fade {
-  background: linear-gradient(180deg, #1a0a35 0%, #241152 50%, #1a0a35 100%);
+  background: linear-gradient(180deg, #0a1838 0%, #102450 50%, #0a1838 100%);
 }
 
-/* Koyu mor cam (kart/nav) */
+/* Koyu lacivert cam (kart/nav) */
 .glass {
-  background: rgba(42, 21, 81, 0.55);
+  background: rgba(15, 33, 72, 0.55);
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid var(--border);
@@ -193,11 +210,29 @@ body {
 
 /* iOS buzlu cam (navigasyon — kullanıcı istedi) */
 .ios-glass {
-  background: rgba(26, 10, 53, 0.5);
+  background: rgba(10, 24, 56, 0.5);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/*
+  Sabit nav — RockFlow BİREBİR (ölçüldü):
+  header = `bg-[#030303]/0.2 backdrop-blur-3xl` →
+  arka plan rengi NEREDEYSE TAMAMEN ŞEFFAF (sadece ~%2 siyah tint) + blur(64px).
+  Renk tabakası YOK → backdrop-filter arkadaki ne varsa onu bulanıklaştırıp
+  rengini AYNEN alır. Koyu zeminde koyu-cam, açık-lila bölümde açık-cam,
+  gradientte gradient-cam görünür. border/shadow YOK.
+*/
+.nav-glass {
+  /* Görünür cam YÜZEY: belirgin yarı-opak mor tint + güçlü blur.
+     Tepede de dolu cam gibi durur, içerik üstünde arka planı bulanıklaştırır. */
+  background: rgba(10, 24, 56, 0.62);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border-bottom: 1px solid rgba(91, 140, 255, 0.12);
+  box-shadow: 0 6px 24px rgba(8, 3, 20, 0.25), inset 0 -1px 0 rgba(255, 255, 255, 0.07);
 }
 
 .glow-brand {
@@ -206,14 +241,20 @@ body {
 }
 
 /* Scrollbar */
+/* Dashboard'da overscroll/sınır zemini mor değil siyah olsun (body --bg mor;
+   landing mor kalır). :has ile yalnız dashboard sayfalarında html'i koyula. */
+html:has(.vela-dashboard-root) { background: #0a0a0a; }
+html:has(.vela-dashboard-root) body { background: #0a0a0a; overscroll-behavior: none; }
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
+  background: rgba(255,255,255,0.14);
   border-radius: 999px;
-  border: 2px solid var(--bg);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); background-clip: content-box; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -226,3 +267,328 @@ body {
   50% { opacity: 1; }
 }
 .animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
+
+/* Üst-kalite micro-interactions — mount reveal + canlı tik. */
+@keyframes vela-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.vela-reveal { animation: vela-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Kademeli (stagger) gecikmeler — kart listeleri için. */
+.vela-reveal-1 { animation-delay: 0.04s; }
+.vela-reveal-2 { animation-delay: 0.08s; }
+.vela-reveal-3 { animation-delay: 0.12s; }
+.vela-reveal-4 { animation-delay: 0.16s; }
+.vela-reveal-5 { animation-delay: 0.20s; }
+
+@keyframes vela-tick {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.6); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+.vela-tick { animation: vela-tick 1.1s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vela-reveal, .vela-tick, .animate-float, .animate-pulse-glow { animation: none; }
+}
+
+/* Claude tarzı "düşünüyor" shimmer. */
+@keyframes vela-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Sidebar genişliğine göre içerik padding'i (yalnız masaüstü).
+   Tailwind utility'sini ezmek için !important; collapsed=76px, expanded=248px. */
+.vela-content { transition: padding-left 0.3s ease; }
+@media (min-width: 1024px) {
+  html[data-sidebar="expanded"] .vela-content { padding-left: 248px !important; }
+  html[data-sidebar="collapsed"] .vela-content { padding-left: 76px !important; }
+}
+
+/* ============================================================
+   SİNEMATİK KATMAN — Apple/Arc hissi (yeni nesil anasayfa)
+   Sıcak ton + derinlik + cam yüzeyler + yumuşak glow.
+   ============================================================ */
+
+/* Atmosfer — sayfa arkasında yavaşça süzülen aurora glow'ları. */
+@keyframes vela-aurora {
+  0%   { transform: translate3d(0,0,0) scale(1); opacity: 0.55; }
+  50%  { transform: translate3d(3%, 2%, 0) scale(1.08); opacity: 0.8; }
+  100% { transform: translate3d(0,0,0) scale(1); opacity: 0.55; }
+}
+.vela-aurora-a, .vela-aurora-b, .vela-aurora-c {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.vela-aurora-a {
+  width: 620px; height: 620px; top: -220px; left: 8%;
+  background: radial-gradient(circle, rgba(91,140,255,0.22), transparent 65%);
+  animation: vela-aurora 18s ease-in-out infinite;
+}
+.vela-aurora-b {
+  width: 560px; height: 560px; top: -120px; right: 4%;
+  background: radial-gradient(circle, rgba(255,176,120,0.16), transparent 65%);
+  animation: vela-aurora 22s ease-in-out infinite reverse;
+}
+.vela-aurora-c {
+  width: 720px; height: 520px; top: 360px; left: 30%;
+  background: radial-gradient(circle, rgba(62,207,142,0.10), transparent 70%);
+  animation: vela-aurora 26s ease-in-out infinite;
+}
+
+/* Cam yüzey — katmanlı kenar (inset highlight) + yumuşak derinlik gölgesi. */
+.vela-glass {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)) ,
+    rgba(16,16,18,0.72);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,0.06),
+    0 1px 2px rgba(0,0,0,0.4),
+    0 24px 60px -28px rgba(0,0,0,0.7);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+/* Arka plan GÖRSELLİ kart: opak cam zeminini KALDIR (görsel görünsün),
+   blur'u da kapat (yoksa görseli bulanıklaştırır). Sadece kenar+gölge kalır. */
+.vela-glass-img {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: #0b0b0e; /* görsel yüklenene kadar koyu taban */
+}
+.vela-glass-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,0.09),
+    0 1px 2px rgba(0,0,0,0.4),
+    0 32px 70px -26px rgba(0,0,0,0.8);
+}
+
+/* Hero için üstte gezinen ince ışık çizgisi (cam kenar parlaması). */
+.vela-edge-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(91,140,255,0.5), rgba(255,176,120,0.25) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Satır hover — yumuşak içeri kayma. */
+.vela-row { transition: background 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1); }
+.vela-row:hover { background: rgba(255,255,255,0.045); transform: translateX(2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .vela-aurora-a, .vela-aurora-b, .vela-aurora-c { animation: none; }
+}
+
+/* ============================================================
+   AI STUDIO YÜZEY KATMANI (.ais) — aistudio.google.com damıtması.
+   Koyu nötr-gri zemin, neredeyse borderless mat kartlar, bol nefes,
+   ince tipografi, tek mavi vurgu çok az. Sade ve sakin.
+   ============================================================ */
+.ais {
+  /* KOYU TEMA — net & canlı: kartlar zeminden belirgin ayrışır, metin parlak. */
+  --ais-bg: #070708;          /* sayfa zemini — saf siyahtan bir tık yukarı (kart ayrışsın) */
+  --ais-surface: #161619;     /* kart yüzeyi — zeminden BELİRGİN ayrışır, derinlik */
+  --ais-surface-2: #1f1f23;   /* hover / iç dolgu */
+  --ais-line: rgba(255,255,255,0.12);   /* görünür ama yumuşak border */
+  --ais-line-strong: rgba(255,255,255,0.20);
+  --ais-fg: #f2f2f4;          /* birincil metin — net beyaz */
+  --ais-fg-muted: #b4b4ba;    /* ikincil — okunaklı gri */
+  --ais-fg-faint: #7e7e86;    /* üçüncül / etiket */
+  --ais-accent: #93baf9;      /* canlı mavi vurgu */
+  --ais-accent-bg: rgba(138,180,248,0.16);
+  /* monokrom destek değişkenleri (scrollbar/skeleton gibi sabitler buradan) */
+  --ais-overlay: rgba(255,255,255,0.12);
+  --ais-overlay-strong: rgba(255,255,255,0.20);
+  --ais-shimmer: rgba(255,255,255,0.05);
+  background: var(--ais-bg);
+  color: var(--ais-fg);
+}
+/* mat kart — dolgu + görünür border + hafif derinlik gölgesi */
+.ais .ais-card {
+  background: var(--ais-surface);
+  border: 1px solid var(--ais-line);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.02) inset;
+}
+
+.ais .ais-card-hover {
+  transition: background .18s ease, border-color .18s ease,
+    transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease;
+}
+.ais .ais-card-hover:hover {
+  background: var(--ais-surface-2);
+  border-color: var(--ais-line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+}
+/* satır hover — ince yatay kayma (tıklanabilir hissi) */
+.ais .ais-row { transition: background .12s ease, transform .18s cubic-bezier(.16,1,.3,1); border-radius: 10px; }
+.ais .ais-row:hover { background: var(--ais-surface-2); transform: translateX(2px); }
+/* bölüm başlığı (Overview gibi) */
+.ais .ais-section { font-size: 13px; font-weight: 500; color: var(--ais-fg); }
+.ais .num { font-variant-numeric: tabular-nums; }
+.ais .mono { font-family: var(--font-display); }
+
+/* dense tablo (markets/screener/portfolio gibi) */
+.ais table.ais-dt { width: 100%; border-collapse: collapse; }
+.ais table.ais-dt thead th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ais-fg-faint);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ais-line);
+  white-space: nowrap;
+}
+.ais table.ais-dt tbody td {
+  font-size: 13px;
+  color: var(--ais-fg);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ais-line);
+  vertical-align: middle;
+}
+.ais table.ais-dt tbody tr:last-child td { border-bottom: 0; }
+.ais table.ais-dt tbody tr { transition: background .12s; }
+.ais table.ais-dt tbody tr:hover { background: var(--ais-surface-2); }
+
+/* input (forms) */
+.ais .ais-input {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--ais-line-strong);
+  background: var(--ais-surface);
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--ais-fg);
+  outline: none;
+  transition: border-color .12s;
+}
+.ais .ais-input::placeholder { color: var(--ais-fg-faint); }
+.ais .ais-input:focus { border-color: var(--ais-accent); }
+
+/* Modal giriş animasyonu (Vercel/Clerk hissi — backdrop blur fade + kart scale). */
+@keyframes vela-modal-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes vela-modal-card-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.vela-modal-backdrop { animation: vela-modal-in 0.2s ease both; }
+.vela-modal-card { animation: vela-modal-card-in 0.26s cubic-bezier(0.16,1,0.3,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .vela-modal-backdrop, .vela-modal-card { animation: none; }
+}
+
+/* .ais içi scrollbar — ince ve nötr (global mor scrollbar yerine). */
+.ais ::-webkit-scrollbar { width: 8px; height: 8px; }
+.ais ::-webkit-scrollbar-track { background: transparent; }
+.ais ::-webkit-scrollbar-thumb {
+  background: var(--ais-overlay);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.ais ::-webkit-scrollbar-thumb:hover { background: var(--ais-overlay-strong); background-clip: content-box; }
+
+/* ── Faz 3: hissiyat / mikro-animasyon (AI Studio sakin) ── */
+
+/* Sayfa-giriş: .ais içeriğinin doğrudan çocukları yumuşak yükselerek gelir (stagger) */
+@keyframes ais-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ais .mx-auto > * {
+  animation: ais-rise .5s cubic-bezier(.16,1,.3,1) both;
+}
+.ais .mx-auto > *:nth-child(1) { animation-delay: .02s; }
+.ais .mx-auto > *:nth-child(2) { animation-delay: .06s; }
+.ais .mx-auto > *:nth-child(3) { animation-delay: .10s; }
+.ais .mx-auto > *:nth-child(4) { animation-delay: .14s; }
+.ais .mx-auto > *:nth-child(5) { animation-delay: .18s; }
+.ais .mx-auto > *:nth-child(6) { animation-delay: .22s; }
+.ais .mx-auto > *:nth-child(7) { animation-delay: .26s; }
+.ais .mx-auto > *:nth-child(n+8) { animation-delay: .30s; }
+
+/* Buton/kart press feedback — hafif tactile */
+.ais button:active { transform: scale(.985); }
+.ais .ais-card-hover:active { transform: translateY(-1px) scale(.995); }
+
+/* Skeleton (yükleme) — vela-shimmer keyframe'ini kullanır */
+.ais .ais-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--ais-surface-2);
+  border-radius: 8px;
+}
+.ais .ais-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--ais-shimmer), transparent);
+  background-size: 200% 100%;
+  animation: vela-shimmer 1.4s linear infinite;
+}
+
+/* Slider thumb büyüme + dolgu geçişi (ais-kit Slider zaten inline width veriyor) */
+.ais input[type="range"] + * { }
+
+@media (prefers-reduced-motion: reduce) {
+  .ais .mx-auto > *,
+  .ais .ais-skeleton::after { animation: none; }
+  .ais button:active,
+  .ais .ais-card-hover:active,
+  .ais .ais-card-hover:hover,
+  .ais .ais-row:hover { transform: none; }
+}
+
+/* ── Clerk (auth) override ───────────────────────────────────────────────
+   Finovela koyu-mavi diline tam oturt. Dev-mode turuncu banner + footer
+   "Secured by" item alanını gizle ki kart altında beyaz/turuncu şerit kalmasın.
+   (footerAction "Sign up / Sign in" linki görünür kalır.) */
+.cl-footerItem,
+.cl-internal-empty {
+  display: none !important;
+}
+/* "Development mode" turuncu banner (Clerk dev anahtarları). Turuncu dolgulu
+   herhangi bir footer iç-bloğunu yakalamak yerine footerItem'i gizliyoruz;
+   footerItem dev banner'ı barındıran kapsayıcıdır. */
+.cl-footer,
+.cl-footerAction {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ── Onboarding (sinematik tam-ekran) ──────────────────────────────────────
+   Kart: her adımda sağ/sola hafif kayarak + solarak gelir (--onb-dir yön).
+   Video: yumuşak fade-in. */
+@keyframes onb-card-in {
+  from { opacity: 0; transform: translateX(calc(var(--onb-dir, 1) * 28px)) scale(0.985); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.onb-card { animation: onb-card-in 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+
+@keyframes onb-video-in { from { opacity: 0; } to { opacity: 0.4; } }
+.onb-video { animation: onb-video-in 1.2s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .onb-card, .onb-video { animation: none; }
+}

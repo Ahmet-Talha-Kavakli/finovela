@@ -548,12 +548,47 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
     }
   };
 
-  const handleStartRecording = () => console.log("Started recording");
+  // Gerçek sesli giriş — tarayıcı yerleşik Web Speech API (konuşma → metin).
+  // Sahte "[Voice message]" göndermek yerine söyleneni input'a yazar; kullanıcı
+  // gözden geçirip gönderir. Desteklenmeyen tarayıcıda buton zaten gizlenir.
+  const recognitionRef = React.useRef<SpeechRecognition | null>(null);
 
-  const handleStopRecording = (duration: number) => {
-    console.log(`Stopped recording after ${duration} seconds`);
+  const handleStartRecording = () => {
+    const SR =
+      (typeof window !== "undefined" &&
+        ((window as unknown as { SpeechRecognition?: typeof SpeechRecognition })
+          .SpeechRecognition ||
+          (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition })
+            .webkitSpeechRecognition)) ||
+      null;
+    if (!SR) {
+      setIsRecording(false);
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "tr-TR";
+    rec.interimResults = true;
+    rec.continuous = true;
+    let finalText = "";
+    rec.onresult = (e: SpeechRecognitionEvent) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t;
+        else interim += t;
+      }
+      setInput((finalText + interim).trim());
+    };
+    rec.onerror = () => setIsRecording(false);
+    rec.onend = () => setIsRecording(false);
+    recognitionRef.current = rec;
+    rec.start();
+  };
+
+  const handleStopRecording = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
     setIsRecording(false);
-    onSend(`[Voice message - ${duration} seconds]`, []);
   };
 
   const hasContent = input.trim() !== "" || files.length > 0;

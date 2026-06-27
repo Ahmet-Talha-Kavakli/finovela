@@ -21,6 +21,10 @@ const MODEL = "gemini-2.5-flash-image";
 
 const prompt = process.argv[2];
 const outFile = process.argv[3] ?? "out.png";
+// 4. arg: en-boy oranı (örn "16:9", "1:1", "21:9"). Hero için geniş sinematik.
+const aspect = process.argv[4] ?? null;
+// 5. arg: çözünürlük "1K"|"2K"|"4K" (Retina full-screen için 2K+ şart, upscale=bulanıklık).
+const size = process.argv[5] ?? null;
 
 if (!KEY) {
   console.error("GEMINI_API_KEY yok (.env.local)");
@@ -38,6 +42,17 @@ const res = await fetch(url, {
   headers: { "content-type": "application/json" },
   body: JSON.stringify({
     contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseModalities: ["IMAGE"],
+      ...(aspect || size
+        ? {
+            imageConfig: {
+              ...(aspect ? { aspectRatio: aspect } : {}),
+              ...(size ? { imageSize: size } : {}),
+            },
+          }
+        : {}),
+    },
   }),
 });
 
@@ -61,3 +76,27 @@ const buf = Buffer.from(img.inlineData.data, "base64");
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, buf);
 console.log(`✓ ${outFile} (${(buf.length / 1024).toFixed(0)}KB)`);
+
+// KALİTE: Gemini ~1344px üretiyor; Retina full-screen ~3024px ister.
+// Aradaki fark tarayıcıda upscale=bulanıklık. ÇÖZÜM: Lanczos ile 3360px'e büyüt.
+// `UPSCALE_WIDTH` env ile genişlik ver (örn tam-ekran hero için 3360). 0=kapalı.
+const upWidth = Number(process.env.UPSCALE_WIDTH || 0);
+if (upWidth > 0) {
+  const { execFileSync } = await import("node:child_process");
+  const py = `from PIL import Image
+img = Image.open(${JSON.stringify(outFile)}).convert("RGB")
+w = ${upWidth}
+h = round(img.height * w / img.width)
+if w > img.width:
+    img = img.resize((w, h), Image.LANCZOS)
+    img.save(${JSON.stringify(outFile)}, "PNG", optimize=False)
+    print(f"  ↑ upscaled to {w}x{h} (Lanczos)")
+else:
+    print("  (kaynak zaten yeterince büyük)")`;
+  try {
+    const out = execFileSync("python3", ["-c", py], { encoding: "utf8" });
+    process.stdout.write(out);
+  } catch (e) {
+    console.error("upscale atlandı (Pillow yok?):", e.message);
+  }
+}

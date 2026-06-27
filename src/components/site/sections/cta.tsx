@@ -23,13 +23,13 @@ export function CTA() {
             <span className="text-gradient">genius</span> in your pocket?
           </h2>
           <p className="mt-5 text-lg text-white/65">
-            Join the investors letting Vela handle the heavy lifting. Start free,
+            Join the investors letting Finovela handle the heavy lifting. Start free,
             build a strategy by chatting, and watch it run on autopilot.
           </p>
           <div className="mt-8">
             <GlassButton size="xl" tone="brand" href="/app">
               <ChatCircleDots size={20} weight="fill" />
-              Chat with Vela — free
+              Chat with Finovela — free
             </GlassButton>
           </div>
         </div>

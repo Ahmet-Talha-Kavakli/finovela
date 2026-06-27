@@ -1,20 +1,18 @@
-// Sağlayıcı seçici — MARKET_PROVIDER env'ine göre mock ya da finnhub.
-// Frontend/route'lar yalnızca `marketProvider`'ı import eder.
+// Çok-varlıklı bileşik sağlayıcı seçici.
+// Frontend/route'lar yalnızca getMarketProvider()'ı import eder.
 
 import type { MarketProvider } from "./types";
-import { MockProvider } from "./mock-provider";
-import { FinnhubProvider } from "./finnhub-provider";
+import { CompositeProvider } from "./composite-provider";
 
 let _provider: MarketProvider | null = null;
 
+/**
+ * Bileşik sağlayıcı: ABD hisse (Finnhub/mock) + gerçek kripto (CoinGecko) +
+ * forex/metal/emtia (Twelve Data) + BIST (Yahoo). Sembol tipine göre yönlendirir.
+ */
 export function getMarketProvider(): MarketProvider {
   if (_provider) return _provider;
-  const choice = (process.env.MARKET_PROVIDER ?? "mock").toLowerCase();
-  if (choice === "finnhub" && process.env.FINNHUB_API_KEY) {
-    _provider = new FinnhubProvider();
-  } else {
-    _provider = new MockProvider();
-  }
+  _provider = new CompositeProvider();
   return _provider;
 }
 

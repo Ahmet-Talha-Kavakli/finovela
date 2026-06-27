@@ -1,0 +1,5 @@
+cd /Users/aysegulcadircioglu/Desktop/robo-advisor
+node scripts/gen-video.mjs "Cinematic abstract growth: elegant glowing blue ascending line chart forming gracefully from particles, soft upward momentum, floating translucent data bars, premium Apple aurora, deep navy #0a1838 background, calm confident motion, no text" public/gen/onb-2.mp4 16:9 > /tmp/onbvid2.log 2>&1
+node scripts/gen-video.mjs "Cinematic abstract security: a softly glowing translucent shield and a secure vault of light slowly forming in deep navy space, gentle protective blue glow, premium Apple feel, slow graceful motion, deep navy #0a1838 background, no text" public/gen/onb-3.mp4 16:9 > /tmp/onbvid3.log 2>&1
+node scripts/gen-video.mjs "Cinematic abstract success: a sleek minimalist sailboat gliding on calm reflective water at blue dawn, soft light rays, serene horizon, premium Apple cinematic, slow elegant motion, deep navy blue tones, no text" public/gen/onb-4.mp4 16:9 > /tmp/onbvid4.log 2>&1
+echo "ALL ONBOARDING VIDEOS DONE"

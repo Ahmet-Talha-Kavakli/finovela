@@ -1,6 +1,11 @@
 import { cn } from "@/lib/utils";
 
-/** Vela logo — yelken/rota metaforu: yıldız + yelken üçgeni. */
+/**
+ * Vela markası — "yelken" (vela = Latince yelken; aynı adlı takımyıldız).
+ * Geometrik, sade: rüzgârla şişmiş bir yelken + yukarı yönelimli rota + rota
+ * yıldızı. currentColor ile çizilir → OLED dashboard'da beyaz, açık zeminde
+ * koyu; landing'de marka rengine sarılabilir. AI-jenerik gradyan yok, Apple-sade.
+ */
 export function VelaMark({ className }: { className?: string }) {
   return (
     <svg
@@ -9,25 +14,21 @@ export function VelaMark({ className }: { className?: string }) {
       className={cn("h-7 w-7", className)}
       aria-hidden
     >
-      <defs>
-        <linearGradient id="vela-g" x1="0" y1="0" x2="32" y2="32">
-          <stop offset="0%" stopColor="var(--brand)" />
-          <stop offset="100%" stopColor="var(--brand-cyan)" />
-        </linearGradient>
-      </defs>
-      {/* yelken */}
+      {/* yelken — kavisli iç kenar, rüzgârla şişmiş hissi */}
       <path
-        d="M16 3 L27 25 L16 21 Z"
-        fill="url(#vela-g)"
+        d="M16.6 4.4c5.4 4 8.7 9.8 9.5 16.8a.55.55 0 0 1-.64.6L16.6 20.4Z"
+        fill="currentColor"
       />
-      {/* tekne / rota */}
+      {/* direk + alt rota çizgisi */}
       <path
-        d="M5 25 L16 21 L16 29 Z"
-        fill="url(#vela-g)"
-        opacity="0.55"
+        d="M14.4 4.6v18.8M7.8 23.4h14.6"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      {/* yıldız parıltısı */}
-      <circle cx="23" cy="8" r="1.6" fill="var(--brand-cyan)" />
+      {/* rota yıldızı (Vela takımyıldızı iması) */}
+      <circle cx="22.6" cy="9" r="1.2" fill="currentColor" />
     </svg>
   );
 }
@@ -36,7 +37,7 @@ export function VelaLogo({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <VelaMark />
-      <span className="text-lg font-semibold tracking-tight">Vela</span>
+      <span className="text-lg font-semibold tracking-tight">Finovela</span>
     </div>
   );
 }

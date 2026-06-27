@@ -4,20 +4,20 @@ const STEPS = [
   {
     icon: ChatCircleDots,
     step: "01",
-    title: "Tell Vela your goal",
-    text: "Just talk. “Grow $5k aggressively in tech” or “a safe income portfolio.” Vela understands plain English and asks the right questions.",
+    title: "Tell Finovela your goal",
+    text: "Just talk. “Grow $5k aggressively in tech” or “a safe income portfolio.” Finovela understands plain English and asks the right questions.",
   },
   {
     icon: Strategy,
     step: "02",
-    title: "Vela builds the strategy",
+    title: "Finovela builds the strategy",
     text: "It designs a diversified, backtested strategy — picks the assets, sets the rules, and shows you exactly why, with the numbers to back it.",
   },
   {
     icon: Robot,
     step: "03",
     title: "It runs on autopilot",
-    text: "Approve it once. Vela executes every trade, rebalances automatically, harvests tax losses, and reports back. You stay in control.",
+    text: "Approve it once. Finovela executes every trade, rebalances automatically, harvests tax losses, and reports back. You stay in control.",
   },
 ];
 
@@ -26,7 +26,7 @@ export function HowItWorks() {
     <section className="relative overflow-hidden bg-lilac-fade py-24">
       <div className="relative mx-auto max-w-7xl px-5">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold text-[#c084fc]">How it works</p>
+          <p className="text-sm font-semibold text-[#7fb0ff]">How it works</p>
           <h2 className="font-display mt-3 text-4xl font-bold text-white sm:text-5xl">
             From a sentence to a strategy{" "}
             <span className="text-gradient">that runs itself</span>
@@ -45,7 +45,7 @@ export function HowItWorks() {
             >
               <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-brand/20 blur-2xl transition group-hover:bg-brand/40" />
               <div className="relative flex items-center justify-between">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#a855f7] to-[#7c3aed] text-white shadow-[0_8px_24px_rgba(139,92,255,0.5)]">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#5b8cff] to-[#2b5cf0] text-white shadow-[0_8px_24px_rgba(59,109,255,0.5)]">
                   <s.icon size={24} weight="duotone" />
                 </span>
                 <span className="font-display text-5xl font-bold text-white/10">

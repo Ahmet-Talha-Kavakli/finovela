@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
+    "@clerk/nextjs": "^7.5.8",
+    "@libsql/client": "^0.15.4",
     "@number-flow/react": "^0.6.0",
     "@paper-design/shaders-react": "^0.0.76",
     "@phosphor-icons/react": "^2.1.10",
@@ -19,7 +21,6 @@
     "@radix-ui/react-tooltip": "^1.2.10",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "better-sqlite3": "^12.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
@@ -31,13 +32,14 @@
     "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "simple-icons": "^16.24.0",
+    "stripe": "^22.3.0",
     "tailwind-merge": "^3.6.0",
     "three": "^0.184.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -45,12 +47,12 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "puppeteer-core": "^25.2.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "esbuild"
     ]
   }

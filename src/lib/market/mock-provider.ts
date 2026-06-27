@@ -211,7 +211,7 @@ export class MockProvider implements MarketProvider {
         out.push({
           id: `${e.symbol}-${idx++}`,
           headline: h.replace("{S}", e.name),
-          summary: `Market commentary on ${e.name} (${e.symbol}). This is illustrative content generated for the Vela demo environment.`,
+          summary: `Market commentary on ${e.name} (${e.symbol}). This is illustrative content generated for the Finovela demo environment.`,
           source: ["Bloomberg", "Reuters", "CNBC", "MarketWatch"][Math.floor(rng() * 4)],
           url: "#",
           datetime: Math.floor(Date.now() / 1000) - i * 3600 - idx * 600,

@@ -6,24 +6,24 @@ import { cn } from "@/lib/utils";
 
 const FAQS = [
   {
-    q: "Does Vela trade with real money?",
-    a: "Vela is a paper-trading, educational environment. It builds and runs strategies using simulated capital and live market data, so you can see exactly how an automated portfolio would behave — with zero real-money risk.",
+    q: "Does Finovela trade with real money?",
+    a: "Finovela is a paper-trading, educational environment. It builds and runs strategies using simulated capital and live market data, so you can see exactly how an automated portfolio would behave — with zero real-money risk.",
   },
   {
     q: "How is this different from a normal robo-advisor?",
-    a: "Traditional robo-advisors use a static questionnaire and a fixed model portfolio. Vela is conversational and agentic: you talk to it, it designs a custom strategy, explains the reasoning, and then automates the entire thing — including rebalancing and tax-loss harvesting.",
+    a: "Traditional robo-advisors use a static questionnaire and a fixed model portfolio. Finovela is conversational and agentic: you talk to it, it designs a custom strategy, explains the reasoning, and then automates the entire thing — including rebalancing and tax-loss harvesting.",
   },
   {
     q: "Do I need to know anything about investing?",
-    a: "No. That's the point. You describe your goal in plain English and Vela handles the strategy, the math, and the execution. It always explains the “why” so you learn as you go.",
+    a: "No. That's the point. You describe your goal in plain English and Finovela handles the strategy, the math, and the execution. It always explains the “why” so you learn as you go.",
   },
   {
     q: "What can the AI actually do?",
-    a: "Vela pulls live quotes, charts and news, compares securities, analyzes portfolio risk and overlap, designs and backtests strategies, and sets up automated rules — all from a single chat, with full memory of your conversation.",
+    a: "Finovela pulls live quotes, charts and news, compares securities, analyzes portfolio risk and overlap, designs and backtests strategies, and sets up automated rules — all from a single chat, with full memory of your conversation.",
   },
   {
     q: "Can I copy other investors?",
-    a: "Yes. Vela includes copy trading — browse top strategies and investors, see their risk score and track record, and mirror them automatically into your simulated portfolio.",
+    a: "Yes. Finovela includes copy trading — browse top strategies and investors, see their risk score and track record, and mirror them automatically into your simulated portfolio.",
   },
   {
     q: "Is there a free plan?",

@@ -32,7 +32,7 @@ export function HotStocks() {
 
   return (
     <section className="relative overflow-hidden bg-deep-violet py-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(139,92,255,0.25),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(59,109,255,0.25),transparent_70%)]" />
       <div className="relative mx-auto max-w-7xl px-5">
         <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
           <div>
@@ -40,19 +40,19 @@ export function HotStocks() {
               Hot <span className="text-gradient">Stocks</span>
             </h2>
             <p className="mt-4 max-w-md text-lg text-white/60">
-              Live market movers, ranked and explained. Tap any name and Vela
+              Live market movers, ranked and explained. Tap any name and Finovela
               breaks down the “why” in seconds.
             </p>
           </div>
           {/* unicorn / bar-chart görseli */}
           <div className="relative hidden lg:block">
-            <div className="absolute inset-0 -z-10 scale-110 bg-[radial-gradient(circle,rgba(139,92,255,0.4),transparent_65%)] blur-2xl" />
+            <div className="absolute inset-0 -z-10 scale-110 bg-[radial-gradient(circle,rgba(59,109,255,0.4),transparent_65%)] blur-2xl" />
             <Image
               src="/gen/portfolio-bars.png"
               alt=""
               width={420}
               height={236}
-              className="w-[360px] drop-shadow-[0_20px_40px_rgba(124,58,237,0.4)]"
+              className="w-[360px] drop-shadow-[0_20px_40px_rgba(43,92,240,0.4)]"
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ export function HotStocks() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-medium transition",
                 tab === t
-                  ? "bg-white text-[#1a0b2e]"
+                  ? "bg-white text-[#0a1838]"
                   : "bg-white/8 text-white/70 hover:bg-white/15 hover:text-white",
               )}
             >
@@ -101,7 +101,7 @@ function StockRow({ q }: { q: Quote }) {
   const up = q.changePct >= 0;
   return (
     <div className="group flex items-center gap-4 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 transition hover:border-brand/40 hover:bg-white/[0.07]">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#a855f7]/30 to-[#7c3aed]/30 text-sm font-bold text-white">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#5b8cff]/30 to-[#2b5cf0]/30 text-sm font-bold text-white">
         {q.symbol.slice(0, 2)}
       </span>
       <div className="min-w-0 flex-1">

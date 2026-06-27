@@ -32,7 +32,7 @@ function Decorations({ tone }: { tone: Tone }) {
           tone === "glass" && "bg-white/8",
           tone === "solid" && "bg-white/70 dark:bg-white/10",
           tone === "brand" &&
-            "bg-gradient-to-b from-[#a855f7] to-[#7c3aed]",
+            "bg-gradient-to-b from-[#3b6dff] to-[#1846c8]",
         )}
       />
       <span
@@ -69,7 +69,7 @@ function baseClass(size: Size, tone: Tone, className?: string) {
     tone === "glass" && "text-white backdrop-blur-xl backdrop-saturate-150",
     tone === "solid" && "text-fg backdrop-blur-xl",
     tone === "brand" &&
-      "text-white shadow-[0_8px_30px_rgba(139,92,255,0.5)] hover:shadow-[0_12px_40px_rgba(139,92,255,0.65)]",
+      "text-white shadow-[0_8px_30px_rgba(59,109,255,0.5)] hover:shadow-[0_12px_40px_rgba(59,109,255,0.65)]",
     className,
   );
 }
