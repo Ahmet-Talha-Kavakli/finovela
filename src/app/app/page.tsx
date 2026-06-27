@@ -49,7 +49,7 @@ export default function AppPage() {
                 </p>
                 <div className="mt-6 border-t border-white/10 pt-6">
                   <p className="text-center text-xs text-white/40">Already have the app?</p>
-                  <div className="mt-3 flex items-center justify-center gap-3">
+                  <div className="mt-3 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
                     <AppStoreBadge />
                     <GooglePlayBadge />
                   </div>
@@ -75,7 +75,7 @@ export default function AppPage() {
                 </p>
                 <div className="mt-7 border-t border-white/10 pt-6">
                   <p className="text-center text-xs text-white/40">Already have the app?</p>
-                  <div className="mt-3 flex items-center justify-center gap-3">
+                  <div className="mt-3 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
                     <AppStoreBadge />
                     <GooglePlayBadge />
                   </div>

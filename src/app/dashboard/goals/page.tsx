@@ -1,21 +1,16 @@
 "use client";
 
+/**
+ * Finovela Hedefler — AI'nın pusulası (Blok 2). Tek ana hedef + yan hedefler.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, Didit ilerleme çubuğu, satır deseni, açık-tema modal.
+ */
+
 import { useState } from "react";
+import Link from "next/link";
 import { Topbar } from "@/components/dashboard/topbar";
 import { useConfirm } from "@/components/dashboard/confirm";
 import { useScrollLock } from "@/lib/dashboard/use-scroll-lock";
-import { LiveGauge } from "@/components/dashboard/live-area-chart";
-import {
-  PageTitle,
-  SectionCard,
-  Card,
-  Btn,
-  Pill,
-  Segmented,
-  EmptyState,
-  AIS_ACCENT,
-  AIS_UP,
-} from "@/components/dashboard/ais-kit";
 import {
   useGoals,
   type Goal,
@@ -23,17 +18,23 @@ import {
   type RiskTolerance,
 } from "@/lib/dashboard/use-goals";
 import { useLivePortfolio } from "@/lib/dashboard/use-portfolio";
+import { DiditToggle } from "@/components/dashboard/ais-kit";
+// Didit ince-çizgi ikon dili → Lucide.
 import {
   Target,
   Plus,
   Star,
-  Trash,
-  ChatCircleDots,
-  PencilSimple,
-  Check,
+  Trash2,
+  MessageCircle,
+  Pencil,
+  Play,
+  Pause,
+  ChevronRight,
   X,
-  CaretRight,
-} from "@phosphor-icons/react";
+  Flag,
+} from "lucide-react";
+
+const ACCENT = "var(--ais-accent)";
 
 const RISK_LABEL: Record<RiskTolerance, string> = {
   low: "Düşük risk",
@@ -49,6 +50,11 @@ export default function GoalsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
 
+  function openNew() {
+    setEditing(null);
+    setOpen(true);
+  }
+
   async function removeGoal(g: Goal) {
     const ok = await confirm({
       title: "Hedefi sil",
@@ -63,28 +69,33 @@ export default function GoalsPage() {
   return (
     <>
       <Topbar title="Hedefler" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Hedeflerin, Finovela'nın pusulası"
-            desc="Bir ana hedef belirle — Finovela her kararını ona göre verir, sapmaz. Yan hedefler ana hedefi bozmadan kovalanır."
-            actions={
-              <Btn
-                variant="primary"
-                onClick={() => {
-                  setEditing(null);
-                  setOpen(true);
-                }}
-              >
-                <Plus size={14} weight="regular" /> Hedef ekle
-              </Btn>
-            }
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="d-title">Hedeflerin, Finovela&apos;nın pusulası</h1>
+              <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+                Bir ana hedef belirle — Finovela her kararını ona göre verir, sapmaz. Yan hedefler ana
+                hedefi bozmadan kovalanır.
+              </p>
+            </div>
+            <button onClick={openNew} className="pill-primary shrink-0">
+              <Plus size={16} /> Hedef ekle
+            </button>
+          </div>
 
           {/* ───────── ANA HEDEF ───────── */}
-          <SectionCard label="Ana hedef" desc="Finovela kararlarını bu hedefe göre verir." className="mt-10">
+          <section className="mt-9 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5">
+              <h2 className="d-section">Ana hedef</h2>
+              <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                Finovela tüm kararlarını bu hedefe göre verir.
+              </p>
+            </div>
+
             {main ? (
-              <MainGoalBody
+              <MainGoalCard
                 goal={main}
                 portfolioValue={summary.total}
                 onEdit={() => {
@@ -94,41 +105,58 @@ export default function GoalsPage() {
                 onRemove={() => removeGoal(main)}
               />
             ) : (
-              <EmptyState
-                icon={Target}
-                title="Henüz ana hedef yok"
-                desc="Bir hedef ekleyip ana hedef yap — Finovela ona göre çalışsın."
-                action={
-                  <Btn
-                    variant="primary"
-                    onClick={() => {
-                      setEditing(null);
-                      setOpen(true);
-                    }}
-                  >
-                    İlk hedefini belirle
-                  </Btn>
-                }
-              />
+              <div
+                className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-14 text-center"
+                style={{ borderColor: "var(--ais-line-strong)" }}
+              >
+                <Target size={22} style={{ color: "var(--ais-fg-faint)" }} />
+                <p className="text-[14px] font-medium text-[var(--ais-fg)]">Henüz ana hedef yok</p>
+                <p className="max-w-sm text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Bir hedef belirle ve ana hedef yap — Finovela ona göre çalışmaya başlasın.
+                </p>
+                <button onClick={openNew} className="pill-primary mt-2">
+                  <Flag size={15} /> İlk hedefini belirle
+                </button>
+              </div>
             )}
-          </SectionCard>
+          </section>
 
           {/* ───────── YAN HEDEFLER ───────── */}
-          <SectionCard
-            label="Yan hedefler"
-            desc="Ana hedefi bozmadan kovalamak istediğin başka hedefler."
-            className="mt-3"
-          >
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="d-section">Yan hedefler</h2>
+                <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Ana hedefi bozmadan kovalamak istediğin başka hedefler.
+                </p>
+              </div>
+              {sides.length > 0 && (
+                <button
+                  onClick={openNew}
+                  className="text-[12.5px] font-medium transition hover:underline"
+                  style={{ color: ACCENT }}
+                >
+                  + Yeni ekle
+                </button>
+              )}
+            </div>
+
             {sides.length === 0 ? (
-              <p className="py-2 text-center text-[13px] text-[var(--ais-fg-muted)]">
-                Yan hedef yok. Ana hedefi bozmadan kovalamak istediğin başka hedefler ekleyebilirsin.
-              </p>
+              <div
+                className="rounded-xl border border-dashed px-6 py-10 text-center"
+                style={{ borderColor: "var(--ais-line-strong)" }}
+              >
+                <p className="text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Yan hedef yok. Ana hedefi bozmadan kovalamak istediğin başka hedefler ekleyebilirsin.
+                </p>
+              </div>
             ) : (
-              <div className="space-y-2.5">
-                {sides.map((g) => (
+              <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
+                {sides.map((g, i) => (
                   <SideGoalRow
                     key={g.id}
                     goal={g}
+                    first={i === 0}
                     onMakeMain={() => setMain(g.id)}
                     onEdit={() => {
                       setEditing(g.id);
@@ -142,12 +170,21 @@ export default function GoalsPage() {
                 ))}
               </div>
             )}
-          </SectionCard>
+          </section>
 
-          {/* ───────── AI'ya götür ───────── */}
-          <Card className="mt-3 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          {/* ───────── AI'ya götür (Didit soft footer satırı) ───────── */}
+          <Link
+            href="/dashboard/chat"
+            className="mt-8 flex items-center justify-between gap-3 rounded-xl px-5 py-4 transition hover:brightness-[0.99]"
+            style={{ background: "var(--ais-accent-bg)" }}
+          >
             <div className="flex items-center gap-3">
-              <ChatCircleDots size={18} weight="regular" style={{ color: AIS_ACCENT }} />
+              <span
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+                style={{ background: "rgba(37,103,255,0.14)", color: ACCENT }}
+              >
+                <MessageCircle size={17} />
+              </span>
               <div>
                 <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">Hedefini Finovela ile işle</p>
                 <p className="text-[12.5px] text-[var(--ais-fg-muted)]">
@@ -155,10 +192,10 @@ export default function GoalsPage() {
                 </p>
               </div>
             </div>
-            <Btn href="/dashboard/chat">
-              Finovela Sohbet&apos;e git <CaretRight size={13} weight="regular" />
-            </Btn>
-          </Card>
+            <span className="flex shrink-0 items-center gap-1 text-[12.5px] font-medium" style={{ color: ACCENT }}>
+              Sohbet&apos;e git <ChevronRight size={14} />
+            </span>
+          </Link>
         </div>
       </div>
 
@@ -177,7 +214,8 @@ export default function GoalsPage() {
   );
 }
 
-function MainGoalBody({
+/* ── ANA HEDEF kartı — Didit "Needs review" kartı + yatay ilerleme çubuğu ── */
+function MainGoalCard({
   goal,
   portfolioValue,
   onEdit,
@@ -189,83 +227,117 @@ function MainGoalBody({
   onRemove: () => void;
 }) {
   const sym = goal.currency === "TRY" ? "₺" : "$";
-  // İlerleme: hedef tutar varsa portföy/hedef, yoksa kayıtlı progress.
   const progress = goal.targetValue
     ? Math.min(100, Math.round((portfolioValue / goal.targetValue) * 100))
     : goal.progress;
-
-  // kalan tutar / gün
   const remaining = goal.targetValue ? Math.max(0, goal.targetValue - portfolioValue) : null;
-  const daysLeft = goal.deadline
-    ? Math.max(0, Math.ceil((goal.deadline - Date.now()) / 86400000))
-    : null;
+  // Kalan gün: Date.now() saf değil → lazy useState initializer'da bir kez okunur
+  // (render saf kalır; SSR'da 0, istemcide gerçek now ile hesaplanır → lint temiz).
+  const [now] = useState(() => (typeof window === "undefined" ? 0 : Date.now()));
+  const daysLeft =
+    goal.deadline && now > 0
+      ? Math.max(0, Math.ceil((goal.deadline - now) / 86400000))
+      : null;
 
   return (
-    <>
-      <div className="flex items-center justify-between">
-        <Pill color={AIS_ACCENT} dot>
-          Ana Hedef
-        </Pill>
-        <div className="flex gap-1">
-          <button onClick={onEdit} className="grid h-8 w-8 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]" aria-label="Düzenle">
-            <PencilSimple size={15} weight="regular" />
-          </button>
-          <button onClick={onRemove} className="grid h-8 w-8 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]" aria-label="Sil">
-            <Trash size={15} weight="regular" />
-          </button>
+    <div className="rounded-xl border p-6" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
+      {/* üst: rozet + başlık + aksiyonlar */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+            style={{ background: "var(--ais-accent-bg)", color: ACCENT }}
+          >
+            <Target size={18} />
+          </span>
+          <div>
+            <span className="badge-soft badge-blue">Ana Hedef</span>
+            <h3 className="mt-1.5 text-[17px] font-medium tracking-tight text-[var(--ais-fg)]">{goal.title}</h3>
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <IconBtn onClick={onEdit} label="Düzenle" tone="accent">
+            <Pencil size={15} />
+          </IconBtn>
+          <IconBtn onClick={onRemove} label="Sil" tone="danger">
+            <Trash2 size={15} />
+          </IconBtn>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col items-center gap-6 sm:flex-row sm:items-center">
-        <div className="shrink-0">
-          <LiveGauge value={progress} size={132} label={`%${progress}`} sublabel="ilerleme" color={AIS_ACCENT} />
+      {goal.detail && (
+        <p className="mt-3 text-[13px] leading-relaxed text-[var(--ais-fg-muted)]">{goal.detail}</p>
+      )}
+
+      {/* ilerleme çubuğu (Didit dashboard barı) */}
+      <div className="mt-5">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[12px] text-[var(--ais-fg-muted)]">İlerleme</span>
+          <span className="num text-[13px] font-medium text-[var(--ais-fg)]">%{progress}</span>
         </div>
-        <div className="min-w-0 flex-1 text-center sm:text-left">
-          <h3 className="text-[19px] font-medium tracking-tight text-[var(--ais-fg)]">{goal.title}</h3>
-          {goal.detail && <p className="mt-1 text-[13px] text-[var(--ais-fg-muted)]">{goal.detail}</p>}
-
-          {/* yolculuk metrikleri */}
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:max-w-md sm:grid-cols-3">
-            {goal.targetValue && (
-              <JourneyStat label="Hedef" value={`${sym}${goal.targetValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`} />
-            )}
-            {remaining != null && (
-              <JourneyStat label="Kalan" value={`${sym}${remaining.toLocaleString("en-US", { maximumFractionDigits: 0 })}`} tone={AIS_UP} />
-            )}
-            {daysLeft != null && <JourneyStat label="Kalan gün" value={`${daysLeft}`} />}
-          </div>
-
-          <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
-            <span className="rounded-full border border-[var(--ais-line-strong)] px-3 py-1 text-[12px] text-[var(--ais-fg-muted)]">{RISK_LABEL[goal.riskTolerance]}</span>
-            {goal.targetValue && (
-              <span className="rounded-full border border-[var(--ais-line-strong)] px-3 py-1 text-[12px] text-[var(--ais-fg-muted)]">
-                Şu an: <span className="num font-medium text-[var(--ais-fg)]">{sym}{portfolioValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
-              </span>
-            )}
-          </div>
+        <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: "var(--ais-surface-2)" }}>
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${progress}%`, background: ACCENT }}
+          />
         </div>
       </div>
-    </>
+
+      {/* yolculuk metrikleri (kutusuz, ızgara ayraçlı şerit) */}
+      <div
+        className="mt-5 grid gap-px overflow-hidden rounded-lg border"
+        style={{
+          borderColor: "var(--ais-line)",
+          background: "var(--ais-line)",
+          gridTemplateColumns: `repeat(${
+            [goal.targetValue, remaining != null, daysLeft != null, true].filter(Boolean).length
+          }, minmax(0,1fr))`,
+        }}
+      >
+        {goal.targetValue && (
+          <JourneyStat label="Hedef tutar" value={`${sym}${goal.targetValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`} />
+        )}
+        {remaining != null && (
+          <JourneyStat label="Kalan" value={`${sym}${remaining.toLocaleString("en-US", { maximumFractionDigits: 0 })}`} tone="var(--ais-green)" />
+        )}
+        {daysLeft != null && <JourneyStat label="Kalan gün" value={`${daysLeft}`} />}
+        <JourneyStat label="Risk" value={RISK_LABEL[goal.riskTolerance]} />
+      </div>
+
+      {goal.targetValue && (
+        <p className="mt-3 text-[12px] text-[var(--ais-fg-muted)]">
+          Şu anki portföy:{" "}
+          <span className="num font-medium text-[var(--ais-fg)]">
+            {sym}{portfolioValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+          </span>
+        </p>
+      )}
+    </div>
   );
 }
 
 function JourneyStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <div className="rounded-lg border border-[var(--ais-line)] px-3 py-2">
+    <div className="bg-[var(--ais-surface)] px-4 py-3">
       <p className="text-[11px] text-[var(--ais-fg-faint)]">{label}</p>
-      <p className="num mt-0.5 text-[15px] font-medium" style={{ color: tone ?? "var(--ais-fg)" }}>{value}</p>
+      <p className="num mt-1 text-[15px] font-medium" style={{ color: tone ?? "var(--ais-fg)" }}>
+        {value}
+      </p>
     </div>
   );
 }
 
+/* ── YAN HEDEF satırı — Didit liste satırı (border-b ayraçlı, hover) ── */
 function SideGoalRow({
   goal,
+  first,
   onMakeMain,
   onEdit,
   onRemove,
   onToggleStatus,
 }: {
   goal: Goal;
+  first: boolean;
   onMakeMain: () => void;
   onEdit: () => void;
   onRemove: () => void;
@@ -274,59 +346,102 @@ function SideGoalRow({
   const sym = goal.currency === "TRY" ? "₺" : "$";
   const paused = goal.status === "paused";
   return (
-    <div className={`ais-card ais-card-hover group flex items-center gap-4 p-4 ${paused ? "opacity-50" : ""}`}>
+    <div
+      className={`group flex items-center gap-4 px-4 py-3.5 transition hover:bg-[var(--ais-surface-2)] ${
+        paused ? "opacity-55" : ""
+      }`}
+      style={{ borderTop: first ? "none" : "1px solid var(--ais-line)" }}
+    >
+      <span
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
+        style={{ background: "var(--ais-surface-2)", color: "var(--ais-fg-muted)" }}
+      >
+        <Flag size={15} />
+      </span>
+
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">{goal.title}</p>
+          <p className="truncate text-[13.5px] font-medium text-[var(--ais-fg)]">{goal.title}</p>
           {paused && (
-            <span className="rounded-full border border-[var(--ais-line-strong)] px-2 py-0.5 text-[10.5px] text-[var(--ais-fg-muted)]">
+            <span className="badge-soft" style={{ background: "var(--ais-soft)", color: "var(--ais-fg-muted)" }}>
               Duraklatıldı
             </span>
           )}
         </div>
-        {goal.detail && <p className="truncate text-[12.5px] text-[var(--ais-fg-muted)]">{goal.detail}</p>}
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {goal.targetValue && (
-            <span className="num rounded-full border border-[var(--ais-line-strong)] px-2 py-0.5 text-[11px] text-[var(--ais-fg-muted)]">
-              {sym}{goal.targetValue.toLocaleString("en-US")}
-            </span>
-          )}
-          <span className="rounded-full border border-[var(--ais-line-strong)] px-2 py-0.5 text-[11px] text-[var(--ais-fg-muted)]">
-            {RISK_LABEL[goal.riskTolerance]}
-          </span>
-        </div>
+        {goal.detail && <p className="mt-0.5 truncate text-[12px] text-[var(--ais-fg-muted)]">{goal.detail}</p>}
       </div>
 
-      <button
-        onClick={onMakeMain}
-        title="Ana hedef yap"
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-accent)]"
-      >
-        <Star size={15} weight="regular" />
-      </button>
-      <button
-        onClick={onToggleStatus}
-        title={paused ? "Devam ettir" : "Duraklat"}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
-      >
-        {paused ? <Check size={15} weight="regular" /> : <X size={15} weight="regular" />}
-      </button>
-      <button
-        onClick={onEdit}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--ais-fg-faint)] opacity-0 transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)] group-hover:opacity-100"
-      >
-        <PencilSimple size={15} weight="regular" />
-      </button>
-      <button
-        onClick={onRemove}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--ais-fg-faint)] opacity-0 transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)] group-hover:opacity-100"
-      >
-        <Trash size={15} weight="regular" />
-      </button>
+      {/* meta rozetler */}
+      <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+        {goal.targetValue && (
+          <span className="num badge-soft" style={{ background: "var(--ais-soft)", color: "var(--ais-fg-muted)" }}>
+            {sym}{goal.targetValue.toLocaleString("en-US")}
+          </span>
+        )}
+        <span className="badge-soft" style={{ background: "var(--ais-soft)", color: "var(--ais-fg-muted)" }}>
+          {RISK_LABEL[goal.riskTolerance]}
+        </span>
+      </div>
+
+      {/* aksiyonlar */}
+      <div className="flex shrink-0 items-center gap-0.5">
+        <IconBtn onClick={onMakeMain} label="Ana hedef yap" accentHover>
+          <Star size={15} />
+        </IconBtn>
+        <IconBtn onClick={onToggleStatus} label={paused ? "Devam ettir" : "Duraklat"}>
+          {paused ? <Play size={15} /> : <Pause size={15} />}
+        </IconBtn>
+        <span className="opacity-0 transition group-hover:opacity-100">
+          <IconBtn onClick={onEdit} label="Düzenle">
+            <Pencil size={15} />
+          </IconBtn>
+        </span>
+        <span className="opacity-0 transition group-hover:opacity-100">
+          <IconBtn onClick={onRemove} label="Sil">
+            <Trash2 size={15} />
+          </IconBtn>
+        </span>
+      </div>
     </div>
   );
 }
 
+function IconBtn({
+  children,
+  onClick,
+  label,
+  accentHover,
+  tone,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  label: string;
+  accentHover?: boolean;
+  /** Renkli ikon: accent = mavi düzenle, danger = kırmızı sil (madde 3). */
+  tone?: "accent" | "danger";
+}) {
+  // Renkli tonlarda taban renk belirgin, hover'da daha koyu/dolgulu.
+  const toneCls =
+    tone === "accent"
+      ? "text-[var(--ais-accent)] hover:bg-[var(--ais-accent-bg)]"
+      : tone === "danger"
+        ? "text-[#d93025] hover:bg-[rgba(217,48,37,0.10)]"
+        : `text-[var(--ais-fg-faint)] hover:bg-[var(--ais-surface-2)] ${
+            accentHover ? "hover:text-[var(--ais-accent)]" : "hover:text-[var(--ais-fg)]"
+          }`;
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      className={`grid h-8 w-8 place-items-center rounded-lg transition ${toneCls}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ── HEDEF EDİTÖRÜ — Didit açık-tema modal (yuvarlak köşe, beyaz, soft gölge) ── */
 function GoalEditor({
   goal,
   onClose,
@@ -369,28 +484,53 @@ function GoalEditor({
   }
 
   return (
+    // Overlay: bulunduğumuz sayfa arkada KALIR — üstüne hafif karartma + gerçek blur.
+    // .ais-light'ı overlay'e VERME (zemini beyazlatıyordu); sadece modal kartına ver.
     <div
-      className="ais vela-modal-backdrop fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 grid place-items-center p-4"
+      style={{
+        background: "rgba(17,17,20,0.32)",
+        backdropFilter: "blur(8px) saturate(120%)",
+        WebkitBackdropFilter: "blur(8px) saturate(120%)",
+      }}
       onClick={onClose}
     >
       <div
-        className="vela-modal-card w-full max-w-md rounded-2xl border border-[var(--ais-line-strong)] bg-[#161618] p-6 shadow-2xl"
+        className="ais ais-light w-full max-w-md overflow-hidden rounded-2xl border bg-[var(--ais-surface)] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.45)]"
+        style={{ borderColor: "var(--ais-line)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2">
-          <Target size={18} weight="regular" style={{ color: AIS_ACCENT }} />
-          <h2 className="text-[15px] font-medium text-[var(--ais-fg)]">
-            {goal ? "Hedefi düzenle" : "Yeni hedef"}
-          </h2>
+        {/* başlık */}
+        <div className="flex items-center justify-between gap-3 px-6 pt-5 pb-4">
+          <div className="flex items-center gap-2.5">
+            <span
+              className="grid h-8 w-8 place-items-center rounded-lg"
+              style={{ background: "var(--ais-accent-bg)", color: ACCENT }}
+            >
+              <Target size={16} />
+            </span>
+            <h2 className="text-[15px] font-medium text-[var(--ais-fg)]">
+              {goal ? "Hedefi düzenle" : "Yeni hedef"}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="grid h-8 w-8 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
+            aria-label="Kapat"
+          >
+            <X size={16} />
+          </button>
         </div>
 
-        <div className="mt-4 space-y-3">
+        {/* gövde */}
+        <div className="space-y-4 px-6 pb-2">
           <Field label="Hedef başlığı">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Örn. Bu ay 10.000$ kazanmak"
               className="ais-input w-full"
+              autoFocus
             />
           </Field>
 
@@ -400,13 +540,13 @@ function GoalEditor({
               onChange={(e) => setDetail(e.target.value)}
               rows={2}
               placeholder="Finovela'nın bilmesi gereken detaylar — kısıtlar, tercihler…"
-              className="ais-input w-full resize-none"
+              className="ais-input w-full resize-none py-2.5"
             />
           </Field>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Field label="Hedef tutar (opsiyonel)" className="flex-1">
-              <div className="ais-input flex items-center gap-1">
+              <div className="ais-input flex items-center gap-1.5">
                 <span className="text-[13px] text-[var(--ais-fg-faint)]">{currency === "TRY" ? "₺" : "$"}</span>
                 <input
                   value={amount}
@@ -418,12 +558,12 @@ function GoalEditor({
               </div>
             </Field>
             <Field label="Para birimi">
-              <Segmented
+              <DiditToggle
                 value={currency}
                 onChange={setCurrency}
                 options={[
-                  { value: "USD", label: "USD" },
-                  { value: "TRY", label: "TRY" },
+                  { value: "USD", label: "USD", tone: "green" },
+                  { value: "TRY", label: "TRY", tone: "blue" },
                 ]}
               />
             </Field>
@@ -434,31 +574,31 @@ function GoalEditor({
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="ais-input w-full [color-scheme:dark]"
+              className="ais-input w-full"
             />
           </Field>
 
           <Field label="Risk toleransı">
-            <Segmented
+            <DiditToggle
               full
               value={risk}
               onChange={setRisk}
               options={[
-                { value: "low", label: RISK_LABEL.low },
-                { value: "medium", label: RISK_LABEL.medium },
-                { value: "high", label: RISK_LABEL.high },
+                { value: "low", label: RISK_LABEL.low, tone: "green" },
+                { value: "medium", label: RISK_LABEL.medium, tone: "blue" },
+                { value: "high", label: RISK_LABEL.high, tone: "red" },
               ]}
             />
           </Field>
 
           <Field label="Hedef tipi">
-            <Segmented
+            <DiditToggle
               full
               value={kind}
               onChange={setKind}
               options={[
-                { value: "main", label: "Ana hedef" },
-                { value: "side", label: "Yan hedef" },
+                { value: "main", label: "Ana hedef", tone: "blue" },
+                { value: "side", label: "Yan hedef", tone: "amber" },
               ]}
             />
             {kind === "main" && (
@@ -469,13 +609,23 @@ function GoalEditor({
           </Field>
         </div>
 
-        <div className="mt-5 flex gap-2">
-          <Btn variant="default" onClick={onClose} className="flex-1">
+        {/* alt aksiyon (Didit modal footer) */}
+        <div className="mt-4 flex gap-2.5 border-t px-6 py-4" style={{ borderColor: "var(--ais-line)" }}>
+          <button
+            onClick={onClose}
+            className="flex-1 rounded-full border py-2.5 text-[13px] font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+            style={{ borderColor: "var(--ais-line-strong)" }}
+          >
             Vazgeç
-          </Btn>
-          <Btn variant="primary" onClick={submit} disabled={!valid} className="flex-1">
+          </button>
+          <button
+            onClick={submit}
+            disabled={!valid}
+            className="flex-1 rounded-full py-2.5 text-[13px] font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: ACCENT }}
+          >
             {goal ? "Kaydet" : "Hedef oluştur"}
-          </Btn>
+          </button>
         </div>
       </div>
     </div>

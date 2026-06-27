@@ -18,9 +18,10 @@ export const finovelaClerkAppearance: ClerkAppearance = {
     fontFamily: "var(--font-display), system-ui, sans-serif",
   },
   elements: {
-    rootBox: "w-full",
-    cardBox: "w-full shadow-none",
-    card: "bg-white/[0.04] border border-white/12 backdrop-blur-xl shadow-[0_30px_80px_rgba(43,92,240,0.25)] rounded-3xl",
+    rootBox: "w-full flex justify-center",
+    cardBox: "w-full max-w-sm mx-auto shadow-none",
+    card: "w-full bg-white/[0.04] border border-white/12 backdrop-blur-xl shadow-[0_30px_80px_rgba(43,92,240,0.25)] rounded-3xl px-7 py-8",
+    header: "text-center",
     headerTitle: "text-white font-display text-2xl",
     headerSubtitle: "text-white/55",
     socialButtonsBlockButton:

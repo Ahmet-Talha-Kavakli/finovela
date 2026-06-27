@@ -31,14 +31,15 @@ export function MadeNatural() {
         {/* SAĞ — metin */}
         <div>
           <h2 className="font-display text-[42px] font-bold leading-[1.3] text-white">
-            Konuş, Dokun, Kazan
+            Konuş, Dokun, Anla
             <br />
-            Yatırım Artık Çok Doğal
+            Araştırma Artık Çok Doğal
           </h2>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-white/65">
-            &ldquo;Finovela, teknoloji hisselerimi riske karşı koru.&rdquo; Finovela analiz
-            eder, opsiyon stratejisini kurar ve uygular — sıfır tık. Ücretsiz AI
-            yatırım uygulamasında sesle işlem.
+            &ldquo;Finovela, teknoloji hisselerimdeki riski analiz et.&rdquo;
+            Finovela analiz eder, olası bir koruma stratejisini kurar ve sanal
+            portföyde test eder — sıfır tık. Ücretsiz AI yatırım araştırma
+            uygulamasında sesle keşfet.
           </p>
           <Link
             href="/app"

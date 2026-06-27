@@ -1,16 +1,14 @@
 "use client";
 
+/**
+ * Finovela Tahviller & Hazine — getiri eğrisi + merdiven oluşturucu + tarayıcı.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, ızgara-ayraçlı metrik şeridi, ais-dt dense tablo, token renkleri.
+ * Beyaz-sabit renk YOK — hepsi --ais-* token (açık temada okunur).
+ */
+
 import { useMemo, useState, useEffect } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
-import {
-  PageTitle,
-  SectionCard,
-  Metric,
-  Btn,
-  Slider,
-  AIS_UP,
-  AIS_DOWN,
-} from "@/components/dashboard/ais-kit";
 import { fmtUsd } from "@/lib/dashboard/data";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import {
@@ -23,7 +21,12 @@ import {
   type BondType,
   type Rating,
 } from "@/lib/dashboard/fixed-income";
-import { Stack } from "@phosphor-icons/react";
+import { Layers } from "lucide-react";
+
+// Didit açık-tema renkleri.
+const ACCENT = "var(--ais-accent)";
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
 
 const TYPES: { label: string; value: BondType | "all" }[] = [
   { label: "Tümü", value: "all" },
@@ -83,7 +86,7 @@ export default function BondsPage() {
   const [ladderAmt, setLadderAmt] = useState("50000");
   const [rungs, setRungs] = useState(4);
   // Referans tarihi bir kez sabitle (render sırasında Date.now() çağırma).
-  const [now] = useState(() => Date.now());
+  const [now] = useState(() => (typeof window === "undefined" ? 0 : Date.now()));
 
   const ladder = useMemo(() => {
     const amt = parseFloat(ladderAmt);
@@ -101,43 +104,53 @@ export default function BondsPage() {
     );
   }
 
-  const ratingColor = (r: Rating) => (isInvestmentGrade(r) ? "var(--ais-fg)" : AIS_DOWN);
+  const ratingColor = (r: Rating) => (isInvestmentGrade(r) ? "var(--ais-fg)" : DOWN);
 
   const typeLabel = (t: BondType) =>
     ({ corporate: "Kurumsal", treasury: "Hazine", muni: "Belediye" })[t] ?? t;
 
+  const rungsPct = ((rungs - 2) / (6 - 2)) * 100;
+
   return (
     <>
       <Topbar title="Tahviller & Hazine" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Tahviller & Hazine"
-            desc="ABD Hazine getirilerini izle, merdiven kur ve tahvil evrenini tara."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Tahviller &amp; Hazine</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              ABD Hazine getirilerini izle, merdiven kur ve tahvil evrenini tara.
+            </p>
+          </div>
 
-          {/* ── Treasury yield curve ──────────────────────────── */}
-          <SectionCard
-            label="ABD Hazine getirileri"
-            className="mt-10"
-            bodyClassName="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
-          >
-            {treasuries.map((t) => (
-              <Metric
-                key={t.id}
-                label={t.term.toUpperCase()}
-                value={`${t.yield.toFixed(2)}%`}
-                color={AIS_UP}
-              />
-            ))}
-          </SectionCard>
+          {/* ───────── ABD Hazine getirileri (kutusuz ızgara-ayraçlı şerit) ───────── */}
+          <section className="mt-9 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <h2 className="d-section mb-5">ABD Hazine getirileri</h2>
+            <div
+              className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border sm:grid-cols-3 lg:grid-cols-6"
+              style={{ borderColor: "var(--ais-line)", background: "var(--ais-line)" }}
+            >
+              {treasuries.map((t) => (
+                <div key={t.id} className="bg-[var(--ais-surface)] px-5 py-4">
+                  <p className="text-[11.5px] text-[var(--ais-fg-faint)]">{t.term.toUpperCase()}</p>
+                  <p className="num mt-2 text-[19px] font-medium tracking-tight" style={{ color: UP }}>
+                    {t.yield.toFixed(2)}%
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
 
-          {/* ── Treasury ladder builder ───────────────────────── */}
-          <SectionCard
-            label="Hazine merdiveni oluşturucu"
-            className="mt-3"
-            desc="Sermaye, kademeli vadelere (6 ay arayla) eşit olarak dağıtılır."
-          >
+          {/* ───────── Hazine merdiveni oluşturucu ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5">
+              <h2 className="d-section">Hazine merdiveni oluşturucu</h2>
+              <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                Sermaye, kademeli vadelere (6 ay arayla) eşit olarak dağıtılır.
+              </p>
+            </div>
+
             <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
               <div className="space-y-5">
                 <div>
@@ -147,19 +160,36 @@ export default function BondsPage() {
                     inputMode="decimal"
                     value={ladderAmt}
                     onChange={(e) => setLadderAmt(e.target.value)}
-                    className="ais-input num mt-1.5"
+                    className="ais-input num mt-1.5 w-full"
                   />
                 </div>
-                <Slider
-                  label="Basamak"
-                  value={rungs}
-                  min={2}
-                  max={6}
-                  step={1}
-                  onChange={(v) => setRungs(v)}
-                />
+
+                {/* Didit slider */}
+                <div>
+                  <div className="mb-2.5 flex items-center justify-between">
+                    <span className="text-[13px] text-[var(--ais-fg-muted)]">Basamak</span>
+                    <span className="num text-[13px] font-medium text-[var(--ais-fg)]">{rungs}</span>
+                  </div>
+                  <div className="relative h-1 rounded-full" style={{ background: "var(--ais-line-strong)" }}>
+                    <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${rungsPct}%`, background: ACCENT }} />
+                    <input
+                      type="range"
+                      min={2}
+                      max={6}
+                      step={1}
+                      value={rungs}
+                      onChange={(e) => setRungs(Number(e.target.value))}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    />
+                    <div
+                      className="pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full"
+                      style={{ left: `calc(${rungsPct}% - 7px)`, background: ACCENT, boxShadow: "0 0 0 4px var(--ais-bg)" }}
+                    />
+                  </div>
+                </div>
+
                 {ladder && (
-                  <div className="ais-card p-4 text-[13px]">
+                  <div className="rounded-xl border p-4 text-[13px]" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
                     <div className="flex items-center justify-between">
                       <span className="text-[var(--ais-fg-muted)]">Harmanlanmış getiri</span>
                       <span className="num font-medium text-[var(--ais-fg)]">
@@ -168,43 +198,43 @@ export default function BondsPage() {
                     </div>
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-[var(--ais-fg-muted)]">Öngörülen faiz</span>
-                      <span className="num font-medium" style={{ color: AIS_UP }}>
+                      <span className="num font-medium" style={{ color: UP }}>
                         +{fmtUsd(ladder.totalProjectedInterest)}
                       </span>
                     </div>
                   </div>
                 )}
-                <Btn
-                  variant="primary"
+
+                <button
                   onClick={handleBuildLadder}
                   disabled={!ladder}
-                  className="w-full"
+                  className="pill-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Merdiven planı oluştur <Stack size={15} weight="regular" />
-                </Btn>
+                  Merdiven planı oluştur <Layers size={15} />
+                </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
                 <table className="ais-dt min-w-[420px]">
                   <thead>
                     <tr>
-                      <th className="text-left">Basamak</th>
-                      <th className="text-right">Vade</th>
-                      <th className="text-right">Vade tarihi</th>
-                      <th className="text-right">Tutar</th>
-                      <th className="text-right">Getiri</th>
-                      <th className="text-right">Faiz</th>
+                      <th>BASAMAK</th>
+                      <th className="!text-right">VADE</th>
+                      <th className="!text-right">VADE TARİHİ</th>
+                      <th className="!text-right">TUTAR</th>
+                      <th className="!text-right">GETİRİ</th>
+                      <th className="!text-right">FAİZ</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ladder?.rungs.map((r) => (
                       <tr key={r.index}>
                         <td className="font-medium text-[var(--ais-fg)]">#{r.index}</td>
-                        <td className="num text-right">{r.termLabel}</td>
-                        <td className="num text-right text-[var(--ais-fg-muted)]">{r.maturityDate}</td>
-                        <td className="num text-right">{fmtUsd(r.amount, 0)}</td>
-                        <td className="num text-right">{r.yield.toFixed(2)}%</td>
-                        <td className="num text-right font-medium" style={{ color: AIS_UP }}>
+                        <td className="num !text-right">{r.termLabel}</td>
+                        <td className="num !text-right text-[var(--ais-fg-muted)]">{r.maturityDate}</td>
+                        <td className="num !text-right">{fmtUsd(r.amount, 0)}</td>
+                        <td className="num !text-right">{r.yield.toFixed(2)}%</td>
+                        <td className="num !text-right font-medium" style={{ color: UP }}>
                           +{fmtUsd(r.projectedInterest, 0)}
                         </td>
                       </tr>
@@ -213,33 +243,40 @@ export default function BondsPage() {
                 </table>
               </div>
             </div>
-          </SectionCard>
+          </section>
 
-          {/* ── Bond screener ─────────────────────────────────── */}
-          <SectionCard
-            label="Tahvil tarayıcı"
-            className="mt-3"
-            desc="ABD Hazine getirileri canlıdır; kurumsal ve belediye tahvilleri örnek bir evrendir (canlı tahvil kotasyonu değildir)."
-            action={
-              <span className="num text-[12.5px] text-[var(--ais-fg-faint)]">{filtered.length} tahvil</span>
-            }
-          >
+          {/* ───────── Tahvil tarayıcı ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="d-section">Tahvil tarayıcı</h2>
+                <p className="mt-1 max-w-2xl text-[12.5px] text-[var(--ais-fg-muted)]">
+                  ABD Hazine getirileri canlıdır; kurumsal ve belediye tahvilleri örnek bir evrendir
+                  (canlı tahvil kotasyonu değildir).
+                </p>
+              </div>
+              <span className="num shrink-0 text-[12.5px] text-[var(--ais-fg-faint)]">{filtered.length} tahvil</span>
+            </div>
+
             <div className="mb-5 flex flex-wrap items-end gap-3">
               <div className="flex flex-wrap gap-1.5">
-                {TYPES.map((t) => (
-                  <button
-                    key={t.value}
-                    onClick={() => setType(t.value)}
-                    className={`rounded-lg border px-3 py-1.5 text-[12.5px] transition ${
-                      type === t.value
-                        ? "border-[var(--ais-accent)]/50 text-[var(--ais-accent)]"
-                        : "border-[var(--ais-line-strong)] text-[var(--ais-fg-muted)] hover:text-[var(--ais-fg)]"
-                    }`}
-                    style={type === t.value ? { background: "var(--ais-accent-bg)" } : undefined}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+                {TYPES.map((t) => {
+                  const on = type === t.value;
+                  return (
+                    <button
+                      key={t.value}
+                      onClick={() => setType(t.value)}
+                      className="rounded-lg border px-3 py-1.5 text-[12.5px] transition"
+                      style={{
+                        borderColor: on ? "var(--ais-accent)" : "var(--ais-line-strong)",
+                        background: on ? "var(--ais-accent-bg)" : "transparent",
+                        color: on ? ACCENT : "var(--ais-fg-muted)",
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
               </div>
               <div>
                 <label className="block text-[12px] text-[var(--ais-fg-faint)]">Not</label>
@@ -268,18 +305,18 @@ export default function BondsPage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
               <table className="ais-dt min-w-[720px]">
                 <thead>
                   <tr>
-                    <th className="text-left">İhraççı</th>
-                    <th className="text-left">Tür</th>
-                    <th className="text-right">Kupon</th>
-                    <th className="text-right">Güncel getiri</th>
-                    <th className="text-right">YTM</th>
-                    <th className="text-right">Fiyat</th>
-                    <th className="text-right">Not</th>
-                    <th className="text-right">Vade</th>
+                    <th>İHRAÇÇI</th>
+                    <th>TÜR</th>
+                    <th className="!text-right">KUPON</th>
+                    <th className="!text-right">GÜNCEL GETİRİ</th>
+                    <th className="!text-right">YTM</th>
+                    <th className="!text-right">FİYAT</th>
+                    <th className="!text-right">NOT</th>
+                    <th className="!text-right">VADE</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -287,16 +324,16 @@ export default function BondsPage() {
                     <tr key={b.id}>
                       <td className="font-medium text-[var(--ais-fg)]">{b.issuer}</td>
                       <td className="text-[var(--ais-fg-muted)]">{typeLabel(b.type)}</td>
-                      <td className="num text-right">{b.coupon.toFixed(2)}%</td>
-                      <td className="num text-right">{currentYield(b).toFixed(2)}%</td>
-                      <td className="num text-right font-medium" style={{ color: AIS_UP }}>
+                      <td className="num !text-right">{b.coupon.toFixed(2)}%</td>
+                      <td className="num !text-right">{currentYield(b).toFixed(2)}%</td>
+                      <td className="num !text-right font-medium" style={{ color: UP }}>
                         {b.ytm.toFixed(2)}%
                       </td>
-                      <td className="num text-right">{b.price.toFixed(1)}</td>
-                      <td className="num text-right font-medium" style={{ color: ratingColor(b.rating) }}>
+                      <td className="num !text-right">{b.price.toFixed(1)}</td>
+                      <td className="num !text-right font-medium" style={{ color: ratingColor(b.rating) }}>
                         {b.rating}
                       </td>
-                      <td className="num text-right text-[var(--ais-fg-muted)]">{b.maturity}</td>
+                      <td className="num !text-right text-[var(--ais-fg-muted)]">{b.maturity}</td>
                     </tr>
                   ))}
                   {filtered.length === 0 && (
@@ -309,7 +346,7 @@ export default function BondsPage() {
                 </tbody>
               </table>
             </div>
-          </SectionCard>
+          </section>
         </div>
       </div>
     </>

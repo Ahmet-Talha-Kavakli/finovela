@@ -164,13 +164,16 @@ export function Footer() {
             ))}
           </div>
           <p>
-            Finovela bir aracı kurum, yatırım danışmanı, borsa veya saklama kuruluşu
-            <strong className="text-white/55"> değildir</strong> ve paranızı tutmaz.
-            İşlemler, yetki verdiğiniz kendi borsa/aracı kurum hesaplarınızda
-            gerçekleşir. Buradaki hiçbir içerik yatırım tavsiyesi, öneri ya da alım-satım
+            Finovela bir yazılım (SaaS) ve eğitim/analiz aracıdır; yatırım danışmanlığı,
+            aracılık veya portföy yönetimi
+            <strong className="text-white/55"> değildir</strong>. Finovela kullanıcı
+            fonlarını <strong className="text-white/55">asla tutmaz</strong>, saklamaz
+            veya transfer etmez. Uygulama içi portföy bir simülasyondur (paper trading);
+            gerçek alım-satım gerçekleştirmez. Buradaki tüm içerik genel
+            bilgilendirme/eğitim amaçlıdır ve yatırım tavsiyesi, öneri ya da alım-satım
             teklifi niteliği taşımaz. Geçmiş ve simüle edilmiş performans gelecekteki
-            sonuçların göstergesi değildir. Yatırım ve otomatik işlem, anaparanın
-            tamamen kaybı dahil önemli riskler içerir. Ayrıntı için{" "}
+            sonuçların göstergesi değildir. Yatırım kararları kullanıcının kendi
+            sorumluluğundadır ve önemli riskler içerir. Ayrıntı için{" "}
             <Link href="/disclaimer" className="underline transition hover:text-white/70">
               Risk Bildirimi
             </Link>{" "}

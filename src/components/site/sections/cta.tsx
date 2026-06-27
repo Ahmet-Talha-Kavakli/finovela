@@ -19,12 +19,12 @@ export function CTA() {
 
         <div className="relative px-8 py-20 sm:py-24 md:max-w-xl md:px-14">
           <h2 className="font-display text-4xl font-bold leading-tight text-white sm:text-5xl">
-            Ready to trade with a{" "}
+            Ready to research with a{" "}
             <span className="text-gradient">genius</span> in your pocket?
           </h2>
           <p className="mt-5 text-lg text-white/65">
-            Join the investors letting Finovela handle the heavy lifting. Start free,
-            build a strategy by chatting, and watch it run on autopilot.
+            Join the investors letting Finovela handle the heavy research. Start free,
+            build a strategy by chatting, and test it risk-free in simulation.
           </p>
           <div className="mt-8">
             <GlassButton size="xl" tone="brand" href="/app">

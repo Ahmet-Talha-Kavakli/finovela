@@ -17,10 +17,13 @@ export function ChartFrame({
   title,
   render,
   className,
+  light,
 }: {
   title?: string;
   render: (fullscreen: boolean) => React.ReactNode;
   className?: string;
+  /** Açık tema (Didit) — fullscreen modal beyaz zemin + açık token'larla açılır. */
+  light?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -54,13 +57,23 @@ export function ChartFrame({
 
       {open && mounted && createPortal(
         <div
-          className="ais vela-modal-backdrop fixed inset-0 z-[200] flex items-center justify-center p-6 backdrop-blur-xl"
-          style={{ backgroundColor: "rgba(0,0,0,0.82)" }}
+          className={`${light ? "ais ais-light" : "ais"} fixed inset-0 z-[200] flex items-center justify-center p-6`}
+          style={{
+            backgroundColor: light ? "rgba(17,17,20,0.32)" : "rgba(0,0,0,0.82)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
           onClick={() => setOpen(false)}
         >
           <div
-            className="vela-modal-card relative z-10 flex max-h-[86vh] w-full max-w-5xl flex-col rounded-2xl border border-white/[0.1] p-5 shadow-2xl shadow-black/60"
-            style={{ backgroundColor: "#161618" }}
+            className="relative z-10 flex max-h-[86vh] w-full max-w-5xl flex-col rounded-2xl border p-5"
+            style={{
+              backgroundColor: light ? "var(--ais-surface)" : "#161618",
+              borderColor: light ? "var(--ais-line)" : "rgba(255,255,255,0.1)",
+              boxShadow: light
+                ? "0 32px 80px -20px rgba(0,0,0,0.45)"
+                : "0 24px 64px -16px rgba(0,0,0,0.6)",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">

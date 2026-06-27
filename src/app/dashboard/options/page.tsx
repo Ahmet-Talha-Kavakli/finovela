@@ -1,19 +1,35 @@
 "use client";
 
+/**
+ * Finovela Opsiyonlar — dayanak/vade seçimi, Black-Scholes zinciri, tanımlı
+ * stratejiler ve demo pozisyonlar. Tasarım dili: Didit (business.didit.me) —
+ * açık tema, kutusuz, border-t ayraçlı bölümler, ais-dt tablo, token renkleri.
+ * Black-Scholes / strateji mantığı AYNEN korunmuştur.
+ */
+
 import { useMemo, useState, useEffect } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
-import { PageTitle, SectionCard, Card, Metric, EmptyState, AIS_ACCENT, AIS_UP, AIS_DOWN } from "@/components/dashboard/ais-kit";
+import { TickerBadge } from "@/components/dashboard/ui";
 import { ChartFrame } from "@/components/dashboard/chart-frame";
 import { fmtUsd } from "@/lib/dashboard/data";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import { optionsStore, markPosition } from "@/lib/dashboard/options-store";
 import { useOptions } from "@/lib/dashboard/use-options";
 import { useConfirm } from "@/components/dashboard/confirm";
-import { TrendUp, TrendDown, Lightning, ShieldCheck, ArrowsLeftRight, CheckCircle, X } from "@phosphor-icons/react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  ShieldCheck,
+  ArrowLeftRight,
+  CheckCircle2,
+  X,
+} from "lucide-react";
 
-const ACCENT = AIS_ACCENT;
-const UP = AIS_UP;
-const DOWN = AIS_DOWN;
+// Didit açık-tema renkleri — beyaz zeminde okunur.
+const ACCENT = "var(--ais-accent)";
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
 
 /* ----------------------------------------------------------------
  * Mock underlyings (deterministic chain generated from base price)
@@ -124,11 +140,11 @@ type Leg = { action: "Buy" | "Sell"; type: "Call" | "Put" | "Stock"; strike?: nu
 type StratKey = "covered-call" | "csp" | "bull-call" | "protective-put" | "iron-condor";
 
 const STRATEGIES: { key: StratKey; name: string; desc: string; icon: React.ReactNode }[] = [
-  { key: "covered-call", name: "Kapalı Alım (Covered Call)", desc: "Hisseyi elde tut, yükseliş potansiyelini gelir için sat.", icon: <TrendUp size={16} weight="bold" /> },
-  { key: "csp", name: "Nakit Teminatlı Satım", desc: "Bir put sat, düşüşü beklerken prim kazan.", icon: <TrendDown size={16} weight="bold" /> },
-  { key: "bull-call", name: "Boğa Alım Spreadi", desc: "Ölçülü bir yükselişe tanımlı-riskli bahis.", icon: <ArrowsLeftRight size={16} weight="bold" /> },
-  { key: "protective-put", name: "Koruyucu Satım", desc: "Hisseni ani düşüşe karşı sigortala.", icon: <ShieldCheck size={16} weight="bold" /> },
-  { key: "iron-condor", name: "Demir Kondor", desc: "Hisse bant içinde kalırsa kâr et.", icon: <Lightning size={16} weight="bold" /> },
+  { key: "covered-call", name: "Kapalı Alım (Covered Call)", desc: "Hisseyi elde tut, yükseliş potansiyelini gelir için sat.", icon: <TrendingUp size={16} /> },
+  { key: "csp", name: "Nakit Teminatlı Satım", desc: "Bir put sat, düşüşü beklerken prim kazan.", icon: <TrendingDown size={16} /> },
+  { key: "bull-call", name: "Boğa Alım Spreadi", desc: "Ölçülü bir yükselişe tanımlı-riskli bahis.", icon: <ArrowLeftRight size={16} /> },
+  { key: "protective-put", name: "Koruyucu Satım", desc: "Hisseni ani düşüşe karşı sigortala.", icon: <ShieldCheck size={16} /> },
+  { key: "iron-condor", name: "Demir Kondor", desc: "Hisse bant içinde kalırsa kâr et.", icon: <Zap size={16} /> },
 ];
 
 type StratResult = {
@@ -262,7 +278,7 @@ function buildStrategy(key: StratKey, u: Underlying, rows: OptRow[]): StratResul
 }
 
 /* ----------------------------------------------------------------
- * Payoff diagram (SVG) — green above 0, red below
+ * Payoff diagram (SVG) — green above 0, red below (Didit açık tema)
  * ---------------------------------------------------------------- */
 function PayoffChart({ spot, payoff }: { spot: number; payoff: (p: number) => number }) {
   const w = 760;
@@ -289,20 +305,20 @@ function PayoffChart({ spot, payoff }: { spot: number; payoff: (p: number) => nu
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="h-full w-full">
       <defs>
         <linearGradient id="po-up" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={UP} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={UP} stopOpacity="0" />
+          <stop offset="0%" stopColor="#0f7d4a" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#0f7d4a" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="po-down" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor={DOWN} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={DOWN} stopOpacity="0" />
+          <stop offset="0%" stopColor="#d93025" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#d93025" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={upArea} fill="url(#po-up)" />
       <path d={downArea} fill="url(#po-down)" />
       {/* zero line */}
-      <line x1="0" y1={zeroY} x2={w} y2={zeroY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="4 4" />
+      <line x1="0" y1={zeroY} x2={w} y2={zeroY} stroke="var(--ais-line-strong)" strokeWidth="1" strokeDasharray="4 4" />
       {/* spot marker */}
-      <line x1={x(spot)} y1="0" x2={x(spot)} y2={h} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+      <line x1={x(spot)} y1="0" x2={x(spot)} y2={h} stroke="var(--ais-line)" strokeWidth="1" />
       <path d={path} fill="none" stroke="var(--ais-fg)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -399,100 +415,135 @@ export default function OptionsPage() {
   return (
     <>
       <Topbar title="Opsiyonlar" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Opsiyonlar"
-            desc="Dayanak ve vade seç, zinciri incele, tanımlı stratejiler oluştur ve demo pozisyon aç."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Opsiyonlar</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              Dayanak ve vade seç, zinciri incele, tanımlı stratejiler oluştur ve demo pozisyon aç.
+            </p>
+          </div>
 
-          {/* seçici */}
-          <SectionCard label="Dayanak ve vade" className="mt-2">
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-              <div>
-                <p className="mb-2 text-[12px] text-[var(--ais-fg-faint)]">Dayanak varlık</p>
+          {/* ───────── Dayanak ve vade ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <h2 className="d-section mb-5">Dayanak ve vade</h2>
+            <div
+              className="rounded-xl border p-6"
+              style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+            >
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+                <div>
+                  <p className="mb-2 text-[12px] text-[var(--ais-fg-faint)]">Dayanak varlık</p>
+                  <div className="flex flex-wrap gap-2">
+                    {UNDERLYINGS.map((x) => {
+                      const on = x.symbol === symbol;
+                      return (
+                        <button
+                          key={x.symbol}
+                          onClick={() => setSymbol(x.symbol)}
+                          className="inline-flex items-center gap-2 rounded-lg border py-1.5 pl-1.5 pr-3.5 text-[13px] font-medium transition"
+                          style={{
+                            borderColor: on ? "transparent" : "var(--ais-line-strong)",
+                            background: on ? "var(--ais-accent-bg)" : "transparent",
+                            color: on ? ACCENT : "var(--ais-fg-muted)",
+                          }}
+                        >
+                          <TickerBadge symbol={x.symbol} size={22} />
+                          {x.symbol}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="ml-auto text-right">
+                  <p className="text-[12px] text-[var(--ais-fg-muted)]">{u.name}</p>
+                  <p className="num text-[22px] font-medium tracking-tight text-[var(--ais-fg)]">{fmtUsd(u.price)}</p>
+                  <p className="text-[12px] text-[var(--ais-fg-faint)]">IV {(u.iv * 100).toFixed(0)}%</p>
+                </div>
+              </div>
+              <div className="mt-5">
+                <p className="mb-2 text-[12px] text-[var(--ais-fg-faint)]">Vade</p>
                 <div className="flex flex-wrap gap-2">
-                  {UNDERLYINGS.map((x) => {
-                    const on = x.symbol === symbol;
+                  {EXPIRIES.map((e, i) => {
+                    const on = i === expiryIdx;
                     return (
                       <button
-                        key={x.symbol}
-                        onClick={() => setSymbol(x.symbol)}
-                        className={`rounded-lg border px-3.5 py-1.5 text-[13px] font-medium transition ${
-                          on
-                            ? "border-[var(--ais-accent)]/50 text-[var(--ais-accent)]"
-                            : "border-[var(--ais-line-strong)] text-[var(--ais-fg-muted)] hover:bg-[var(--ais-surface-2)]"
-                        }`}
-                        style={on ? { background: "var(--ais-accent-bg)" } : undefined}
+                        key={e.label}
+                        onClick={() => setExpiryIdx(i)}
+                        className="rounded-lg border px-3.5 py-1.5 text-[13px] transition"
+                        style={{
+                          borderColor: on ? "transparent" : "var(--ais-line-strong)",
+                          background: on ? "var(--ais-accent-bg)" : "transparent",
+                          color: on ? ACCENT : "var(--ais-fg-muted)",
+                        }}
                       >
-                        {x.symbol}
+                        {e.label}
+                        <span className="ml-1.5 text-[11px] text-[var(--ais-fg-faint)]">{e.dte}g</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
-              <div className="ml-auto text-right">
-                <p className="text-[12px] text-[var(--ais-fg-muted)]">{u.name}</p>
-                <p className="num text-[22px] font-normal tracking-tight text-[var(--ais-fg)]">{fmtUsd(u.price)}</p>
-                <p className="text-[12px] text-[var(--ais-fg-faint)]">IV {(u.iv * 100).toFixed(0)}%</p>
-              </div>
             </div>
-            <div className="mt-5">
-              <p className="mb-2 text-[12px] text-[var(--ais-fg-faint)]">Vade</p>
-              <div className="flex flex-wrap gap-2">
-                {EXPIRIES.map((e, i) => {
-                  const on = i === expiryIdx;
-                  return (
-                    <button
-                      key={e.label}
-                      onClick={() => setExpiryIdx(i)}
-                      className={`rounded-lg border px-3.5 py-1.5 text-[13px] transition ${
-                        on
-                          ? "border-[var(--ais-accent)]/50 text-[var(--ais-accent)]"
-                          : "border-[var(--ais-line-strong)] text-[var(--ais-fg-muted)] hover:bg-[var(--ais-surface-2)]"
-                      }`}
-                      style={on ? { background: "var(--ais-accent-bg)" } : undefined}
-                    >
-                      {e.label}
-                      <span className="ml-1.5 text-[11px] text-[var(--ais-fg-faint)]">{e.dte}g</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </SectionCard>
+          </section>
 
-          {/* opsiyon zinciri */}
-          <SectionCard
-            label="Opsiyon zinciri"
-            className="mt-3"
-            desc={`${symbol} · ${expiry.label} — paraya en yakın satır vurgulanır.`}
-            bodyClassName="p-0"
-          >
-            <div className="overflow-x-auto">
+          {/* ───────── Opsiyon zinciri ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5">
+              <h2 className="d-section">Opsiyon zinciri</h2>
+              <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                {symbol} · {expiry.label} — paraya en yakın satır vurgulanır.
+              </p>
+            </div>
+            <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
               <table className="ais-dt num min-w-[920px]">
                 <thead>
                   <tr>
-                    <th colSpan={6} className="!text-center" style={{ color: UP }}>
-                      Alım opsiyonları
+                    <th
+                      colSpan={6}
+                      className="!text-center !text-[12px] !font-semibold uppercase tracking-wide"
+                      style={{ color: UP, background: "var(--ais-green-bg)" }}
+                    >
+                      Alım Opsiyonları
                     </th>
-                    <th></th>
-                    <th colSpan={6} className="!text-center" style={{ color: DOWN }}>
-                      Satım opsiyonları
+                    <th
+                      className="!text-center !text-[12px] !font-semibold uppercase tracking-wide text-[var(--ais-fg)]"
+                      style={{
+                        borderLeft: "1px solid var(--ais-line)",
+                        borderRight: "1px solid var(--ais-line)",
+                      }}
+                    >
+                      Kullanım
+                    </th>
+                    <th
+                      colSpan={6}
+                      className="!text-center !text-[12px] !font-semibold uppercase tracking-wide"
+                      style={{ color: DOWN, background: "rgba(217,48,37,0.07)" }}
+                    >
+                      Satım Opsiyonları
                     </th>
                   </tr>
                   <tr>
-                    <th className="!text-right">Alış</th>
-                    <th className="!text-right">Satış</th>
-                    <th className="!text-right">Son</th>
-                    <th className="!text-right">Hacim</th>
+                    <th className="!text-right">ALIŞ</th>
+                    <th className="!text-right">SATIŞ</th>
+                    <th className="!text-right">SON</th>
+                    <th className="!text-right">HACİM</th>
                     <th className="!text-right">IV</th>
                     <th className="!text-right">Δ</th>
-                    <th className="!text-center">Kullanım</th>
-                    <th className="!text-right">Alış</th>
-                    <th className="!text-right">Satış</th>
-                    <th className="!text-right">Son</th>
-                    <th className="!text-right">Hacim</th>
+                    <th
+                      className="!text-center"
+                      style={{
+                        borderLeft: "1px solid var(--ais-line)",
+                        borderRight: "1px solid var(--ais-line)",
+                      }}
+                    >
+                      FİYAT
+                    </th>
+                    <th className="!text-right">ALIŞ</th>
+                    <th className="!text-right">SATIŞ</th>
+                    <th className="!text-right">SON</th>
+                    <th className="!text-right">HACİM</th>
                     <th className="!text-right">IV</th>
                     <th className="!text-right">Δ</th>
                   </tr>
@@ -502,8 +553,8 @@ export default function OptionsPage() {
                     const isAtm = r.strike === atmStrike;
                     const callItm = r.strike < u.price;
                     const putItm = r.strike > u.price;
-                    const callBg = callItm ? `${UP}0d` : undefined;
-                    const putBg = putItm ? `${DOWN}0d` : undefined;
+                    const callBg = callItm ? "var(--ais-green-bg)" : undefined;
+                    const putBg = putItm ? "rgba(217,48,37,0.08)" : undefined;
                     return (
                       <tr key={r.strike} style={isAtm ? { background: "var(--ais-accent-bg)" } : undefined}>
                         {/* calls */}
@@ -525,13 +576,19 @@ export default function OptionsPage() {
                         <td className="!text-right text-[var(--ais-fg-muted)]" style={{ background: callBg }}>
                           {r.call.delta.toFixed(2)}
                         </td>
-                        {/* strike */}
-                        <td className="!text-center">
+                        {/* strike — vurgulu orta kolon (dikey ayraçlı) */}
+                        <td
+                          className="!text-center"
+                          style={{
+                            borderLeft: "1px solid var(--ais-line)",
+                            borderRight: "1px solid var(--ais-line)",
+                          }}
+                        >
                           <span
-                            className="inline-block rounded-md px-2.5 py-0.5 font-medium"
+                            className="inline-block rounded-md px-2.5 py-0.5 font-semibold"
                             style={
                               isAtm
-                                ? { background: "var(--ais-accent-bg)", color: ACCENT }
+                                ? { background: "var(--ais-accent)", color: "#fff" }
                                 : { color: "var(--ais-fg)" }
                             }
                           >
@@ -563,161 +620,182 @@ export default function OptionsPage() {
                 </tbody>
               </table>
             </div>
-            <p className="border-t border-[var(--ais-line)] px-5 py-3 text-[12px] text-[var(--ais-fg-faint)]">
+            <p className="mt-3 text-[12px] text-[var(--ais-fg-faint)]">
               Paraya en yakın satır vurgulandı. Karda (ITM) bacaklar hafifçe renklendirildi. Dayanak (underlying) fiyatları CANLIDIR; opsiyon prim/Greek değerleri canlı fiyat üzerinden Black-Scholes ile tahmin edilir (gerçek opsiyon piyasası kotasyonu değildir).
             </p>
-          </SectionCard>
+          </section>
 
-          {/* strateji oluşturucu */}
-          <SectionCard label="Strateji oluşturucu" className="mt-3" desc="Tanımlı-riskli bir strateji seç, getirisini gör.">
-          <div className="grid gap-3 lg:grid-cols-3">
-            {/* strateji seçici */}
-            <div className="space-y-2 lg:col-span-1">
-              {STRATEGIES.map((s) => {
-                const on = s.key === strat;
-                return (
-                  <button
-                    key={s.key}
-                    onClick={() => setStrat(s.key)}
-                    className={`ais-card ais-card-hover flex w-full items-start gap-3 p-3 text-left ${
-                      on ? "!border-[var(--ais-accent)]/50" : ""
-                    }`}
-                  >
-                    <span
-                      className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg"
-                      style={
-                        on
-                          ? { background: "var(--ais-accent-bg)", color: ACCENT }
-                          : { background: "rgba(255,255,255,0.05)", color: "var(--ais-fg-muted)" }
-                      }
-                    >
-                      {s.icon}
-                    </span>
-                    <span>
-                      <span className="block text-[13.5px] font-medium text-[var(--ais-fg)]">{s.name}</span>
-                      <span className="mt-0.5 block text-[12px] leading-relaxed text-[var(--ais-fg-muted)]">{s.desc}</span>
-                    </span>
-                  </button>
-                );
-              })}
+          {/* ───────── Strateji oluşturucu ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5">
+              <h2 className="d-section">Strateji oluşturucu</h2>
+              <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                Tanımlı-riskli bir strateji seç, getirisini gör.
+              </p>
             </div>
-
-            {/* bacaklar + getiri + metrikler */}
-            <Card className="lg:col-span-2">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-[14px] font-medium text-[var(--ais-fg)]">{STRATEGIES.find((s) => s.key === strat)!.name}</h3>
-                <span className="text-[12px] text-[var(--ais-fg-faint)]">{u.symbol} · {expiry.label} · 1 kontrat</span>
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* strateji seçici */}
+              <div className="space-y-2 lg:col-span-1">
+                {STRATEGIES.map((s) => {
+                  const on = s.key === strat;
+                  return (
+                    <button
+                      key={s.key}
+                      onClick={() => setStrat(s.key)}
+                      className="flex w-full items-start gap-3 rounded-xl border p-3 text-left transition hover:bg-[var(--ais-surface-2)]"
+                      style={{
+                        borderColor: on ? "var(--ais-accent)" : "var(--ais-line)",
+                        background: "var(--ais-surface)",
+                      }}
+                    >
+                      <span
+                        className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg"
+                        style={
+                          on
+                            ? { background: "var(--ais-accent-bg)", color: ACCENT }
+                            : { background: "var(--ais-surface-2)", color: "var(--ais-fg-muted)" }
+                        }
+                      >
+                        {s.icon}
+                      </span>
+                      <span>
+                        <span className="block text-[13.5px] font-medium text-[var(--ais-fg)]">{s.name}</span>
+                        <span className="mt-0.5 block text-[12px] leading-relaxed text-[var(--ais-fg-muted)]">{s.desc}</span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* bacaklar */}
-              <div className="mb-5 space-y-1.5">
-                {result.legs.map((l, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between rounded-lg border border-[var(--ais-line)] px-4 py-2.5 text-[13px]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="rounded-md px-2 py-0.5 text-[11px] font-medium"
-                        style={{
-                          color: l.action === "Buy" ? UP : DOWN,
-                          background: `${l.action === "Buy" ? UP : DOWN}1f`,
-                        }}
-                      >
-                        {l.action === "Buy" ? "Al" : "Sat"}
-                      </span>
-                      <span className="font-medium text-[var(--ais-fg)]">
-                        {l.qty}{" "}
-                        {l.type === "Stock"
-                          ? "× 100 hisse"
-                          : `× ${l.type === "Call" ? "Alım" : "Satım"}`}
+              {/* bacaklar + getiri + metrikler */}
+              <div
+                className="rounded-xl border p-5 lg:col-span-2"
+                style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-[14px] font-medium text-[var(--ais-fg)]">{STRATEGIES.find((s) => s.key === strat)!.name}</h3>
+                  <span className="text-[12px] text-[var(--ais-fg-faint)]">{u.symbol} · {expiry.label} · 1 kontrat</span>
+                </div>
+
+                {/* bacaklar */}
+                <div className="mb-5 space-y-1.5">
+                  {result.legs.map((l, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between rounded-lg border px-4 py-2.5 text-[13px]"
+                      style={{ borderColor: "var(--ais-line)" }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="rounded-md px-2 py-0.5 text-[11px] font-medium"
+                          style={{
+                            color: l.action === "Buy" ? UP : DOWN,
+                            background: l.action === "Buy" ? "var(--ais-green-bg)" : "rgba(217,48,37,0.10)",
+                          }}
+                        >
+                          {l.action === "Buy" ? "Al" : "Sat"}
+                        </span>
+                        <span className="font-medium text-[var(--ais-fg)]">
+                          {l.qty}{" "}
+                          {l.type === "Stock"
+                            ? "× 100 hisse"
+                            : `× ${l.type === "Call" ? "Alım" : "Satım"}`}
+                        </span>
+                      </div>
+                      <span className="num text-[var(--ais-fg-muted)]">
+                        {l.strike ? `${fmtUsd(l.strike)} kullanım` : `@ ${fmtUsd(u.price)}`}
                       </span>
                     </div>
-                    <span className="num text-[var(--ais-fg-muted)]">
-                      {l.strike ? `${fmtUsd(l.strike)} kullanım` : `@ ${fmtUsd(u.price)}`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* metrikler */}
-              <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <Metric label="Maks. kâr" value={fmtPL(result.maxProfit)} color={UP} />
-                <Metric label="Maks. zarar" value={fmtPL(result.maxLoss)} color={DOWN} />
-                <Metric
-                  label="Başabaş"
-                  value={result.breakeven.map((b) => fmtUsd(b)).join(" / ")}
-                />
-                <Metric
-                  label={result.netCredit >= 0 ? "Net alacak" : "Net borç"}
-                  value={fmtUsd(Math.abs(result.netCredit) * 100)}
-                  color={result.netCredit >= 0 ? UP : undefined}
-                />
-              </div>
-
-              {/* getiri */}
-              <div className="mb-1 flex items-center justify-between">
-                <p className="text-[12px] text-[var(--ais-fg-faint)]">Vade sonu getirisi</p>
-                <p className="text-[12px] text-[var(--ais-fg-faint)]">Spot {fmtUsd(u.price)}</p>
-              </div>
-              <ChartFrame
-                title="Vade sonu getirisi"
-                render={(big) => (
-                  <div className="w-full" style={{ height: big ? 440 : 200 }}>
-                    <PayoffChart spot={u.price} payoff={result.payoff} />
-                  </div>
-                )}
-              />
-              <div className="num mt-1 flex justify-between text-[11px] text-[var(--ais-fg-faint)]">
-                <span>{fmtUsd(u.price * 0.78)}</span>
-                <span>{fmtUsd(u.price * 0.89)}</span>
-                <span className="text-[var(--ais-fg-muted)]">{fmtUsd(u.price)}</span>
-                <span>{fmtUsd(u.price * 1.11)}</span>
-                <span>{fmtUsd(u.price * 1.22)}</span>
-              </div>
-
-              {confirmed ? (
-                <div
-                  className="mt-6 flex items-center justify-center gap-2 rounded-lg py-3 text-[13px] font-medium"
-                  style={{ background: `${UP}1f`, color: UP }}
-                >
-                  <CheckCircle size={16} weight="regular" /> Strateji açıldı · demo
+                  ))}
                 </div>
-              ) : (
-                <button
-                  onClick={confirmStrategy}
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-lg py-3 text-[13px] font-medium text-[var(--ais-accent)]"
-                  style={{ background: "var(--ais-accent-bg)" }}
-                >
-                  Stratejiyi onayla · Demo işlem
-                </button>
-              )}
-            </Card>
-          </div>
-          </SectionCard>
 
-          {/* açık pozisyonlar — canlı K/Z */}
-          <SectionCard
-            label="Açık pozisyonlar"
-            className="mt-3"
-            desc={`${positions.length} açık`}
-            bodyClassName="p-0"
-          >
-          {positions.length === 0 ? (
-              <EmptyState
-                title="Henüz açık pozisyon yok"
-                desc="Yukarıda bir strateji oluşturup onaylayarak bir tane açın."
-              />
-          ) : (
-              <div className="overflow-x-auto">
+                {/* metrikler — kutusuz ızgara-ayraçlı şerit */}
+                <div
+                  className="mb-5 grid grid-cols-2 gap-px overflow-hidden rounded-lg border sm:grid-cols-4"
+                  style={{ borderColor: "var(--ais-line)", background: "var(--ais-line)" }}
+                >
+                  <Metric label="Maks. kâr" value={fmtPL(result.maxProfit)} color={UP} />
+                  <Metric label="Maks. zarar" value={fmtPL(result.maxLoss)} color={DOWN} />
+                  <Metric
+                    label="Başabaş"
+                    value={result.breakeven.map((b) => fmtUsd(b)).join(" / ")}
+                  />
+                  <Metric
+                    label={result.netCredit >= 0 ? "Net alacak" : "Net borç"}
+                    value={fmtUsd(Math.abs(result.netCredit) * 100)}
+                    color={result.netCredit >= 0 ? UP : undefined}
+                  />
+                </div>
+
+                {/* getiri */}
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="text-[12px] text-[var(--ais-fg-faint)]">Vade sonu getirisi</p>
+                  <p className="text-[12px] text-[var(--ais-fg-faint)]">Spot {fmtUsd(u.price)}</p>
+                </div>
+                <ChartFrame
+                  title="Vade sonu getirisi"
+                  light
+                  render={(big) => (
+                    <div className="w-full" style={{ height: big ? 440 : 200 }}>
+                      <PayoffChart spot={u.price} payoff={result.payoff} />
+                    </div>
+                  )}
+                />
+                <div className="num mt-1 flex justify-between text-[11px] text-[var(--ais-fg-faint)]">
+                  <span>{fmtUsd(u.price * 0.78)}</span>
+                  <span>{fmtUsd(u.price * 0.89)}</span>
+                  <span className="text-[var(--ais-fg-muted)]">{fmtUsd(u.price)}</span>
+                  <span>{fmtUsd(u.price * 1.11)}</span>
+                  <span>{fmtUsd(u.price * 1.22)}</span>
+                </div>
+
+                {confirmed ? (
+                  <div
+                    className="mt-6 flex items-center justify-center gap-2 rounded-lg py-3 text-[13px] font-medium"
+                    style={{ background: "var(--ais-green-bg)", color: UP }}
+                  >
+                    <CheckCircle2 size={16} /> Strateji açıldı · demo
+                  </div>
+                ) : (
+                  <button
+                    onClick={confirmStrategy}
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-lg py-3 text-[13px] font-medium text-[var(--ais-accent)] transition hover:brightness-105"
+                    style={{ background: "var(--ais-accent-bg)" }}
+                  >
+                    Stratejiyi onayla · Demo işlem
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* ───────── Açık pozisyonlar — canlı K/Z ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <h2 className="d-section">Açık pozisyonlar</h2>
+              <span className="text-[12px] text-[var(--ais-fg-faint)]">{positions.length} açık</span>
+            </div>
+
+            {positions.length === 0 ? (
+              <div
+                className="rounded-xl border border-dashed px-6 py-14 text-center"
+                style={{ borderColor: "var(--ais-line-strong)" }}
+              >
+                <p className="text-[14px] font-medium text-[var(--ais-fg)]">Henüz açık pozisyon yok</p>
+                <p className="mx-auto mt-1 max-w-sm text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Yukarıda bir strateji oluşturup onaylayarak bir tane açın.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
                 <table className="ais-dt num min-w-[680px]">
                   <thead>
                     <tr>
-                      <th>Pozisyon</th>
-                      <th className="!text-right">Kullanım</th>
-                      <th className="!text-right">Kontrat</th>
-                      <th className="!text-right">Giriş</th>
-                      <th className="!text-right">Güncel</th>
+                      <th>POZİSYON</th>
+                      <th className="!text-right">KULLANIM</th>
+                      <th className="!text-right">KONTRAT</th>
+                      <th className="!text-right">GİRİŞ</th>
+                      <th className="!text-right">GÜNCEL</th>
                       <th className="!text-right">K/Z</th>
                       <th className="!text-right"></th>
                     </tr>
@@ -735,7 +813,7 @@ export default function OptionsPage() {
                               className="mr-2 rounded-md px-2 py-0.5 text-[11px] font-medium"
                               style={{
                                 color: p.side === "long" ? UP : DOWN,
-                                background: `${p.side === "long" ? UP : DOWN}1f`,
+                                background: p.side === "long" ? "var(--ais-green-bg)" : "rgba(217,48,37,0.10)",
                               }}
                             >
                               {p.side === "long" ? "Uzun" : "Kısa"}
@@ -756,9 +834,10 @@ export default function OptionsPage() {
                           <td className="!text-right">
                             <button
                               onClick={() => optionsStore.closePosition(p.id, markPrice)}
-                              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ais-line-strong)] px-3 py-1 text-[12px] text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)]"
+                              className="inline-flex items-center gap-1 rounded-lg border px-3 py-1 text-[12px] text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)]"
+                              style={{ borderColor: "var(--ais-line-strong)" }}
                             >
-                              <X size={11} weight="regular" /> Kapat
+                              <X size={11} /> Kapat
                             </button>
                           </td>
                         </tr>
@@ -767,10 +846,22 @@ export default function OptionsPage() {
                   </tbody>
                 </table>
               </div>
-          )}
-          </SectionCard>
+            )}
+          </section>
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Strateji metrik hücresi (kutusuz ızgara şeridi — Didit) ── */
+function Metric({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div className="bg-[var(--ais-surface)] px-4 py-3">
+      <p className="text-[11px] text-[var(--ais-fg-faint)]">{label}</p>
+      <p className="num mt-1 text-[15px] font-medium tracking-tight" style={{ color: color ?? "var(--ais-fg)" }}>
+        {value}
+      </p>
+    </div>
   );
 }

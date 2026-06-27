@@ -1,39 +1,46 @@
 "use client";
 
-import { useState, useEffect } from "react";
+/**
+ * Finovela Brain — otonom yönetici kontrol paneli (Blok 3).
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-b ayraçlı
+ * bölümler, sol-açıklama / sağ-kontrol satır deseni, ais-dt dense tablo.
+ * Kabuk komple Didit Settings sayfası (Account/Team/Security) deseninden alınmıştır.
+ */
+
+import { useState } from "react";
 import Link from "next/link";
 import { Topbar } from "@/components/dashboard/topbar";
 import { useConfirm } from "@/components/dashboard/confirm";
 import { AnimatedNumber } from "@/components/dashboard/animated-number";
-import { SectionCard } from "@/components/dashboard/ais-kit";
 import {
   useBrain,
   AUTHORITY_LABELS,
   type Authority,
 } from "@/lib/dashboard/use-brain";
 import { useDecisions, type Decision } from "@/lib/dashboard/use-decisions";
+// Didit ince-çizgi (1.5 stroke, 24 viewBox) ikon dili → Lucide.
 import {
-  Lightning,
+  Zap,
   ShieldCheck,
-  ChatCircleDots,
+  MessageCircle,
   Power,
   Target,
-  TrendUp,
-  ArrowsClockwise,
-  BellSimple,
-  Sparkle,
-  Prohibit,
-  CaretRight,
-  WarningCircle,
-} from "@phosphor-icons/react";
+  TrendingUp,
+  RefreshCw,
+  Bell,
+  Sparkles,
+  Ban,
+  ChevronRight,
+  Check,
+  Trash2,
+} from "lucide-react";
 
-// Tema değişkeninden — açık/koyu temada doğru kontrast (sabit açık mavi değil).
 const ACCENT = "var(--ais-accent)";
 
-const AUTH_META: Record<Authority, { icon: typeof Lightning }> = {
-  full: { icon: Lightning },
+const AUTH_META: Record<Authority, { icon: typeof Zap }> = {
+  full: { icon: Zap },
   semi: { icon: ShieldCheck },
-  advisory: { icon: ChatCircleDots },
+  advisory: { icon: MessageCircle },
 };
 
 export default function BrainPage() {
@@ -50,11 +57,9 @@ export default function BrainPage() {
   const executedToday = decisions.filter((d) => d.ts >= startOfDay && d.executed).length;
 
   async function onSelectAuthority(a: Authority) {
-    // Aynı seçili ise işlem yok.
     if (settings.authority === a) return;
 
     if (a === "full") {
-      // Tam yetki — para kaybı riski olan otonom işlem. Net onay iste.
       const ok = await confirm({
         title: "Tam yetki — risk uyarısı",
         message:
@@ -65,7 +70,6 @@ export default function BrainPage() {
       });
       if (!ok) return;
     } else if (a === "semi") {
-      // Yarım yetki — daha hafif bilgi.
       const ok = await confirm({
         title: "Yarım yetki",
         message:
@@ -76,8 +80,6 @@ export default function BrainPage() {
       });
       if (!ok) return;
     }
-    // "advisory" için uyarı yok.
-
     setAuthority(a);
   }
 
@@ -104,194 +106,247 @@ export default function BrainPage() {
         ? "Onaylı modda çalışıyor"
         : "Tam otonom çalışıyor";
 
+  const live = !settings.killSwitch;
+
   return (
     <>
       <Topbar title="Finovela Brain" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
-          <h1 className="text-[22px] font-normal tracking-tight text-[var(--ais-fg)]">Finovela Brain</h1>
-          <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-[var(--ais-fg-muted)]">
-            Hedeflerine göre sürekli çalışır, sen sınırları belirlersin; her kararı aşağıdaki defterde
-            gerekçesiyle kayıtlı.
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <h1 className="d-title">Finovela Brain</h1>
+                <StatusChip live={live} text={statusText} />
+              </div>
+              <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+                Hedeflerine göre sürekli çalışır, sınırları sen belirlersin. Aldığı her karar
+                aşağıdaki defterde gerekçesiyle kayıtlı.
+              </p>
+            </div>
+          </div>
 
-          {/* Dürüst kapsam: motor canlı fiyatla çalışır ve simülasyon hesabında işlem yapar.
-              Bağlı gerçek borsada otonom işlem ayrı bir adım (Bağlantılar + tam yetki). */}
+          {/* ───────── Dürüst kapsam notu (Didit "You're connected" yeşil bandı) ───────── */}
           <div
-            className="mt-5 flex items-start gap-2.5 rounded-xl border p-3.5"
-            style={{ borderColor: "var(--ais-line-strong)", background: "var(--ais-surface)" }}
+            className="mt-6 flex items-start gap-2.5 rounded-xl px-4 py-3"
+            style={{ background: "var(--ais-green-bg)" }}
           >
-            <ShieldCheck size={17} weight="fill" className="mt-px shrink-0" style={{ color: ACCENT }} />
-            <p className="text-[12.5px] leading-relaxed text-[var(--ais-fg-muted)]">
-              Brain motoru <span className="text-[var(--ais-fg)]">canlı piyasa fiyatıyla</span> sürekli çalışır;
-              kuralların ve limitlerin tetiklendiğinde <span className="text-[var(--ais-fg)]">simülasyon (paper) hesabında</span>{" "}
-              gerçek işlem yürütür ve her adımı bu deftere yazar. Bağlı borsanda gerçek-para otonom işlem için{" "}
-              <Link href="/dashboard/connections" className="underline hover:text-[var(--ais-fg)]">
+            <ShieldCheck size={16} className="mt-px shrink-0" style={{ color: "var(--ais-green)" }} />
+            <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--ais-fg-muted)" }}>
+              Brain motoru <span className="text-[var(--ais-fg)]">canlı piyasa fiyatıyla</span> sürekli
+              çalışır; kuralların tetiklendiğinde <span className="text-[var(--ais-fg)]">simülasyon (paper)
+              hesabında</span> gerçek işlem yürütür ve her adımı bu deftere yazar. Bağlı borsanda
+              gerçek-para otonom işlem için{" "}
+              <Link href="/dashboard/connections" className="font-medium underline" style={{ color: ACCENT }}>
                 hesabını bağlaman
               </Link>{" "}
               ve tam yetkiyi açman gerekir.
             </p>
           </div>
 
-          {/* Kill switch uyarısı */}
+          {/* ───────── Kill switch aktif uyarısı ───────── */}
           {settings.killSwitch && (
-            <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#f28b82]/25 bg-[#f28b82]/[0.08] px-4 py-3">
-              <Power size={18} weight="bold" className="shrink-0 text-[#f28b82]" />
+            <div
+              className="mt-4 flex items-center gap-3 rounded-xl px-4 py-3"
+              style={{ background: "rgba(229,57,53,0.08)" }}
+            >
+              <Power size={17} className="shrink-0" style={{ color: "#d93025" }} />
               <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-medium text-[#f28b82]">Acil durdurma aktif</div>
-                <div className="text-[12.5px] text-[var(--ais-fg-muted)]">
+                <div className="text-[13px] font-medium" style={{ color: "#d93025" }}>
+                  Acil durdurma aktif
+                </div>
+                <div className="text-[12.5px]" style={{ color: "var(--ais-fg-muted)" }}>
                   Tüm otonom işlemler durduruldu. Finovela sadece danışmanlık yapıyor.
                 </div>
               </div>
               <button
                 onClick={onToggleKill}
-                className="shrink-0 text-[12.5px] font-medium text-[#f28b82] hover:underline"
+                className="shrink-0 text-[12.5px] font-medium hover:underline"
+                style={{ color: "#d93025" }}
               >
                 Devam ettir
               </button>
             </div>
           )}
 
-          {/* ───────── Genel bakış (KPI) ───────── */}
-          <SectionCard label="Genel bakış" className="mt-10" bodyClassName="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Metric label="Durum" value={statusText} accent={!settings.killSwitch} />
-            <Metric label="Bugün uygulanan" animate={executedToday} format={(n) => `${Math.round(n)}`} sub="otonom işlem" />
-            <Metric label="Günlük limit" animate={settings.maxDailyTrades} format={(n) => `${Math.round(n)}`} sub="işlem / gün" />
-            <Metric label="Tek işlem tavanı" animate={settings.maxTradePct} format={(n) => `%${Math.round(n)}`} sub="portföyün" />
-          </SectionCard>
-
-          {/* ───────── Yetki seviyesi ───────── */}
-          <SectionCard
-            label="Yetki seviyesi"
-            desc="Finovela'nın ne kadar bağımsız hareket edeceğini sen belirlersin."
-            className="mt-3"
-            bodyClassName="grid gap-3 sm:grid-cols-3"
+          {/* ───────── Genel bakış — Didit "Usage" üst metrik şeridi (kutusuz, dikey ayraçlı) ───────── */}
+          <div className="mt-9 grid grid-cols-2 gap-px overflow-hidden rounded-xl border lg:grid-cols-4"
+            style={{ borderColor: "var(--ais-line)", background: "var(--ais-line)" }}
           >
-            {(["full", "semi", "advisory"] as const).map((a) => {
-              const Icon = AUTH_META[a].icon;
-              const on = settings.authority === a && !settings.killSwitch;
-              return (
-                <button
-                  key={a}
-                  onClick={() => onSelectAuthority(a)}
-                  disabled={settings.killSwitch}
-                  className={`ais-card ais-card-hover relative p-5 text-left disabled:opacity-40 ${
-                    on ? "!border-[var(--ais-accent)]/50" : ""
-                  }`}
-                >
-                  <span
-                    className={`grid h-9 w-9 place-items-center rounded-lg ${
-                      on ? "text-[var(--ais-accent)]" : "text-[var(--ais-fg-muted)]"
-                    }`}
-                    style={{ background: on ? "var(--ais-accent-bg)" : "var(--ais-surface-2)" }}
+            <Stat label="Durum" value={statusText} accent={live} />
+            <Stat label="Bugün uygulanan" animate={executedToday} format={(n) => `${Math.round(n)}`} sub="otonom işlem" />
+            <Stat label="Günlük limit" animate={settings.maxDailyTrades} format={(n) => `${Math.round(n)}`} sub="işlem / gün" />
+            <Stat label="Tek işlem tavanı" animate={settings.maxTradePct} format={(n) => `%${Math.round(n)}`} sub="portföyün" />
+          </div>
+
+          {/* ───────── Yetki seviyesi (Didit Settings satır deseni: sol açıklama / sağ kontrol) ───────── */}
+          <SettingsBlock
+            title="Yetki seviyesi"
+            desc="Finovela'nın ne kadar bağımsız hareket edeceğini belirler. İstediğin an değiştirebilirsin."
+          >
+            <div className="grid gap-2.5 sm:grid-cols-3">
+              {(["full", "semi", "advisory"] as const).map((a) => {
+                const Icon = AUTH_META[a].icon;
+                const on = settings.authority === a && live;
+                return (
+                  <button
+                    key={a}
+                    onClick={() => onSelectAuthority(a)}
+                    disabled={settings.killSwitch}
+                    className="relative rounded-xl border p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{
+                      borderColor: on ? ACCENT : "var(--ais-line)",
+                      background: on ? "var(--ais-accent-bg)" : "var(--ais-surface)",
+                      boxShadow: on ? "0 0 0 1px var(--ais-accent)" : "none",
+                    }}
                   >
-                    <Icon size={18} weight="regular" />
-                  </span>
-                  <p className="mt-3 text-[14px] font-medium text-[var(--ais-fg)]">{AUTHORITY_LABELS[a].title}</p>
-                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-[var(--ais-fg-muted)]">
-                    {AUTHORITY_LABELS[a].desc}
-                  </p>
-                  {on && (
-                    <span className="absolute right-4 top-4 h-2 w-2 rounded-full" style={{ background: ACCENT }} />
-                  )}
-                </button>
-              );
-            })}
-          </SectionCard>
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="grid h-8 w-8 place-items-center rounded-lg"
+                        style={{
+                          background: on ? "rgba(37,103,255,0.14)" : "var(--ais-surface-2)",
+                          color: on ? ACCENT : "var(--ais-fg-muted)",
+                        }}
+                      >
+                        <Icon size={16} />
+                      </span>
+                      {on && (
+                        <span
+                          className="grid h-5 w-5 place-items-center rounded-full"
+                          style={{ background: ACCENT, color: "#fff" }}
+                        >
+                          <Check size={12} strokeWidth={2.5} />
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-3 text-[13.5px] font-medium text-[var(--ais-fg)]">
+                      {AUTHORITY_LABELS[a].title}
+                    </p>
+                    <p className="mt-1 text-[12px] leading-relaxed text-[var(--ais-fg-muted)]">
+                      {AUTHORITY_LABELS[a].desc}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </SettingsBlock>
 
           {/* ───────── Güven bütçesi ───────── */}
-          <SectionCard
-            label="Güven bütçesi"
-            desc="Tam/yarım yetkide Finovela bu sınırları asla aşmaz."
-            className="mt-3"
+          <SettingsBlock
+            title="Güven bütçesi"
+            desc="Tam ve yarım yetkide Finovela bu sınırları asla aşmaz — seni korumak içindir."
           >
-            <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-[#fdd663]/20 bg-[#fdd663]/[0.06] px-4 py-3">
-              <WarningCircle size={16} weight="regular" className="mt-px shrink-0 text-[#fdd663]" />
-              <p className="text-[12.5px] leading-relaxed text-[var(--ais-fg-muted)]">
-                Yatırım risk içerir; para kaybı yaşanabilir. Bu sınırlar seni korumak içindir —
-                Finovela onları asla aşmaz.
-              </p>
-            </div>
-            <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
               <NumberField label="Tek işlemde portföyün en fazla" value={settings.maxTradePct} min={1} max={50} suffix="%" hint="1–50 arası" onChange={(v) => update({ maxTradePct: v })} />
               <NumberField label="Günlük en fazla otonom işlem" value={settings.maxDailyTrades} min={1} max={30} suffix="işlem" hint="1–30 arası" onChange={(v) => update({ maxDailyTrades: v })} />
               <NumberField label="Tek varlık ağırlığı en fazla" value={settings.maxPositionPct} min={5} max={100} suffix="%" hint="5–100 arası" onChange={(v) => update({ maxPositionPct: v })} />
               <NumberField label="Bu tutar üstü işlemde PIN iste" value={settings.requirePinOver} min={0} max={1000000} prefix="$" hint="Üstünde PIN sorulur" onChange={(v) => update({ requirePinOver: v })} />
             </div>
-          </SectionCard>
+          </SettingsBlock>
 
-          {/* ───────── Karar Defteri ───────── */}
-          <SectionCard
-            label="Karar Defteri"
-            desc="Finovela'nın yaptığı ve önerdiği her aksiyon — gerekçesiyle."
-            className="mt-3"
-            bodyClassName="p-0"
+          {/* ───────── Karar Defteri (Didit ais-dt tablo + empty state) ───────── */}
+          <SettingsBlock
+            title="Karar Defteri"
+            desc="Finovela'nın yaptığı ve önerdiği her aksiyon — gerekçesiyle, denetlenebilir."
             action={
               decisions.length > 0 ? (
-                <button onClick={clear} className="text-[12.5px] text-[var(--ais-fg-faint)] hover:text-[var(--ais-fg)]">
-                  Temizle
+                <button
+                  onClick={clear}
+                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] font-medium text-[var(--ais-fg-muted)] transition hover:border-[#d93025]/30 hover:bg-[rgba(217,48,37,0.08)] hover:text-[#d93025]"
+                  style={{ borderColor: "var(--ais-line-strong)" }}
+                >
+                  <Trash2 size={14} /> Temizle
                 </button>
               ) : undefined
             }
           >
             {decisions.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-                <Sparkle size={22} className="text-[var(--ais-fg-faint)]" />
-                <p className="max-w-sm text-[13px] text-[var(--ais-fg-muted)]">
-                  Henüz kayıt yok. Finovela bir işlem yaptığında veya önerdiğinde burada görünür.
+              <div
+                className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-16 text-center"
+                style={{ borderColor: "var(--ais-line-strong)" }}
+              >
+                <Sparkles size={22} style={{ color: "var(--ais-fg-faint)" }} />
+                <p className="text-[14px] font-medium text-[var(--ais-fg)]">Henüz kayıt yok</p>
+                <p className="max-w-sm text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Finovela bir işlem yaptığında veya önerdiğinde, gerekçesiyle birlikte burada görünür.
                 </p>
                 <Link
                   href="/dashboard/chat"
-                  className="mt-1 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-medium"
-                  style={{ background: "var(--ais-accent-bg)", color: ACCENT }}
+                  className="pill-primary mt-2"
                 >
-                  <ChatCircleDots size={14} weight="regular" /> Finovela ile başla
+                  <MessageCircle size={15} /> Finovela ile başla
                 </Link>
               </div>
             ) : (
-              <div className="p-2">
-                {decisions.map((d) => (
-                  <DecisionRow key={d.id} d={d} />
-                ))}
+              <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
+                <table className="ais-dt">
+                  <thead>
+                    <tr>
+                      <th>AKSİYON</th>
+                      <th>GEREKÇE</th>
+                      <th className="w-28 !text-right">DURUM</th>
+                      <th className="w-32 !text-right">ZAMAN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {decisions.map((d) => (
+                      <DecisionRow key={d.id} d={d} />
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
-          </SectionCard>
+          </SettingsBlock>
 
-          {/* ───────── Alt eylemler ───────── */}
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {!settings.killSwitch && (
-              <div className="ais-card flex items-center justify-between gap-3 p-5">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#f28b82]/12 text-[#f28b82]">
-                    <Power size={18} weight="regular" />
-                  </span>
-                  <div>
-                    <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">Acil durdurma</p>
-                    <p className="text-[12px] text-[var(--ais-fg-muted)]">Tüm otonom işlemleri durdur.</p>
-                  </div>
-                </div>
-                <button
-                  onClick={onToggleKill}
-                  className="shrink-0 rounded-lg border border-[#f28b82]/30 px-3 py-1.5 text-[12.5px] font-medium text-[#f28b82] transition hover:bg-[#f28b82]/10"
-                >
-                  Durdur
-                </button>
-              </div>
-            )}
-
-            <Link href="/dashboard/goals" className="ais-card ais-card-hover flex items-center justify-between gap-3 p-5">
+          {/* ───────── Alt eylemler (Didit "Need a custom..." soft footer satırı) ───────── */}
+          <div className="mt-8 grid gap-2.5 sm:grid-cols-2">
+            <Link
+              href="/dashboard/goals"
+              className="flex items-center justify-between gap-3 rounded-xl border p-4 transition hover:bg-[var(--ais-surface-2)]"
+              style={{ borderColor: "var(--ais-line)" }}
+            >
               <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-lg text-[var(--ais-accent)]" style={{ background: "var(--ais-accent-bg)" }}>
-                  <Target size={18} weight="regular" />
+                <span
+                  className="grid h-9 w-9 place-items-center rounded-lg"
+                  style={{ background: "var(--ais-accent-bg)", color: ACCENT }}
+                >
+                  <Target size={17} />
                 </span>
                 <div>
                   <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">Hedeflerin pusula</p>
                   <p className="text-[12px] text-[var(--ais-fg-muted)]">Finovela ana hedefine göre karar verir.</p>
                 </div>
               </div>
-              <CaretRight size={14} className="shrink-0 text-[var(--ais-fg-faint)]" />
+              <ChevronRight size={15} className="shrink-0" style={{ color: "var(--ais-fg-faint)" }} />
             </Link>
+
+            {live && (
+              <div
+                className="flex items-center justify-between gap-3 rounded-xl border p-4"
+                style={{ borderColor: "var(--ais-line)" }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="grid h-9 w-9 place-items-center rounded-lg"
+                    style={{ background: "rgba(229,57,53,0.10)", color: "#d93025" }}
+                  >
+                    <Power size={17} />
+                  </span>
+                  <div>
+                    <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">Acil durdurma</p>
+                    <p className="text-[12px] text-[var(--ais-fg-muted)]">Tüm otonom işlemleri anında durdur.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={onToggleKill}
+                  className="shrink-0 rounded-full border px-4 py-1.5 text-[12.5px] font-medium transition"
+                  style={{ borderColor: "rgba(229,57,53,0.30)", color: "#d93025" }}
+                >
+                  Durdur
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -299,31 +354,23 @@ export default function BrainPage() {
   );
 }
 
-/* ── Bölüm başlığı (AI Studio "Overview" stili) ── */
-function Section({
-  label,
-  desc,
-  action,
-  className = "",
-}: {
-  label: string;
-  desc?: string;
-  action?: React.ReactNode;
-  className?: string;
-}) {
+/* ── Başlık durum chip'i (Didit "Active" yeşil pill) ── */
+function StatusChip({ live, text }: { live: boolean; text: string }) {
+  const color = live ? "var(--ais-green)" : "#d93025";
+  const bg = live ? "var(--ais-green-bg)" : "rgba(229,57,53,0.10)";
   return (
-    <div className={`mb-4 flex items-end justify-between gap-3 ${className}`}>
-      <div>
-        <h2 className="text-[15px] font-medium text-[var(--ais-fg)]">{label}</h2>
-        {desc && <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">{desc}</p>}
-      </div>
-      {action}
-    </div>
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-medium"
+      style={{ background: bg, color }}
+    >
+      <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+      {text}
+    </span>
   );
 }
 
-/* ── KPI metriği (borderless-ish mat kart) ── */
-function Metric({
+/* ── Üst metrik (kutusuz, ızgara ayraçlı — Didit Usage şeridi) ── */
+function Stat({
   label,
   value,
   sub,
@@ -335,68 +382,95 @@ function Metric({
   value?: string;
   sub?: string;
   accent?: boolean;
-  /** Sayısal değer verilirse count-up animasyonu uygulanır. */
   animate?: number;
   format?: (n: number) => string;
 }) {
   return (
-    <div className="ais-card p-4">
-      <p className="text-[12px] text-[var(--ais-fg-faint)]">{label}</p>
+    <div className="bg-[var(--ais-surface)] px-5 py-4">
+      <p className="text-[11.5px] text-[var(--ais-fg-faint)]">{label}</p>
       <p
-        className="num mt-2 text-[20px] font-normal tracking-tight"
-        style={{ color: accent ? ACCENT : "var(--ais-fg)" }}
+        className="num mt-2 text-[19px] font-medium tracking-tight"
+        style={{ color: accent ? "var(--ais-green)" : "var(--ais-fg)" }}
       >
-        {typeof animate === "number" ? (
-          <AnimatedNumber value={animate} format={format} />
-        ) : (
-          value
-        )}
+        {typeof animate === "number" ? <AnimatedNumber value={animate} format={format} /> : value}
       </p>
-      {sub && <p className="mt-1 text-[12px] text-[var(--ais-fg-muted)]">{sub}</p>}
+      {sub && <p className="mt-0.5 text-[11.5px] text-[var(--ais-fg-muted)]">{sub}</p>}
     </div>
   );
 }
 
-const KIND_META: Record<Decision["kind"], { icon: typeof TrendUp; color: string }> = {
-  trade: { icon: TrendUp, color: "#81c995" },
-  rebalance: { icon: ArrowsClockwise, color: ACCENT },
-  alert: { icon: BellSimple, color: "#fdd663" },
-  insight: { icon: Sparkle, color: ACCENT },
-  blocked: { icon: Prohibit, color: "#f28b82" },
+/* ── Ayar bloğu — Didit Settings deseni: üst border ayraç + sol başlık/açıklama + içerik ── */
+function SettingsBlock({
+  title,
+  desc,
+  action,
+  children,
+}: {
+  title: string;
+  desc?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="d-section">{title}</h2>
+          {desc && <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--ais-fg-muted)]">{desc}</p>}
+        </div>
+        {action && <div className="shrink-0">{action}</div>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+const KIND_META: Record<Decision["kind"], { icon: typeof TrendingUp; color: string; label: string }> = {
+  trade: { icon: TrendingUp, color: "var(--ais-green)", label: "İşlem" },
+  rebalance: { icon: RefreshCw, color: ACCENT, label: "Dengeleme" },
+  alert: { icon: Bell, color: "var(--ais-amber)", label: "Uyarı" },
+  insight: { icon: Sparkles, color: ACCENT, label: "İçgörü" },
+  blocked: { icon: Ban, color: "#d93025", label: "Engellendi" },
 };
 
 function DecisionRow({ d }: { d: Decision }) {
   const meta = KIND_META[d.kind] ?? KIND_META.insight;
   const Icon = meta.icon;
   return (
-    <div className="ais-row flex gap-3 px-3 py-3">
-      <span
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
-        style={{ background: `${meta.color}1f`, color: meta.color }}
-      >
-        <Icon size={15} weight="regular" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate text-[13px] font-medium text-[var(--ais-fg)]">{d.action}</p>
-          {!d.executed && (
-            <span className="rounded-full border border-[var(--ais-line-strong)] px-2 py-0.5 text-[10.5px] text-[var(--ais-fg-muted)]">
-              Öneri
-            </span>
-          )}
+    <tr>
+      <td>
+        <div className="flex items-center gap-2.5">
+          <span
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-lg"
+            style={{ background: "color-mix(in srgb, currentColor 12%, transparent)", color: meta.color }}
+          >
+            <Icon size={14} />
+          </span>
+          <span className="font-medium text-[var(--ais-fg)]">{d.action}</span>
         </div>
-        <p className="mt-0.5 text-[12.5px] leading-relaxed text-[var(--ais-fg-muted)]">{d.rationale}</p>
-        <p className="num mt-1 text-[11px] text-[var(--ais-fg-faint)]">
+      </td>
+      <td>
+        <span className="text-[var(--ais-fg-muted)]">{d.rationale}</span>
+      </td>
+      <td className="w-28 !text-right">
+        {d.executed ? (
+          <span className="badge-soft badge-green">Uygulandı</span>
+        ) : (
+          <span className="badge-soft" style={{ background: "var(--ais-soft)", color: "var(--ais-fg-muted)" }}>
+            Öneri
+          </span>
+        )}
+      </td>
+      <td className="w-32 !text-right">
+        <span className="num whitespace-nowrap text-[12px] text-[var(--ais-fg-faint)]">
           {new Date(d.ts).toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-          {d.authority ? ` · ${d.authority}` : ""}
-        </p>
-      </div>
-    </div>
+        </span>
+      </td>
+    </tr>
   );
 }
 
-/* Elle yazılabilir sayı alanı — slider yerine. Yazarken serbest, odak çıkınca
-   min/max aralığına sıkıştırır (kullanıcı geçersiz değer kaydedemez). */
+/* ── Elle yazılabilir sayı alanı (Didit input — odakta mavi çerçeve) ── */
 function NumberField({
   label,
   value,
@@ -417,11 +491,14 @@ function NumberField({
   onChange: (v: number) => void;
 }) {
   // Yerel taslak: kullanıcı silip baştan yazabilsin diye string tutulur.
+  // Dışarıdan değer değişirse (örn. risk profili) render sırasında senkronla —
+  // useEffect+setState cascading-render önerisinden kaçınmak için kontrollü desen.
   const [draft, setDraft] = useState<string>(String(value));
-  // Dışarıdan değer değişirse (örn. risk profili) taslağı senkronla.
-  useEffect(() => {
+  const [lastValue, setLastValue] = useState(value);
+  if (value !== lastValue) {
+    setLastValue(value);
     setDraft(String(value));
-  }, [value]);
+  }
 
   function commit(raw: string) {
     const n = Number(raw.replace(/[^0-9.]/g, ""));
@@ -437,7 +514,10 @@ function NumberField({
   return (
     <div>
       <label className="mb-2 block text-[13px] text-[var(--ais-fg-muted)]">{label}</label>
-      <div className="flex items-center gap-2 rounded-xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] px-3.5 transition focus-within:border-[var(--ais-accent)] focus-within:ring-2 focus-within:ring-[var(--ais-accent)]/15">
+      <div
+        className="flex items-center gap-2 rounded-xl border px-3.5 transition focus-within:border-[var(--ais-accent)] focus-within:ring-2 focus-within:ring-[var(--ais-accent)]/15"
+        style={{ borderColor: "var(--ais-line-strong)", background: "var(--ais-surface)" }}
+      >
         {prefix && <span className="text-[14px] text-[var(--ais-fg-faint)]">{prefix}</span>}
         <input
           type="text"

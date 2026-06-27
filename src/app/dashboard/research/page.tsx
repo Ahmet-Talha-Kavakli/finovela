@@ -1,9 +1,14 @@
 "use client";
 
+/**
+ * Finovela Araştırma — AI araştırma promtu + haber/sentiment + bilanço + analist + radar.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, ince-kenarlı satırlar, token renkleri. Beyaz-sabit renk YOK.
+ */
+
 import { useCallback, useRef, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { Delta, TickerBadge } from "@/components/dashboard/ui";
-import { PageTitle, SectionCard, AIS_UP, AIS_DOWN } from "@/components/dashboard/ais-kit";
 import { Markdown } from "@/components/dashboard/markdown";
 import { EARNINGS } from "@/lib/dashboard/data";
 import { usePaper } from "@/lib/dashboard/use-portfolio";
@@ -14,14 +19,11 @@ import {
   newsSentiment,
   type SentimentLabel,
 } from "@/lib/dashboard/sentiment";
-import {
-  Sparkle,
-  Newspaper,
-  Star,
-  Pulse,
-  CalendarBlank,
-  ArrowUp,
-} from "@phosphor-icons/react";
+import { Sparkles, Newspaper, Star, Activity, Calendar, ArrowUp } from "lucide-react";
+
+// Didit açık-tema renkleri — beyaz zeminde okunur.
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
 
 // title: ekranda gösterilen TR başlık. enTitle: sentiment hesaplaması için
 // orijinal İngilizce metin (newsSentiment İngilizce anahtar kelimelere bakıyor).
@@ -38,12 +40,12 @@ const ANALYST_SYMBOLS = ["NVDA", "AAPL", "TSLA", "MSFT"];
 // Sentiment paneli için varsayılan semboller — portföy boşsa bunlara düşülür.
 const SENTIMENT_FALLBACK = ["NVDA", "AAPL", "TSLA", "META", "AMD"];
 
-const sentColor = { positive: AIS_UP, negative: AIS_DOWN, neutral: "var(--ais-fg-muted)" } as const;
+const sentColor = { positive: UP, negative: DOWN, neutral: "var(--ais-fg-muted)" } as const;
 // Haber sentiment etiketinin TR gösterimi (mantık değeri değişmiyor).
 const sentLabelTr = { positive: "Olumlu", negative: "Olumsuz", neutral: "Nötr" } as const;
 const labelColor: Record<SentimentLabel, string> = {
-  Bullish: AIS_UP,
-  Bearish: AIS_DOWN,
+  Bullish: UP,
+  Bearish: DOWN,
   Neutral: "var(--ais-fg-muted)",
 };
 // Sentiment etiketinin TR gösterimi (logic değeri korunur).
@@ -180,18 +182,24 @@ export default function ResearchPage() {
   return (
     <>
       <Topbar title="Araştırma" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Araştırma"
-            desc="Finovela'ya bir hisse veya tema sor; haberleri, bilançoları, analist konsensüsünü ve duyarlılığı tek yerde gör."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Araştırma</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              Finovela&apos;ya bir hisse veya tema sor; haberleri, bilançoları, analist konsensüsünü
+              ve duyarlılığı tek yerde gör.
+            </p>
+          </div>
 
-          {/* AI araştırma promtu — gerçek /api/chat akışına bağlı */}
-          <SectionCard
-            label="Finovela araştırmaya sor"
-            action={<Sparkle size={17} weight="regular" className="text-[var(--ais-accent)]" />}
-          >
+          {/* ───────── AI araştırma promtu — gerçek /api/chat akışına bağlı ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5 flex items-center gap-2">
+              <h2 className="d-section">Finovela araştırmaya sor</h2>
+              <Sparkles size={16} className="text-[var(--ais-accent)]" />
+            </div>
+
             <div className="flex items-center gap-2">
               <input
                 value={query}
@@ -208,7 +216,7 @@ export default function ResearchPage() {
                 className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-4 text-[13px] font-medium text-[var(--ais-accent)] transition disabled:opacity-40"
                 style={{ background: "var(--ais-accent-bg)" }}
               >
-                <ArrowUp size={15} weight="regular" />
+                <ArrowUp size={15} />
                 {busy ? "Düşünüyor…" : "Sor"}
               </button>
             </div>
@@ -218,7 +226,8 @@ export default function ResearchPage() {
                   key={q}
                   onClick={() => ask(q)}
                   disabled={busy}
-                  className="rounded-lg border border-[var(--ais-line-strong)] px-3 py-1 text-[12px] text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)] disabled:opacity-40"
+                  className="rounded-lg border px-3 py-1 text-[12px] text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)] disabled:opacity-40"
+                  style={{ borderColor: "var(--ais-line-strong)" }}
                 >
                   {q}
                 </button>
@@ -226,9 +235,9 @@ export default function ResearchPage() {
             </div>
 
             {asked && (
-              <div className="mt-4 rounded-lg border border-[var(--ais-line)] p-4">
+              <div className="mt-4 rounded-xl border p-4" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
                 {answer ? (
-                  <Markdown text={answer} />
+                  <Markdown text={answer} tone="light" />
                 ) : (
                   <span className="inline-flex gap-1">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--ais-fg-muted)]" />
@@ -238,142 +247,166 @@ export default function ResearchPage() {
                 )}
               </div>
             )}
-          </SectionCard>
+          </section>
 
-          <div className="mt-3 grid gap-3 lg:grid-cols-3">
-            {/* haber + sentiment */}
-            <SectionCard
-              label="Haberler ve duyarlılık"
-              className="lg:col-span-2"
-              action={<Newspaper size={16} weight="regular" className="text-[var(--ais-fg-faint)]" />}
-            >
-              <div className="space-y-1">
-                {NEWS.map((n) => {
-                  const sent = newsSentiment(n.enTitle);
-                  return (
-                    <div key={n.title} className="ais-row flex items-start gap-3 px-2 py-3">
-                      <TickerBadge symbol={n.sym} size={32} />
-                      <div className="flex-1">
-                        <p className="text-[13px] font-medium text-[var(--ais-fg)]">{n.title}</p>
-                        <div className="mt-1 flex items-center gap-2 text-[12px]">
-                          <span
-                            className="rounded-full px-2 py-0.5 font-medium"
-                            style={{ background: `${sentColor[sent]}1f`, color: sentColor[sent] }}
-                          >
-                            {sentLabelTr[sent]}
-                          </span>
-                          <span className="text-[var(--ais-fg-faint)]">{n.time} önce</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </SectionCard>
-
-            {/* earnings takvimi */}
-            <SectionCard
-              label="Bu haftaki bilançolar"
-              action={<CalendarBlank size={16} weight="regular" className="text-[var(--ais-fg-faint)]" />}
-            >
-              <div className="space-y-2">
-                {EARNINGS.map((e) => (
-                  <div key={e.symbol} className="flex items-center gap-3 rounded-lg border border-[var(--ais-line)] p-3">
-                    <TickerBadge symbol={e.symbol} size={32} />
-                    <div className="flex-1">
-                      <p className="text-[13px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
-                      <p className="text-[12px] text-[var(--ais-fg-muted)]">{earningsTimeTr(e.time)}</p>
-                    </div>
-                    {e.status === "beat" ? (
-                      <span
-                        className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-                        style={{ background: `${AIS_UP}1f`, color: AIS_UP }}
+          {/* ───────── Haberler + bilançolar ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* haber + sentiment */}
+              <div className="lg:col-span-2">
+                <div className="mb-4 flex items-center gap-2">
+                  <h2 className="d-section">Haberler ve duyarlılık</h2>
+                  <Newspaper size={15} className="text-[var(--ais-fg-faint)]" />
+                </div>
+                <div className="rounded-xl border" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
+                  {NEWS.map((n, i) => {
+                    const sent = newsSentiment(n.enTitle);
+                    return (
+                      <div
+                        key={n.title}
+                        className="flex items-start gap-3 px-4 py-3.5 transition hover:bg-[var(--ais-surface-2)]"
+                        style={{ borderTop: i === 0 ? "none" : "1px solid var(--ais-line)" }}
                       >
-                        Aştı
-                      </span>
-                    ) : (
-                      <span className="num text-[13px] font-medium text-[var(--ais-fg)]">{earningsDayTr(e.date)}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-          </div>
-
-          {/* analist + sentiment radar */}
-          <div className="mt-3 grid gap-3 lg:grid-cols-2">
-            <SectionCard
-              label="Analist konsensüsü"
-              action={<Star size={16} weight="regular" className="text-[var(--ais-fg-faint)]" />}
-            >
-              <div className="space-y-1">
-                {ANALYST_SYMBOLS.map((sym) => {
-                  const c = analystConsensus(sym, getUniverseEntry(sym).basePrice);
-                  const buyPct = Math.round((c.buy / c.total) * 100);
-                  const holdPct = Math.round((c.hold / c.total) * 100);
-                  const sellPct = 100 - buyPct - holdPct;
-                  return (
-                    <div key={sym} className="ais-row px-2 py-2.5">
-                      <div className="flex items-center gap-3">
-                        <TickerBadge symbol={sym} size={32} />
-                        <div className="flex-1">
-                          <p className="text-[13px] font-medium text-[var(--ais-fg)]">{sym}</p>
-                          <p className="text-[12px] text-[var(--ais-fg-muted)]">{ratingTr[c.rating] ?? c.rating} · {c.total} analist</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="num text-[13px] text-[var(--ais-fg-muted)]">Hedef ${c.target}</p>
-                          <Delta value={c.upsidePct} className="text-[12px]" />
+                        <TickerBadge symbol={n.sym} size={32} />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[13px] font-medium text-[var(--ais-fg)]">{n.title}</p>
+                          <div className="mt-1 flex items-center gap-2 text-[12px]">
+                            <span
+                              className="rounded-full px-2 py-0.5 font-medium"
+                              style={{ background: `${sentColor[sent]}1f`, color: sentColor[sent] }}
+                            >
+                              {sentLabelTr[sent]}
+                            </span>
+                            <span className="text-[var(--ais-fg-faint)]">{n.time} önce</span>
+                          </div>
                         </div>
                       </div>
-                      {/* buy/hold/sell çubuğu */}
-                      <div className="mt-2 flex h-1.5 overflow-hidden rounded-full">
-                        <div style={{ width: `${buyPct}%`, background: AIS_UP }} />
-                        <div style={{ width: `${holdPct}%`, background: "rgba(255,255,255,0.18)" }} />
-                        <div style={{ width: `${sellPct}%`, background: AIS_DOWN }} />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </SectionCard>
 
-            <SectionCard
-              label="Duyarlılık radarı"
-              action={<Pulse size={16} weight="regular" className="text-[var(--ais-fg-faint)]" />}
-            >
-              <div className="space-y-3.5">
-                {sentimentSymbols.map((sym) => {
-                  const s = sentimentScore(sym);
-                  // -100..100 → 0..100 doluluk
-                  const fill = Math.round((s.score + 100) / 2);
-                  return (
-                    <div key={sym}>
-                      <div className="flex items-center justify-between text-[13px]">
-                        <span className="font-medium text-[var(--ais-fg)]">{sym}</span>
-                        <span className="num font-medium" style={{ color: labelColor[s.label] }}>
-                          {labelTr[s.label]} · {s.score > 0 ? "+" : ""}{s.score}
+              {/* earnings takvimi */}
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <h2 className="d-section">Bu haftaki bilançolar</h2>
+                  <Calendar size={15} className="text-[var(--ais-fg-faint)]" />
+                </div>
+                <div className="space-y-2">
+                  {EARNINGS.map((e) => (
+                    <div
+                      key={e.symbol}
+                      className="flex items-center gap-3 rounded-xl border p-3"
+                      style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+                    >
+                      <TickerBadge symbol={e.symbol} size={32} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
+                        <p className="truncate text-[12px] text-[var(--ais-fg-muted)]">{earningsTimeTr(e.time)}</p>
+                      </div>
+                      {e.status === "beat" ? (
+                        <span
+                          className="rounded-full px-2.5 py-1 text-[11px] font-medium"
+                          style={{ background: "var(--ais-green-bg)", color: UP }}
+                        >
+                          Aştı
                         </span>
-                      </div>
-                      <div className="mt-1.5 h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${fill}%`, background: labelColor[s.label] }}
-                        />
-                      </div>
-                      <div className="num mt-1.5 flex gap-3 text-[11px] text-[var(--ais-fg-faint)]">
-                        <span>Sosyal {s.social}</span>
-                        <span>Haber {s.news}</span>
-                        <span>Analist {s.analyst}</span>
-                      </div>
+                      ) : (
+                        <span className="num text-[13px] font-medium text-[var(--ais-fg)]">{earningsDayTr(e.date)}</span>
+                      )}
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-              <p className="mt-4 text-[11px] text-[var(--ais-fg-faint)]">
-                Sosyal, haber ve analist sinyalinin birleşimi. Yalnızca bilgilendirme amaçlıdır.
-              </p>
-            </SectionCard>
-          </div>
+            </div>
+          </section>
+
+          {/* ───────── Analist + sentiment radar ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* analist konsensüsü */}
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <h2 className="d-section">Analist konsensüsü</h2>
+                  <Star size={15} className="text-[var(--ais-fg-faint)]" />
+                </div>
+                <div className="rounded-xl border" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
+                  {ANALYST_SYMBOLS.map((sym, i) => {
+                    const c = analystConsensus(sym, getUniverseEntry(sym).basePrice);
+                    const buyPct = Math.round((c.buy / c.total) * 100);
+                    const holdPct = Math.round((c.hold / c.total) * 100);
+                    const sellPct = 100 - buyPct - holdPct;
+                    return (
+                      <div
+                        key={sym}
+                        className="px-4 py-3"
+                        style={{ borderTop: i === 0 ? "none" : "1px solid var(--ais-line)" }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <TickerBadge symbol={sym} size={32} />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-medium text-[var(--ais-fg)]">{sym}</p>
+                            <p className="truncate text-[12px] text-[var(--ais-fg-muted)]">{ratingTr[c.rating] ?? c.rating} · {c.total} analist</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="num text-[13px] text-[var(--ais-fg-muted)]">Hedef ${c.target}</p>
+                            <Delta value={c.upsidePct} className="text-[12px]" />
+                          </div>
+                        </div>
+                        {/* buy/hold/sell çubuğu */}
+                        <div className="mt-2 flex h-1.5 overflow-hidden rounded-full">
+                          <div style={{ width: `${buyPct}%`, background: UP }} />
+                          <div style={{ width: `${holdPct}%`, background: "var(--ais-line-strong)" }} />
+                          <div style={{ width: `${sellPct}%`, background: DOWN }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* sentiment radar */}
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <h2 className="d-section">Duyarlılık radarı</h2>
+                  <Activity size={15} className="text-[var(--ais-fg-faint)]" />
+                </div>
+                <div className="rounded-xl border p-5" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
+                  <div className="space-y-3.5">
+                    {sentimentSymbols.map((sym) => {
+                      const s = sentimentScore(sym);
+                      // -100..100 → 0..100 doluluk
+                      const fill = Math.round((s.score + 100) / 2);
+                      return (
+                        <div key={sym}>
+                          <div className="flex items-center justify-between text-[13px]">
+                            <span className="font-medium text-[var(--ais-fg)]">{sym}</span>
+                            <span className="num font-medium" style={{ color: labelColor[s.label] }}>
+                              {labelTr[s.label]} · {s.score > 0 ? "+" : ""}{s.score}
+                            </span>
+                          </div>
+                          <div className="mt-1.5 h-2 overflow-hidden rounded-full" style={{ background: "var(--ais-surface-2)" }}>
+                            <div
+                              className="h-full rounded-full"
+                              style={{ width: `${fill}%`, background: labelColor[s.label] }}
+                            />
+                          </div>
+                          <div className="num mt-1.5 flex gap-3 text-[11px] text-[var(--ais-fg-faint)]">
+                            <span>Sosyal {s.social}</span>
+                            <span>Haber {s.news}</span>
+                            <span>Analist {s.analyst}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-4 text-[11px] text-[var(--ais-fg-faint)]">
+                    Sosyal, haber ve analist sinyalinin birleşimi. Yalnızca bilgilendirme amaçlıdır.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </>

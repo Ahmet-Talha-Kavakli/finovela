@@ -34,7 +34,7 @@ export function AiPortfolios() {
             <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
               20'den fazla hazır AI portföye göz at: meme temaları, gelir
               korumaları ya da kantitatif seçkiler — hepsi Finovela AI gücüyle.
-              Herhangi birini saniyeler içinde kopyala.
+              Herhangi birini saniyeler içinde sanal portföyünde dene.
             </p>
             <Link href="/app" className="mt-9 inline-flex h-14 items-center justify-center rounded-full bg-[linear-gradient(90deg,#cfe0ff,#e6f0ff)] px-9 text-lg font-semibold text-black transition hover:brightness-105">
               Finovela ile Sohbet Et

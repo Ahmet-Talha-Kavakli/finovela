@@ -9,7 +9,7 @@
 import { useId, useMemo, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-const ACCENT = "#a9b4ff";
+const ACCENT = "#2567ff";
 
 /** Canlı dolan ilerleme halkası — mount'ta 0'dan değere akar + parlak uç. */
 export function LiveGauge({
@@ -41,7 +41,7 @@ export function LiveGauge({
       <svg width={size} height={size} className="-rotate-90">
         <defs>
           <linearGradient id={`lg-${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#c9d2ff" />
+            <stop offset="0%" stopColor="#5e8dff" />
             <stop offset="100%" stopColor={color} />
           </linearGradient>
           <filter id={`lgglow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
@@ -52,7 +52,7 @@ export function LiveGauge({
             </feMerge>
           </filter>
         </defs>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={stroke} />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--ais-surface-2)" strokeWidth={stroke} />
         <motion.circle
           cx={cx}
           cy={cy}
@@ -70,8 +70,8 @@ export function LiveGauge({
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">
         <div>
-          {label && <p className="font-display text-2xl font-bold tabular-nums text-white">{label}</p>}
-          {sublabel && <p className="text-[11px] text-white/45">{sublabel}</p>}
+          {label && <p className="font-display text-2xl font-bold tabular-nums text-[var(--ais-fg)]">{label}</p>}
+          {sublabel && <p className="text-[11px] text-[var(--ais-fg-faint)]">{sublabel}</p>}
         </div>
       </div>
     </div>
@@ -117,7 +117,7 @@ export function LiveAreaChart({
   const { line, area, benchLine, endX, endY, c1 } = useMemo(() => {
     const w = 800;
     const h = height;
-    if (!data.length) return { line: "", area: "", benchLine: "", endX: 0, endY: 0, c1: "#3ecf8e" };
+    if (!data.length) return { line: "", area: "", benchLine: "", endX: 0, endY: 0, c1: "#1f9d57" };
     const vs = data.map((d) => d.v);
     const allVs = hasBench ? [...vs, ...benchmark!] : vs;
     const min = Math.min(...allVs);
@@ -136,7 +136,7 @@ export function LiveAreaChart({
         : "",
       endX: pts[pts.length - 1][0],
       endY: pts[pts.length - 1][1],
-      c1: positive ? "#3ecf8e" : "#ff5c5c",
+      c1: positive ? "#1f9d57" : "#d93025",
     };
   }, [data, height, positive, hasBench, benchmark]);
 
@@ -153,7 +153,7 @@ export function LiveAreaChart({
             <stop offset="100%" stopColor={c1} stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`la-line-${uid}`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+            <stop offset="0%" stopColor={ACCENT} stopOpacity="0.55" />
             <stop offset="60%" stopColor={ACCENT} stopOpacity="0.9" />
             <stop offset="100%" stopColor={c1} stopOpacity="1" />
           </linearGradient>
@@ -180,7 +180,8 @@ export function LiveAreaChart({
           <motion.path
             d={benchLine}
             fill="none"
-            stroke="rgba(255,255,255,0.30)"
+            stroke="var(--ais-fg-faint)"
+            strokeOpacity="0.5"
             strokeWidth="1.5"
             strokeDasharray="5 5"
             strokeLinejoin="round"
@@ -223,7 +224,7 @@ export function LiveAreaChart({
           cx={endX}
           cy={endY}
           r="3.5"
-          fill="#fff"
+          fill="var(--ais-surface)"
           initial={{ scale: 0 }}
           animate={{ scale: inView ? 1 : 0 }}
           transition={{ delay: 1.4, type: "spring", stiffness: 300 }}
@@ -232,13 +233,13 @@ export function LiveAreaChart({
 
       {/* lejant — yalnızca benchmark verilince */}
       {hasBench && (
-        <div className="mt-2 flex items-center gap-4 text-[11px] text-white/45">
+        <div className="mt-2 flex items-center gap-4 text-[11px] text-[var(--ais-fg-faint)]">
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: c1 }} />
             Portföy
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
+            <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: "var(--ais-line-strong)" }} />
             {benchmarkLabel}
           </span>
         </div>

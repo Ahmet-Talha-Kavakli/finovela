@@ -22,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: "Portföy — Finovela",
   description:
-    "Her varlığını takip et, gerçek performansını anla ve paranı neyin hareket ettirdiğini Finovela'ya açıklat — hepsi tek, net ve şık bir ekranda.",
+    "Her varlığını takip et, gerçek performansını analiz et ve portföyünü neyin hareket ettirdiğini Finovela'ya açıklat — hepsi tek, net ve şık bir ekranda.",
 };
 
 const FEATURES: Feature[] = [
@@ -53,13 +53,13 @@ const FEATURES: Feature[] = [
   {
     icon: Coins,
     title: "Temettü ve gelir",
-    desc: "Temettüler, tahvil kuponları ve getiri için birleşik bir gelir görünümü — yerleşik otomatik yeniden yatırımla.",
+    desc: "Temettüler, tahvil kuponları ve getiri için birleşik bir gelir görünümü — yeniden yatırım senaryolarını simülasyonda modelleyerek.",
     image: "/gen/card-portfolio-temettu.png",
   },
   {
     icon: ArrowsClockwise,
-    title: "Akıllı dengeleme",
-    desc: "Finovela hedef dağılımından sapmayı işaretler ve komutunla ya da belirli aralıklarla portföyü dengeler.",
+    title: "Akıllı dengeleme önerisi",
+    desc: "Finovela hedef dağılımından sapmayı işaretler ve dengeleme planını simülasyonda modeller; uygulamak istersen adımları kendi aracı kurumunda kendin yaparsın.",
     image: "/gen/card-portfolio-dengeleme.png",
   },
 ];

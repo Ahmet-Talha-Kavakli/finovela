@@ -371,3 +371,69 @@ export function EmptyState({
 export function Row({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn("ais-row flex items-center gap-3 px-3 py-3", className)}>{children}</div>;
 }
+
+/**
+ * Didit segment toggle — seçenek başına ANLAMLI renk (madde 4/7).
+ * Her option'a `tone` ver: seçiliyken o renk dolgusu/metni kullanılır.
+ * tone yoksa accent (mavi) varsayılır. Açık tema (.ais-light) için.
+ * Kullanım:
+ *   <DiditToggle value={risk} onChange={setRisk} full options={[
+ *     {value:"low", label:"Düşük risk", tone:"green"},
+ *     {value:"medium", label:"Dengeli", tone:"blue"},
+ *     {value:"high", label:"Agresif", tone:"red"},
+ *   ]} />
+ */
+export function DiditToggle<T extends string>({
+  value,
+  onChange,
+  options,
+  full,
+  className,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: React.ReactNode; tone?: "blue" | "green" | "red" | "amber" }[];
+  full?: boolean;
+  className?: string;
+}) {
+  const toneColor = (tone?: string) => {
+    switch (tone) {
+      case "green": return { fg: "var(--ais-green)", bg: "var(--ais-green-bg)" };
+      case "red": return { fg: "#d93025", bg: "rgba(217,48,37,0.10)" };
+      case "amber": return { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" };
+      default: return { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" };
+    }
+  };
+  return (
+    <div
+      className={cn(
+        "gap-1 rounded-full border p-1",
+        full ? "flex w-full" : "inline-flex",
+        className,
+      )}
+      style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+    >
+      {options.map((o) => {
+        const on = value === o.value;
+        const c = toneColor(o.tone);
+        return (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            className={cn(
+              "rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors",
+              full && "flex-1",
+            )}
+            style={{
+              background: on ? c.bg : "transparent",
+              color: on ? c.fg : "var(--ais-fg-muted)",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

@@ -58,8 +58,10 @@ export function AreaChart({
           <stop offset="55%" stopColor={c1} stopOpacity="0.08" />
           <stop offset="100%" stopColor={c1} stopOpacity="0" />
         </linearGradient>
+        {/* Çizgi gradyanı: sol uç hafif soluk → sağ uç tam renk.
+            Beyaz sabit yerine çizgi renginin kendisini kullan → açık+koyu temada görünür. */}
         <linearGradient id={`line-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
+          <stop offset="0%" stopColor={c1} stopOpacity="0.55" />
           <stop offset="100%" stopColor={c1} stopOpacity="1" />
         </linearGradient>
         <filter id={`glow-${uid}`} x="-20%" y="-40%" width="140%" height="180%">
@@ -76,7 +78,8 @@ export function AreaChart({
         <path
           d={benchLine}
           fill="none"
-          stroke="rgba(255,255,255,0.30)"
+          stroke="var(--ais-fg-faint)"
+          strokeOpacity="0.5"
           strokeWidth="1.5"
           strokeDasharray="5 5"
           strokeLinejoin="round"
@@ -102,13 +105,13 @@ export function AreaChart({
   return (
     <div className="flex h-full w-full flex-col">
       <div className="min-h-0 flex-1">{svg}</div>
-      <div className="mt-2 flex items-center gap-4 text-[11px] text-white/45">
+      <div className="mt-2 flex items-center gap-4 text-[11px] text-[var(--ais-fg-faint)]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: c1 }} />
           Portföy
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
+          <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: "var(--ais-fg-faint)", opacity: 0.6 }} />
           {benchmarkLabel}
         </span>
       </div>
@@ -134,49 +137,67 @@ function smoothPath(pts: [number, number][]): string {
   return d;
 }
 
-/** Mini sparkline — kar/zarar renkli + hafif gradyan dolgu. */
+/**
+ * Mini sparkline — kar/zarar renkli + hafif gradyan dolgu.
+ * `data` (gerçek kapanış serisi) verilirse onu çizer (GERÇEK fiyat geçmişi);
+ * verilmezse seed'den temsili bir trend üretir (fallback, veri yüklenene kadar).
+ */
 export function Sparkline({
   seed,
   up,
   width = 80,
   height = 28,
+  data,
 }: {
   seed: string;
   up: boolean;
   width?: number;
   height?: number;
+  /** Gerçek kapanış serisi (örn. son 30 gün). Verilirse temsili yerine bu çizilir. */
+  data?: number[];
 }) {
   const uid = useId().replace(/:/g, "");
-  let h = 0;
-  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) % 9973;
-  const pts: number[] = [];
-  for (let i = 0; i < 16; i++) {
-    h = (h * 1103515245 + 12345) % 2147483648;
-    pts.push((h % 100) / 100);
+  const real = Array.isArray(data) && data.length >= 2;
+
+  let series: number[];
+  let trendUp = up;
+  if (real) {
+    series = data!;
+    trendUp = data![data!.length - 1] >= data![0];
+  } else {
+    let h = 0;
+    for (const c of seed) h = (h * 31 + c.charCodeAt(0)) % 9973;
+    const pts: number[] = [];
+    for (let i = 0; i < 16; i++) {
+      h = (h * 1103515245 + 12345) % 2147483648;
+      pts.push((h % 100) / 100);
+    }
+    series = pts.map((p, i) => p * 0.5 + (up ? i : 15 - i) / 30);
   }
-  const trended = pts.map((p, i) => p * 0.5 + (up ? i : 15 - i) / 30);
-  const min = Math.min(...trended);
-  const max = Math.max(...trended);
+
+  const min = Math.min(...series);
+  const max = Math.max(...series);
   const range = max - min || 1;
-  const X = (i: number) => (i / (trended.length - 1)) * width;
+  const X = (i: number) => (i / (series.length - 1)) * width;
   const Y = (v: number) => height - ((v - min) / range) * (height - 3) - 1.5;
-  const coords = trended.map((v, i) => [X(i), Y(v)] as [number, number]);
+  const coords = series.map((v, i) => [X(i), Y(v)] as [number, number]);
   const line = smoothPath(coords);
-  const col = up ? "#3ecf8e" : "#ff5c5c";
+  // Didit açık-tema yeşil/kırmızı (beyaz zeminde okunur).
+  const col = trendUp ? "#1f9d57" : "#d93025";
   return (
     <svg
       width={width}
       height={height}
       className="overflow-visible"
       role="img"
-      aria-label="Temsili trend göstergesi"
+      aria-label={real ? "Fiyat trendi" : "Temsili trend göstergesi"}
     >
-      {/* Dürüstlük: bu mini-çizgi temsili bir trend yönü göstergesidir,
-          birebir geçmiş fiyat serisi değildir (hover'da görünür). */}
-      <title>Temsili trend göstergesi — birebir fiyat geçmişi değildir</title>
+      <title>
+        {real ? "Son dönem fiyat trendi" : "Temsili trend göstergesi — fiyat yüklenirken"}
+      </title>
       <defs>
         <linearGradient id={`sl-${uid}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={col} stopOpacity="0.25" />
+          <stop offset="0%" stopColor={col} stopOpacity="0.22" />
           <stop offset="100%" stopColor={col} stopOpacity="0" />
         </linearGradient>
       </defs>

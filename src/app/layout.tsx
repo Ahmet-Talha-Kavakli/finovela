@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -11,6 +12,14 @@ const hanken = localFont({
   src: "../../public/fonts/HankenGrotesk-Variable.woff2",
   variable: "--font-display",
   weight: "300 800",
+  display: "swap",
+});
+
+// Inter — Didit dashboard dili (.ais-light) için. Didit canlı CSS'inden ölçüldü:
+// font-family: Inter. Yalnız açık-tema dashboard sayfalarında kullanılır.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -29,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${hanken.variable} h-full antialiased`}
+      className={`${hanken.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-fg">
         <ThemeProvider>{children}</ThemeProvider>

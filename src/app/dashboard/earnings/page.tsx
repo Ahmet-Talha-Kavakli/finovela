@@ -1,23 +1,22 @@
 "use client";
 
+/**
+ * Finovela Bilançolar — yaklaşan + raporlanmış kazançlar, beat/miss, AI özeti.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, satır deseni, token renkleri, Lucide ikonlar.
+ */
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Topbar } from "@/components/dashboard/topbar";
-import {
-  PageTitle,
-  SectionCard,
-  Card,
-  Btn,
-  Pill,
-  AIS_ACCENT,
-  AIS_UP,
-  AIS_DOWN,
-} from "@/components/dashboard/ais-kit";
 import { TickerBadge } from "@/components/dashboard/ticker-badge";
 import { Markdown } from "@/components/dashboard/markdown";
-import { Sparkle, CheckCircle, XCircle } from "@phosphor-icons/react";
+import { Sparkles, CheckCircle2, XCircle } from "lucide-react";
 
-/** Earnings Hub — yaklaşan + raporlanmış kazançlar, beat/miss, AI özeti. */
+// Didit açık-tema renkleri — beyaz zeminde okunur.
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
+const ACCENT = "var(--ais-accent)";
 
 type Earning = {
   symbol: string;
@@ -155,95 +154,133 @@ export default function EarningsPage() {
   return (
     <>
       <Topbar title="Bilançolar" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Bilançolar"
-            desc="Bu haftanın bilanço takvimi, raporlanan sonuçlar ve yapay zeka özetleri."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Bilançolar</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              Bu haftanın bilanço takvimi, raporlanan sonuçlar ve yapay zeka özetleri.
+            </p>
+          </div>
 
           {/* AI recap paneli */}
           {recap && (
-            <Card className="mt-8">
+            <div
+              className="mt-8 rounded-xl border p-5"
+              style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+            >
               <div className="mb-3 flex items-center gap-2">
                 <span
                   className="grid h-7 w-7 place-items-center rounded-lg"
-                  style={{ background: "var(--ais-accent-bg)", color: AIS_ACCENT }}
+                  style={{ background: "var(--ais-accent-bg)", color: ACCENT }}
                 >
-                  <Sparkle size={14} weight="regular" />
+                  <Sparkles size={14} />
                 </span>
                 <h2 className="text-[14px] font-medium text-[var(--ais-fg)]">{recap.symbol} — Yapay zeka özeti</h2>
                 <button
                   onClick={() => setRecap(null)}
-                  className="ml-auto text-[12px] text-[var(--ais-fg-faint)] hover:text-[var(--ais-fg)]"
+                  className="ml-auto text-[12px] text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]"
                 >
                   Kapat
                 </button>
               </div>
-              {recap.text ? <Markdown text={recap.text} /> : (
+              {recap.text ? <Markdown text={recap.text} tone="light" /> : (
                 <span className="inline-flex gap-1">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--ais-fg-faint)]" />
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--ais-fg-faint)] [animation-delay:150ms]" />
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--ais-fg-faint)] [animation-delay:300ms]" />
                 </span>
               )}
-            </Card>
+            </div>
           )}
 
-          <div className="mt-3 grid gap-3 lg:grid-cols-2">
-            {/* yaklaşan */}
-            <SectionCard label="Bu hafta">
-              <div className="space-y-2">
-                {UPCOMING.map((e, i) => (
-                  <div key={`${e.symbol}-${i}`} className="ais-card flex items-center gap-3 p-3">
-                    <Link href={`/dashboard/stock/${e.symbol}`}><TickerBadge symbol={e.symbol} size={34} /></Link>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
-                      <p className="truncate text-[12px] text-[var(--ais-fg-faint)]">{e.when}</p>
-                    </div>
-                    <div className="text-right text-[12px]">
-                      <p className="text-[var(--ais-fg-faint)]">Tahmini EPS</p>
-                      <p className="num font-medium text-[var(--ais-fg)]">${e.epsEst.toFixed(2)}</p>
-                    </div>
-                    <Btn variant="default" size="sm" onClick={() => getRecap(e.symbol)}>
-                      <Sparkle size={12} weight="regular" /> Önizle
-                    </Btn>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            {/* raporlanmış */}
-            <SectionCard label="Yakın zamanda raporlananlar">
-              <div className="space-y-2">
-                {REPORTED.map((e, i) => {
-                  const beat = (e.surprise ?? 0) >= 0;
-                  return (
-                    <div key={`${e.symbol}-${i}`} className="ais-card flex items-center gap-3 p-3">
-                      <Link href={`/dashboard/stock/${e.symbol}`}><TickerBadge symbol={e.symbol} size={34} /></Link>
+          {/* ───────── Takvim ───────── */}
+          <section className="mt-9 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* yaklaşan */}
+              <div>
+                <h2 className="d-section mb-4">Bu hafta</h2>
+                <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
+                  {UPCOMING.map((e, i) => (
+                    <div
+                      key={`${e.symbol}-${i}`}
+                      className="flex items-center gap-3 px-4 py-3 transition hover:bg-[var(--ais-surface-2)]"
+                      style={{ borderTop: i === 0 ? "none" : "1px solid var(--ais-line)" }}
+                    >
+                      <Link href={`/dashboard/stock/${e.symbol}`}>
+                        <TickerBadge symbol={e.symbol} size={34} />
+                      </Link>
                       <div className="min-w-0 flex-1">
                         <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
-                        <p className="num truncate text-[12px] text-[var(--ais-fg-faint)]">
-                          EPS ${e.epsActual?.toFixed(2)} (tahmin ${e.epsEst.toFixed(2)})
-                        </p>
+                        <p className="truncate text-[12px] text-[var(--ais-fg-faint)]">{e.when}</p>
                       </div>
-                      <Pill color={beat ? AIS_UP : AIS_DOWN}>
-                        {beat ? <CheckCircle size={12} weight="regular" /> : <XCircle size={12} weight="regular" />}
-                        {beat ? "Aştı" : "Kaçırdı"} %{Math.abs(e.surprise ?? 0).toFixed(1)}
-                      </Pill>
-                      <Btn variant="default" size="sm" onClick={() => getRecap(e.symbol)}>
-                        <Sparkle size={12} weight="regular" /> Özet
-                      </Btn>
+                      <div className="text-right text-[12px]">
+                        <p className="text-[var(--ais-fg-faint)]">Tahmini EPS</p>
+                        <p className="num font-medium text-[var(--ais-fg)]">${e.epsEst.toFixed(2)}</p>
+                      </div>
+                      <button
+                        onClick={() => getRecap(e.symbol)}
+                        className="inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-[12px] font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+                        style={{ borderColor: "var(--ais-line-strong)" }}
+                      >
+                        <Sparkles size={12} /> Önizle
+                      </button>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </SectionCard>
-          </div>
 
-          <p className="mt-8 text-[12px] text-[var(--ais-fg-faint)]">
-            Tahminler ve rakamlar bu demo hesap için örnek niteliğindedir. Yapay zeka özetleri canlı haberleri kullanır.
-          </p>
+              {/* raporlanmış */}
+              <div>
+                <h2 className="d-section mb-4">Yakın zamanda raporlananlar</h2>
+                <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
+                  {REPORTED.map((e, i) => {
+                    const beat = (e.surprise ?? 0) >= 0;
+                    return (
+                      <div
+                        key={`${e.symbol}-${i}`}
+                        className="flex items-center gap-3 px-4 py-3 transition hover:bg-[var(--ais-surface-2)]"
+                        style={{ borderTop: i === 0 ? "none" : "1px solid var(--ais-line)" }}
+                      >
+                        <Link href={`/dashboard/stock/${e.symbol}`}>
+                          <TickerBadge symbol={e.symbol} size={34} />
+                        </Link>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
+                          <p className="num truncate text-[12px] text-[var(--ais-fg-faint)]">
+                            EPS ${e.epsActual?.toFixed(2)} (tahmin ${e.epsEst.toFixed(2)})
+                          </p>
+                        </div>
+                        <span
+                          className="badge-soft"
+                          style={{
+                            background: beat ? "var(--ais-green-bg)" : "rgba(217,48,37,0.10)",
+                            color: beat ? UP : DOWN,
+                          }}
+                        >
+                          {beat ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                          {beat ? "Aştı" : "Kaçırdı"} %{Math.abs(e.surprise ?? 0).toFixed(1)}
+                        </span>
+                        <button
+                          onClick={() => getRecap(e.symbol)}
+                          className="inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-[12px] font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+                          style={{ borderColor: "var(--ais-line-strong)" }}
+                        >
+                          <Sparkles size={12} /> Özet
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-8 text-[12px] text-[var(--ais-fg-faint)]">
+              Tahminler ve rakamlar bu demo hesap için örnek niteliğindedir. Yapay zeka özetleri canlı
+              haberleri kullanır.
+            </p>
+          </section>
         </div>
       </div>
     </>

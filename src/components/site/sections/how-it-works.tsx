@@ -10,14 +10,14 @@ const STEPS = [
   {
     icon: Strategy,
     step: "02",
-    title: "Finovela builds the strategy",
-    text: "It designs a diversified, backtested strategy — picks the assets, sets the rules, and shows you exactly why, with the numbers to back it.",
+    title: "Finovela designs the strategy",
+    text: "It designs a diversified, backtested strategy — suggests the assets, sets the rules, and shows you exactly why, with the numbers to back it.",
   },
   {
     icon: Robot,
     step: "03",
-    title: "It runs on autopilot",
-    text: "Approve it once. Finovela executes every trade, rebalances automatically, harvests tax losses, and reports back. You stay in control.",
+    title: "Test it in simulation",
+    text: "Run it in a risk-free paper portfolio. Finovela simulates the trades, auto-rebalances the simulation, and reports back so you can see how it would behave. Your money stays with you — always.",
   },
 ];
 
@@ -29,11 +29,11 @@ export function HowItWorks() {
           <p className="text-sm font-semibold text-[#7fb0ff]">How it works</p>
           <h2 className="font-display mt-3 text-4xl font-bold text-white sm:text-5xl">
             From a sentence to a strategy{" "}
-            <span className="text-gradient">that runs itself</span>
+            <span className="text-gradient">you can test</span>
           </h2>
           <p className="mt-4 text-lg text-white/60">
             No spreadsheets. No jargon. No staring at charts. Three steps to a
-            portfolio that manages itself.
+            strategy you can explore risk-free in simulation.
           </p>
         </div>
 

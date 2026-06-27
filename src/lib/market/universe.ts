@@ -178,6 +178,35 @@ export function logoUrl(symbol: string): string | null {
   return null;
 }
 
+/**
+ * Çok-kaynaklı logo zinciri — ticker-badge sırayla dener (img onError → sıradaki).
+ * Öncelik: domain varsa Clearbit (yüksek kalite, güvenilir) → FMP → kripto/BIST CDN.
+ * FMP'nin "XX"/yamuk/eksik logo sorununu Clearbit fallback ile çözer.
+ * Boş dizi dönerse harf-rozetine düşülür.
+ */
+export function logoSources(symbol: string): string[] {
+  const sym = symbol.toUpperCase();
+  const out: string[] = [];
+  const crypto = CRYPTO_ICON[sym];
+  if (crypto) {
+    out.push(`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${crypto}.png`);
+    // Kripto domain'i varsa Clearbit yedek (spothq bazı yeni coinlerde eksik).
+    if (SYMBOL_DOMAIN[sym]) out.push(`https://logo.clearbit.com/${SYMBOL_DOMAIN[sym]}`);
+    return out;
+  }
+  const domain = SYMBOL_DOMAIN[sym];
+  if (domain) {
+    // Clearbit önce — temiz, kare, şeffaf PNG. FMP yedek.
+    out.push(`https://logo.clearbit.com/${domain}`);
+  }
+  if (BIST_SYMBOLS.has(sym)) {
+    out.push(`https://financialmodelingprep.com/image-stock/${sym}.IS.png`);
+  } else if (domain) {
+    out.push(`https://financialmodelingprep.com/image-stock/${sym}.png`);
+  }
+  return out;
+}
+
 export const BY_SYMBOL = new Map(UNIVERSE.map((e) => [e.symbol, e]));
 
 export function getUniverseEntry(symbol: string): UniverseEntry {

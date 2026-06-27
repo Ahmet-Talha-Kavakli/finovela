@@ -26,14 +26,14 @@ const CARDS = [
     text: "X, Reddit ve forumlardaki yükselen hikâyeleri ve duyarlılığı 7/24 dinler; bir sonraki büyük hamleyi sana sade bir özet ve kart olarak iletir.",
   },
   {
-    title: "Kopya İşlem",
+    title: "Kopya Simülasyonu",
     img: "/gen/uc-copy.png",
-    text: "Finovela en iyi yatırımcıları bulur, tarzına eşler ve dağılımlarını sanal (paper) portföyüne risksiz yansıtır.",
+    text: "Finovela en iyi yatırımcıları bulur, tarzına eşler ve dağılımlarını sanal (paper) portföyünde risksiz simüle eder.",
   },
   {
     title: "Otomasyon & Alarm",
     img: "/gen/uc-auto.png",
-    text: "Kurallarını söyle: Finovela işlemleri otopilotta yapsın, portföyü dengelesin, fiyat ve haber alarmlarıyla seni uyarsın.",
+    text: "Kurallarını söyle: Finovela bunları sanal portföyde otomatikleştirip simüle etsin, fiyat ve haber alarmlarıyla seni uyarsın — kontrol her zaman sende.",
   },
 ];
 
@@ -59,12 +59,12 @@ export function UseCases() {
           <span className="text-base font-bold">Finovela Kullanım Senaryoları</span>
         </div>
         <h2 className="font-display mx-auto mt-5 max-w-3xl text-center text-[36px] font-bold leading-[1.28] text-white">
-          Daha Akıllı Yatırım İçin Yapay Zeka Destekli İşlem Araçları
+          Daha Akıllı Yatırım İçin Yapay Zeka Destekli Araştırma Araçları
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-relaxed text-white/55">
-          Canlı web araştırmasından sosyal duyarlılığa, en iyi yatırımcıları
-          kopyalamaktan otomasyon ve alarmlara kadar — Finovela hepsini
-          uygulanabilir zekâya dönüştürür, tek bir AI sohbetinde.
+          Canlı web araştırmasından sosyal duyarlılığa, sanal kopya
+          simülasyonundan otomasyon ve alarmlara kadar — Finovela hepsini
+          uygulanabilir içgörüye dönüştürür, tek bir AI sohbetinde.
         </p>
 
         {/* başlık üstü ok navigasyonu */}

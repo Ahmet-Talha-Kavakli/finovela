@@ -21,7 +21,7 @@ import {
 export const metadata: Metadata = {
   title: "Strateji Oluşturucu — Finovela",
   description:
-    "Kod yazmadan yatırım stratejileri tasarla, geriye dönük test et ve devreye al. Bir fikri anlat, nasıl performans gösterirdi gör ve Finovela'nın canlı çalıştırmasına izin ver.",
+    "Kod yazmadan yatırım stratejileri tasarla, geriye dönük test et ve simülasyonda dene. Bir fikri anlat, nasıl performans gösterirdi gör ve Finovela ile paper-trading ortamında modelle.",
 };
 
 const FEATURES: Feature[] = [
@@ -57,8 +57,8 @@ const FEATURES: Feature[] = [
   },
   {
     icon: Share,
-    title: "Yayınla ve kazan",
-    desc: "Stratejini Finovela topluluğuyla paylaş. Başkaları takip edip strateji performans gösterdikçe ödül kazanırsın.",
+    title: "Yayınla ve paylaş",
+    desc: "Strateji modelini Finovela topluluğuyla paylaş. Başkaları senin analizini inceleyip kendi araştırmalarında ilham alır.",
     image: "/gen/card-strategy-yayinla.png",
   },
 ];
@@ -73,10 +73,10 @@ export default function StrategyPage() {
           <>
             Strateji kur.
             <br />
-            Kanıtla. Çalıştır.
+            Test et. Modelle.
           </>
         }
-        subtitle="Kod yok, tablo yok. Bir fikri anlat, gerçek piyasa geçmişiyle test et ve tek dokunuşla canlıya al."
+        subtitle="Kod yok, tablo yok. Bir fikri anlat, gerçek piyasa geçmişiyle test et ve simülasyonda (paper trading) dene."
       >
         <GlassButton href="/app" tone="solid" size="xl">
           Strateji kur
@@ -89,8 +89,8 @@ export default function StrategyPage() {
       <Section bg="#0a1838" prev="#0c1d40">
         <SectionHeading
           eyebrow="Özellikler"
-          title="Fikirden geriye dönük teste, oradan canlıya"
-          subtitle="Bir kuantitatif masanın yaptığı her şey — kuantitatif masaya gerek kalmadan."
+          title="Fikirden geriye dönük teste, oradan simülasyona"
+          subtitle="Bir kuantitatif masanın yaptığı analizin her şeyi — kuantitatif masaya gerek kalmadan."
         />
         <FeatureGrid items={FEATURES} cols={3} cardStyle="B" />
       </Section>
@@ -143,7 +143,7 @@ export default function StrategyPage() {
 
       <CtaBand
         title="En iyi fikrini bir stratejiye dönüştür"
-        subtitle="Anlat, test et, devreye al — başlaması ücretsiz."
+        subtitle="Anlat, test et, simülasyonda dene — başlaması ücretsiz."
         prev="#071026"
       />
     </PageShell>

@@ -1,8 +1,8 @@
 const STATS = [
   { value: "500K+", label: "Investors modeled" },
   { value: "3,000+", label: "AI strategies" },
-  { value: "24/7", label: "Autopilot execution" },
-  { value: "$0", label: "Commissions" },
+  { value: "24/7", label: "AI research" },
+  { value: "$0", label: "We never hold your money" },
 ];
 
 export function Stats() {

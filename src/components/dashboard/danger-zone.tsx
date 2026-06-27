@@ -4,6 +4,7 @@
  * Tehlikeli bölge — paper-trading hesabını başlangıç durumuna sıfırlar
  * (nakit + pozisyonlar + emirler seed değerine döner). Test sırasında nakit
  * tükenince "Insufficient cash" alan kullanıcı buradan temiz başlangıç yapar.
+ * Tasarım dili: Didit açık tema (kutusuz, border-t ayraçlı bölüm, token renk).
  */
 
 import { useState, useEffect } from "react";
@@ -12,8 +13,7 @@ import { cashStore } from "@/lib/dashboard/cash-store";
 import { fmtUsd } from "@/lib/dashboard/data";
 import { toast } from "@/components/dashboard/toast";
 import { useConfirm } from "@/components/dashboard/confirm";
-import { SectionCard, Btn } from "@/components/dashboard/ais-kit";
-import { ArrowCounterClockwise } from "@phosphor-icons/react";
+import { RotateCcw } from "lucide-react";
 
 export function DangerZone() {
   const confirm = useConfirm();
@@ -23,7 +23,7 @@ export function DangerZone() {
   // sonra basar. Render sırasında setState yapmak hydration mismatch veriyordu.
   useEffect(() => {
     try {
-      setCash(paperStore.get().cash);
+      setCash(paperStore.get().cash); // eslint-disable-line react-hooks/set-state-in-effect
     } catch {
       /* yoksay */
     }
@@ -50,19 +50,32 @@ export function DangerZone() {
   }
 
   return (
-    <SectionCard label="Paper hesabı" desc="Sanal işlem bakiyeni ve pozisyonlarını yönet." className="mt-10">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+      <div className="mb-5">
+        <h2 className="d-section">Paper hesabı</h2>
+        <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+          Sanal işlem bakiyeni ve pozisyonlarını yönet.
+        </p>
+      </div>
+      <div
+        className="flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5"
+        style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+      >
         <div>
           <p className="text-[12px] text-[var(--ais-fg-faint)]">Kullanılabilir nakit</p>
           <p className="num mt-1 text-[18px] font-medium text-[var(--ais-fg)]">
             {cash !== null ? fmtUsd(cash) : "—"}
           </p>
         </div>
-        <Btn variant="ghost" onClick={resetPaper} className="shrink-0">
-          <ArrowCounterClockwise size={15} weight="regular" />
+        <button
+          onClick={resetPaper}
+          className="flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-medium transition"
+          style={{ borderColor: "rgba(217,48,37,0.30)", color: "#d93025" }}
+        >
+          <RotateCcw size={15} />
           Hesabı sıfırla
-        </Btn>
+        </button>
       </div>
-    </SectionCard>
+    </section>
   );
 }

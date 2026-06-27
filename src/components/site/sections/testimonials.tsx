@@ -8,9 +8,9 @@ import { CurveDivider } from "@/components/ui/curve-divider";
  * altta sonsuz kaydırmalı stagger testimonial kartları.
  */
 const STORIES = [
-  { text: "Finovela'nın otomatik işlemi etkileyici — sadece hedef fiyat ve adet belirliyorsun, gerisini kusursuz hallediyor. Yatırımı basitleştiren gerçek bir 'kur ve unut' deneyimi.", name: "Liu Max", role: "Web3 Araştırmacısı & KOL", color: "#5b8cff" },
+  { text: "Finovela'nın simülasyon otomasyonu etkileyici — sadece hedef fiyat ve adet belirliyorsun, sanal portföyde gerisini kusursuz modelliyor. Araştırmayı basitleştiren gerçek bir 'kur ve izle' deneyimi.", name: "Liu Max", role: "Web3 Araştırmacısı & KOL", color: "#5b8cff" },
   { text: "Finovela'nın veri analizi çarpıcı, özellikle derin portföy içgörüleri. Risk dökümü, neye sahip olduğumu gerçekten anlamamı sağlıyor.", name: "Lee", role: "Kıdemli Backend Mühendisi", color: "#2b5cf0" },
-  { text: "Finovela'nın stratejik düşünmesi mükemmel. Açığa satış gibi işlemler piyasada engellendiğinde, riske göre akıllıca alternatifler öneriyor. Çok esnek.", name: "Derek Zhou", role: "Yatırım Danışmanı, HK", color: "#7fb0ff" },
+  { text: "Finovela'nın stratejik düşünmesi mükemmel. Açığa satış gibi senaryolar uygun olmadığında, riske göre akıllıca alternatifler öneriyor. Çok esnek.", name: "Derek Zhou", role: "Finans Analisti, HK", color: "#7fb0ff" },
   { text: "Finovela ile portföy kurup 5 yıllık veriyi geriye dönük test ettim, getiriler beklentileri fazlasıyla aştı. Strateji doğrulaması kararları çok daha güvenli kılıyor.", name: "Lynn", role: "Finans Öğrencisi @ NYU", color: "#3b6dff" },
   { text: "Finovela akıllı işlemi yeniden tanımlıyor — profesyonel, rahat ve insani. Yeni nesil 'vibe trading' deneyimi.", name: "Alex Hsu", role: "İçerik Üreticisi, Finans", color: "#3b6dff" },
   { text: "Hedeflerimi sade bir dille anlattım ve Finovela saniyeler içinde çeşitlendirilmiş bir sepet kurdu. Cebimde bir kantitatif analiz ekibi varmış gibi.", name: "Maya R.", role: "Ürün Tasarımcısı", color: "#2b5cf0" },
@@ -30,8 +30,8 @@ export function Testimonials() {
             Topluluğumuzdan Gerçek Hikâyeler
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/55">
-            Finovela&apos;nın akıllı işlem özelliklerinin dünya genelinde
-            yatırımcıların deneyimini nasıl dönüştürdüğünü keşfet.
+            Finovela&apos;nın akıllı analiz özelliklerinin dünya genelinde
+            yatırımcıların araştırma deneyimini nasıl dönüştürdüğünü keşfet.
           </p>
           <div className="mt-9 flex justify-center">
             <Link href="/app" className="inline-flex h-14 items-center justify-center rounded-full bg-[linear-gradient(90deg,#cfe0ff,#e6f0ff)] px-9 text-lg font-semibold text-black transition hover:brightness-105">

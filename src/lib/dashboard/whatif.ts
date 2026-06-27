@@ -103,20 +103,30 @@ export function runMonteCarlo(input: WhatIfInput): WhatIfResult {
   const mean = endValues.reduce((a, b) => a + b, 0) / endValues.length;
   const probGain = endValues.filter((v) => v > startValue).length / endValues.length;
 
-  // Temsili eğriler — sabit z-seviyeleriyle (p90/p50/p10 yaklaşık) tek yol çiz.
-  const buildCurve = (zLevel: number): number[] => {
+  // Temsili eğriler — DOĞRU finansal model: GBM'de belirsizlik zamanın KAREKÖKÜ
+  // ile büyür (t ile değil). Her gün d için beklenen log-değer:
+  //   μ·d  +  z · σ · √d        (z: senaryo dilimi, σ√d: o güne kadarki sapma)
+  // Böylece iyimser/kötümser ufukla MAKUL açılır (katrilyon olmaz), eğri kavislidir,
+  // ve her senaryo doğru yüzdelik dilime (p90/p50/p10) oturur. Gürültü organik kavis verir.
+  const muDaily = annualReturn - 0.5 * annualVol * annualVol; // yıllık log-drift
+  const buildCurve = (zLevel: number, pathSeed: number): number[] => {
     const curve: number[] = [startValue];
-    let v = startValue;
-    for (let d = 0; d < horizonDays; d++) {
-      v = v * Math.exp(drift + diffusion * zLevel);
-      curve.push(v);
+    const noise = mulberry32(seed ^ pathSeed);
+    let wob = 0;
+    for (let d = 1; d <= horizonDays; d++) {
+      const tYears = d / 252;
+      // beklenen log-getiri: drift·t + z·σ·√t
+      const expected = muDaily * tYears + zLevel * annualVol * Math.sqrt(tYears);
+      // küçük sönümlü organik dalga (görsel kavis; son noktada sıfıra yaklaşır)
+      wob = wob * 0.9 + gaussian(noise) * 0.012 * (1 - d / horizonDays);
+      curve.push(startValue * Math.exp(expected + wob));
     }
     return curve;
   };
   // z ≈ ±1.28 → ~%10/%90 dilim
-  const optimistic = buildCurve(1.28);
-  const base = buildCurve(0);
-  const pessimistic = buildCurve(-1.28);
+  const optimistic = buildCurve(1.28, 0x1111);
+  const base = buildCurve(0, 0x2222);
+  const pessimistic = buildCurve(-1.28, 0x3333);
 
   const band = (label: string, curve: number[]): ScenarioBand => {
     const end = curve[curve.length - 1];

@@ -5,6 +5,7 @@
 // portföy = beyaz çizgi, benchmark = soluk kesikli, drawdown = kırmızı dolgu.
 
 import { useState } from "react";
+import { Check } from "lucide-react";
 import type { EquityPoint } from "@/lib/dashboard/backtest";
 import { paperStore } from "@/lib/dashboard/paper-store";
 import { notifStore } from "@/lib/dashboard/use-notifications";
@@ -258,22 +259,35 @@ export function InvestBasket({
 
   return (
     <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-      <div className="flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-4">
-        <span className="text-sm text-white/45">$</span>
+      <div
+        className="flex items-center gap-2 rounded-full border px-4"
+        style={{ borderColor: "var(--ais-line-strong)", background: "var(--ais-surface)" }}
+      >
+        <span className="text-sm text-[var(--ais-fg-faint)]">$</span>
         <input
           value={amount}
           onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
           inputMode="decimal"
-          className="w-24 bg-transparent py-2.5 text-sm text-white focus:outline-none"
+          className="w-24 bg-transparent py-2.5 text-sm text-[var(--ais-fg)] placeholder:text-[var(--ais-fg-faint)] focus:outline-none"
           placeholder="Tutar"
         />
       </div>
       <button
         onClick={invest}
         disabled={busy}
-        className="flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-7 text-sm font-bold text-black transition hover:brightness-105 disabled:opacity-60"
+        className="flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-7 text-sm font-bold text-white transition hover:brightness-105 disabled:opacity-60"
+        style={{ background: "var(--ais-accent)" }}
       >
-        {busy ? "Yatırılıyor…" : done ? "Yatırıldı ✓" : `${fmtUsd0(parseFloat(amount) || 0)} yatır`}
+        {busy ? (
+          "Yatırılıyor…"
+        ) : done ? (
+          <>
+            <Check size={16} strokeWidth={2.5} />
+            Yatırıldı
+          </>
+        ) : (
+          `${fmtUsd0(parseFloat(amount) || 0)} yatır`
+        )}
       </button>
       {error && (
         <span className="text-xs sm:self-center" style={{ color: DOWN }}>

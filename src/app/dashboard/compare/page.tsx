@@ -1,32 +1,23 @@
 "use client";
 
+/**
+ * Finovela Hisse Karşılaştırma — 2-4 sembolü yan yana metrik tablosunda kıyasla.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, ais-dt dense tablo, token renkleri. TÜM metrikler CANLI gerçek
+ * veriden gelir; veri gelmeyen alanlar UYDURULMAZ → "—".
+ * Beyaz-sabit renk YOK — hepsi --ais-* token (açık temada okunur).
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
-import {
-  SectionCard,
-  PageTitle,
-  EmptyState,
-  AIS_UP,
-  AIS_DOWN,
-} from "@/components/dashboard/ais-kit";
 import { Sparkline } from "@/components/dashboard/area-chart";
 import { fmtMoney } from "@/lib/dashboard/data";
-import {
-  MagnifyingGlass,
-  Spinner,
-  X,
-  Scales,
-  Plus,
-} from "@phosphor-icons/react";
+import { Search, Loader2, X, Scale, Plus } from "lucide-react";
 
-/* ──────────────────────────────────────────────────────────────
-   Hisse Karşılaştırma — 2-4 sembolü yan yana metrik tablosunda kıyasla.
-   AI Studio SİYAH tema (.ais). TÜM metrikler CANLI gerçek veriden gelir:
-   fiyat/değişim/hacim → /api/market/quote, piyasa değeri → /api/market/profile,
-   52 hafta yüksek/düşük → /api/market/fundamentals (Yahoo). Gerçek veri
-   gelmeyen alanlar UYDURULMAZ; "—" gösterilir.
-   ────────────────────────────────────────────────────────────── */
+// Didit açık-tema renkleri.
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
 
 const MAX = 4;
 
@@ -59,7 +50,7 @@ function fmtCompact(n: number): string {
 function Delta({ value }: { value: number }) {
   const up = value >= 0;
   return (
-    <span className="num text-[12.5px] font-medium" style={{ color: up ? AIS_UP : AIS_DOWN }}>
+    <span className="num text-[12.5px] font-medium" style={{ color: up ? UP : DOWN }}>
       {up ? "+" : "−"}
       {Math.abs(value).toFixed(2)}%
     </span>
@@ -78,7 +69,7 @@ export default function ComparePage() {
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
     if (query.trim().length < 1) {
-      setHits([]);
+      setHits([]); // eslint-disable-line react-hooks/set-state-in-effect
       return;
     }
     setSearching(true);
@@ -95,7 +86,10 @@ export default function ComparePage() {
     const sym = symbol.toUpperCase();
     setQuery("");
     setHits([]);
-    setFocused(false);
+    // NOT: setFocused(false) ÇAĞIRMIYORUZ — kullanıcı arka arkaya 2-4 sembol
+    // ekleyebilsin diye alan "odaklı" kalır (input DOM odağı zaten korunuyor:
+    // dropdown butonu onMouseDown.preventDefault). Aksi halde 2. sembolü ararken
+    // dropdown bir daha açılmaz (onFocus tekrar tetiklenmez).
     if (cols.length >= MAX) return;
     if (cols.some((c) => c.symbol === sym)) return;
 
@@ -163,17 +157,24 @@ export default function ComparePage() {
   return (
     <>
       <Topbar title="Hisse Karşılaştırma" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Hisse Karşılaştırma"
-            desc="2-4 hisseyi yan yana koy; fiyat, değişim, piyasa değeri, hacim ve 52 hafta aralığını tek bakışta kıyasla."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Hisse Karşılaştırma</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              2-4 hisseyi yan yana koy; fiyat, değişim, piyasa değeri, hacim ve 52 hafta aralığını tek
+              bakışta kıyasla.
+            </p>
+          </div>
 
           {/* ── Arama + eklenen sembol chip'leri ── */}
-          <div className="relative">
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] px-4 py-3">
-              <MagnifyingGlass size={18} weight="regular" className="shrink-0 text-[var(--ais-fg-faint)]" />
+          <div className="relative mt-6">
+            <div
+              className="flex flex-wrap items-center gap-2 rounded-xl border px-4 py-3"
+              style={{ borderColor: "var(--ais-line-strong)", background: "var(--ais-surface)" }}
+            >
+              <Search size={18} className="shrink-0 text-[var(--ais-fg-faint)]" />
               {cols.map((c) => (
                 <span
                   key={c.symbol}
@@ -183,10 +184,11 @@ export default function ComparePage() {
                   {c.symbol}
                   <button
                     onClick={() => remove(c.symbol)}
-                    className="grid place-items-center rounded text-[var(--ais-accent)]/70 transition hover:text-[var(--ais-accent)]"
+                    className="grid place-items-center rounded transition hover:opacity-70"
+                    style={{ color: "var(--ais-accent)" }}
                     title="Kaldır"
                   >
-                    <X size={12} weight="bold" />
+                    <X size={12} />
                   </button>
                 </span>
               ))}
@@ -208,11 +210,14 @@ export default function ComparePage() {
                 }
                 className="min-w-[140px] flex-1 bg-transparent text-[14px] text-[var(--ais-fg)] placeholder:text-[var(--ais-fg-faint)] focus:outline-none disabled:opacity-40"
               />
-              {searching && <Spinner size={16} className="animate-spin text-[var(--ais-fg-faint)]" />}
+              {searching && <Loader2 size={16} className="animate-spin text-[var(--ais-fg-faint)]" />}
             </div>
 
             {focused && hits.length > 0 && cols.length < MAX && (
-              <div className="ais-card absolute z-20 mt-2 w-full overflow-hidden p-1">
+              <div
+                className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border p-1 shadow-[0_16px_40px_-16px_rgba(26,26,26,0.2)]"
+                style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+              >
                 {hits.map((h) => {
                   const added = cols.some((c) => c.symbol === h.symbol);
                   return (
@@ -221,13 +226,13 @@ export default function ComparePage() {
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => !added && addSymbol(h.symbol, h.name)}
                       disabled={added}
-                      className="ais-row flex w-full items-center gap-3 px-3 py-2.5 text-left disabled:opacity-40"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition hover:bg-[var(--ais-surface-2)] disabled:opacity-40"
                     >
                       <TickerBadge symbol={h.symbol} size={26} />
                       <span className="text-[13px] font-medium text-[var(--ais-fg)]">{h.symbol}</span>
                       <span className="truncate text-[12.5px] text-[var(--ais-fg-muted)]">{h.name}</span>
                       <span className="ml-auto shrink-0 text-[var(--ais-fg-faint)]">
-                        {added ? <span className="text-[11px]">Eklendi</span> : <Plus size={14} weight="bold" />}
+                        {added ? <span className="text-[11px]">Eklendi</span> : <Plus size={14} />}
                       </span>
                     </button>
                   );
@@ -238,22 +243,36 @@ export default function ComparePage() {
 
           {/* ── Boş durum ── */}
           {cols.length === 0 ? (
-            <SectionCard label="Karşılaştırma" desc="Seçtiğin semboller burada yan yana kıyaslanır." className="mt-6" bodyClassName="p-0">
-              <EmptyState
-                icon={Scales}
-                title="Karşılaştırmak için sembol ekle"
-                desc="Yukarıdan en az iki hisse ara ve ekle; metrikleri yan yana göster, en iyi/kötü değeri otomatik vurgulayalım."
-              />
-            </SectionCard>
+            <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+              <h2 className="d-section mb-5">Karşılaştırma</h2>
+              <div
+                className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-16 text-center"
+                style={{ borderColor: "var(--ais-line-strong)" }}
+              >
+                <Scale size={22} style={{ color: "var(--ais-fg-faint)" }} />
+                <p className="text-[14px] font-medium text-[var(--ais-fg)]">Karşılaştırmak için sembol ekle</p>
+                <p className="max-w-sm text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Yukarıdan en az iki hisse ara ve ekle; metrikleri yan yana göster, en iyi/kötü değeri
+                  otomatik vurgulayalım.
+                </p>
+              </div>
+            </section>
           ) : (
-            <SectionCard label="Karşılaştırma" desc="Seçtiğin semboller yan yana; en iyi/kötü değer otomatik vurgulanır." className="mt-6" bodyClassName="p-0">
-              <div className="overflow-x-auto">
+            <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+              <div className="mb-5">
+                <h2 className="d-section">Karşılaştırma</h2>
+                <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">
+                  Seçtiğin semboller yan yana; en iyi/kötü değer otomatik vurgulanır.
+                </p>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
                 <table className="ais-dt min-w-[640px]">
                   <thead>
                     <tr>
-                      <th className="w-[160px]">Metrik</th>
+                      <th className="w-[160px]">METRİK</th>
                       {cols.map((c) => (
-                        <th key={c.symbol} className="text-right">
+                        <th key={c.symbol} className="!text-right">
                           <div className="flex items-center justify-end gap-2">
                             <TickerBadge symbol={c.symbol} size={22} />
                             <span className="text-[13px] font-medium text-[var(--ais-fg)]">{c.symbol}</span>
@@ -267,7 +286,7 @@ export default function ComparePage() {
                     <tr>
                       <td className="text-[var(--ais-fg-muted)]">Şirket</td>
                       {cols.map((c) => (
-                        <td key={c.symbol} className="text-right">
+                        <td key={c.symbol} className="!text-right">
                           {c.loading ? (
                             <div className="ais-skeleton ml-auto h-[12px] w-24" />
                           ) : (
@@ -281,7 +300,7 @@ export default function ComparePage() {
                     <tr>
                       <td className="text-[var(--ais-fg-muted)]">Trend</td>
                       {cols.map((c) => (
-                        <td key={c.symbol} className="text-right">
+                        <td key={c.symbol} className="!text-right">
                           {c.loading ? (
                             <div className="ais-skeleton ml-auto h-[20px] w-[80px]" />
                           ) : (
@@ -342,17 +361,17 @@ export default function ComparePage() {
               </div>
 
               {!anyLoading && ready.length === 1 && (
-                <div className="border-t border-[var(--ais-line)] px-4 py-3 text-[12.5px] text-[var(--ais-fg-muted)]">
+                <p className="mt-3 text-[12.5px] text-[var(--ais-fg-muted)]">
                   Kıyaslamak için bir sembol daha ekle.
-                </div>
+                </p>
               )}
-            </SectionCard>
+            </section>
           )}
 
           {cols.length > 0 && (
             <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--ais-fg-faint)]">
               Yeşil satır içindeki en avantajlı, kırmızı en zayıf değeri gösterir. Tüm değerler
-              canlı piyasa verisinden gelir; bir veri kaynaktan alınamazsa "—" gösterilir.
+              canlı piyasa verisinden gelir; bir veri kaynaktan alınamazsa &quot;—&quot; gösterilir.
               Yatırım tavsiyesi değildir.
             </p>
           )}
@@ -404,9 +423,9 @@ function CompareRow({
         const v = c.loading ? undefined : key2(c);
         const isBest = best !== undefined && v === best && worst !== best;
         const isWorst = worst !== undefined && v === worst && worst !== best;
-        const color = isBest ? AIS_UP : isWorst ? AIS_DOWN : undefined;
+        const color = isBest ? UP : isWorst ? DOWN : undefined;
         return (
-          <td key={c.symbol} className="text-right">
+          <td key={c.symbol} className="!text-right">
             {c.loading ? (
               <div className="ais-skeleton ml-auto h-[12px] w-16" />
             ) : render ? (

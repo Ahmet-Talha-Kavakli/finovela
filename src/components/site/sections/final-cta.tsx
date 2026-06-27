@@ -26,12 +26,12 @@ export function FinalCta() {
 
       <div className="relative mx-auto max-w-3xl px-6 py-40 text-center">
         <h2 className="font-display text-[42px] font-bold leading-[1.3] text-white">
-          Cebinde Bir Dahiyle İşlem Yapmaya Hazır mısın?
+          Cebinde Bir Dahiyle Araştırmaya Hazır mısın?
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/65">
-          Zor işi Finovela&apos;ya bırakan binlerce yatırımcıya katıl. Yeni
-          başlayanlar için en iyi AI yatırım yardımcısıyla başla — denemesi
-          ücretsiz.
+          Araştırmanın zor işini Finovela&apos;ya bırakan binlerce yatırımcıya
+          katıl. Yeni başlayanlar için en iyi AI yatırım araştırma yardımcısıyla
+          başla — denemesi ücretsiz.
         </p>
         <div className="mt-10 flex justify-center">
           <Link

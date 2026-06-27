@@ -1,10 +1,15 @@
 "use client";
 
+/**
+ * Finovela Hisse Tarama — kriter çubuğu + filtreli ais-dt sonuç tablosu.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, chip filtreler, token renkleri. Beyaz-sabit renk YOK.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
-import { PageTitle, SectionCard, AIS_UP, AIS_DOWN } from "@/components/dashboard/ais-kit";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { UNIVERSE } from "@/lib/market/universe";
 import {
@@ -22,11 +27,16 @@ import {
   type SortKey,
 } from "@/lib/dashboard/screener";
 
-/** İnce yüzde göstergesi (AIS renkleri). */
+// Didit açık-tema renkleri — beyaz zeminde okunur.
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
+const ACCENT = "var(--ais-accent)";
+
+/** İnce yüzde göstergesi — Didit yeşil/kırmızı. */
 function Delta({ value }: { value: number }) {
   const up = value >= 0;
   return (
-    <span className="num text-[12.5px]" style={{ color: up ? AIS_UP : AIS_DOWN }}>
+    <span className="num text-[12.5px] font-medium" style={{ color: up ? UP : DOWN }}>
       {up ? "+" : "−"}
       {Math.abs(value).toFixed(2)}%
     </span>
@@ -88,29 +98,35 @@ export default function ScreenerPage() {
   return (
     <>
       <Topbar title="Hisse Tarama" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Hisse Tarama"
-            desc="Kriterlerini belirle, evreni filtrele; Finovela uygun enstrümanları listeler."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Hisse Tarama</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              Kriterlerini belirle, evreni filtrele; Finovela uygun enstrümanları listeler.
+            </p>
+          </div>
 
-          {/* hazır şablonlar */}
-          <div className="flex flex-wrap items-center gap-2">
-            {PRESETS.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setCriteria(p.criteria)}
-                className={
-                  activePreset === p.key
-                    ? "rounded-full px-3.5 py-1.5 text-[12px] font-medium"
-                    : "rounded-full border border-[var(--ais-line)] px-3.5 py-1.5 text-[12px] text-[var(--ais-fg-muted)] transition hover:border-[var(--ais-line-strong)] hover:text-[var(--ais-fg)]"
-                }
-                style={activePreset === p.key ? { background: "var(--ais-accent-bg)", color: "var(--ais-accent)" } : undefined}
-              >
-                {p.label}
-              </button>
-            ))}
+          {/* ───────── Hazır şablonlar ───────── */}
+          <div className="mt-6 flex flex-wrap items-center gap-1.5">
+            {PRESETS.map((p) => {
+              const on = activePreset === p.key;
+              return (
+                <button
+                  key={p.key}
+                  onClick={() => setCriteria(p.criteria)}
+                  className="rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition"
+                  style={{
+                    borderColor: on ? "transparent" : "var(--ais-line)",
+                    background: on ? "var(--ais-accent-bg)" : "transparent",
+                    color: on ? ACCENT : "var(--ais-fg-muted)",
+                  }}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
             <button
               onClick={() => setCriteria(DEFAULT_CRITERIA)}
               className="ml-auto text-[12px] text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]"
@@ -119,29 +135,33 @@ export default function ScreenerPage() {
             </button>
           </div>
 
-          {/* filtre çubuğu */}
-          <SectionCard label="Filtreler" className="mt-10">
+          {/* ───────── Filtreler ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <h2 className="d-section mb-5">Filtreler</h2>
+
             {/* varlık sınıfı çipleri */}
             <div className="mb-5 flex flex-wrap gap-1.5">
-              {FILTERS.assetClasses.map((c) => (
-                <button
-                  key={c.key}
-                  onClick={() => patch({ assetClass: c.key as AssetClass })}
-                  className={
-                    criteria.assetClass === c.key
-                      ? "rounded-full px-3 py-1.5 text-[12px] font-medium"
-                      : "rounded-full border border-[var(--ais-line)] px-3 py-1.5 text-[12px] text-[var(--ais-fg-muted)] transition hover:border-[var(--ais-line-strong)] hover:text-[var(--ais-fg)]"
-                  }
-                  style={criteria.assetClass === c.key ? { background: "var(--ais-accent-bg)", color: "var(--ais-accent)" } : undefined}
-                >
-                  {c.label}
-                </button>
-              ))}
+              {FILTERS.assetClasses.map((c) => {
+                const on = criteria.assetClass === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    onClick={() => patch({ assetClass: c.key as AssetClass })}
+                    className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
+                    style={{
+                      borderColor: on ? "transparent" : "var(--ais-line)",
+                      background: on ? "var(--ais-accent-bg)" : "transparent",
+                      color: on ? ACCENT : "var(--ais-fg-muted)",
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* dropdown / aralık satırı */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {/* sektör */}
               <Field label="Sektör">
                 <select
                   value={criteria.sector}
@@ -157,7 +177,6 @@ export default function ScreenerPage() {
                 </select>
               </Field>
 
-              {/* günlük değişim */}
               <Field label="Günlük değişim">
                 <select
                   value={criteria.changeMode}
@@ -174,7 +193,6 @@ export default function ScreenerPage() {
                 </select>
               </Field>
 
-              {/* piyasa değeri kademesi */}
               <Field label="Piyasa değeri">
                 <select
                   value={criteria.capTier}
@@ -191,7 +209,6 @@ export default function ScreenerPage() {
                 </select>
               </Field>
 
-              {/* sıralama */}
               <Field label="Sıralama">
                 <select
                   value={criteria.sort}
@@ -206,7 +223,6 @@ export default function ScreenerPage() {
                 </select>
               </Field>
 
-              {/* fiyat aralığı */}
               <Field label="Min fiyat">
                 <input
                   type="number"
@@ -236,27 +252,25 @@ export default function ScreenerPage() {
                 />
               </Field>
             </div>
-          </SectionCard>
+          </section>
 
-          {/* sonuçlar */}
-          <SectionCard
-            label="Sonuçlar"
-            className="mt-3"
-            bodyClassName="p-0"
-            action={
-              <span className="num text-[12px] text-[var(--ais-fg-muted)]">
+          {/* ───────── Sonuçlar ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <h2 className="d-section">Sonuçlar</h2>
+              <span className="num text-[12px] text-[var(--ais-fg-faint)]">
                 {loading ? "Yükleniyor…" : `${results.length} sonuç`}
               </span>
-            }
-          >
-            <div className="overflow-x-auto">
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--ais-line)" }}>
               <table className="ais-dt min-w-[640px]">
                 <thead>
                   <tr>
-                    <th>Varlık</th>
-                    <th>Sektör</th>
-                    <th className="text-right">Fiyat</th>
-                    <th className="text-right">Bugün</th>
+                    <th>VARLIK</th>
+                    <th>SEKTÖR</th>
+                    <th className="!text-right">FİYAT</th>
+                    <th className="!text-right">BUGÜN</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -269,17 +283,17 @@ export default function ScreenerPage() {
                       <td>
                         <div className="flex items-center gap-3">
                           <TickerBadge symbol={a.symbol} size={28} />
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-[13px] font-medium text-[var(--ais-fg)]">{a.symbol}</p>
-                            <p className="text-[12px] text-[var(--ais-fg-muted)]">{a.name}</p>
+                            <p className="truncate text-[12px] text-[var(--ais-fg-muted)]">{a.name}</p>
                           </div>
                         </div>
                       </td>
                       <td className="text-[var(--ais-fg-muted)]">{a.sector}</td>
-                      <td className="num text-right text-[var(--ais-fg)]">
+                      <td className="num !text-right font-medium">
                         {fmtMoney(a.price, a.currency)}
                       </td>
-                      <td className="text-right">
+                      <td className="!text-right">
                         <Delta value={a.changePct} />
                       </td>
                     </tr>
@@ -288,7 +302,7 @@ export default function ScreenerPage() {
                     <tr>
                       <td
                         colSpan={4}
-                        className="text-center text-[var(--ais-fg-faint)]"
+                        className="py-8 text-center text-[var(--ais-fg-faint)]"
                       >
                         Bu kriterlere uyan enstrüman bulunamadı. Filtreleri
                         gevşetmeyi deneyin.
@@ -315,15 +329,14 @@ export default function ScreenerPage() {
                 </tbody>
               </table>
             </div>
-          </SectionCard>
+          </section>
         </div>
       </div>
     </>
   );
 }
 
-const selectCls =
-  "ais-input [&>option]:bg-[var(--ais-surface)]";
+const selectCls = "ais-input [&>option]:bg-[var(--ais-surface)]";
 
 function Field({
   label,

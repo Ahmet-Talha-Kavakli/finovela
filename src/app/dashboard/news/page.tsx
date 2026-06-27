@@ -1,16 +1,17 @@
 "use client";
 
+/**
+ * Finovela Haberler — piyasa haber akışı + günlük AI özeti, duyarlılık filtreleri.
+ * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
+ * bölümler, soft rozetler, token renkleri (beyaz-sabit YOK).
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
-import { PageTitle, SectionCard, IconChip, AIS_ACCENT, AIS_UP, AIS_DOWN } from "@/components/dashboard/ais-kit";
 import { Markdown } from "@/components/dashboard/markdown";
 import { newsSentiment, type NewsSentiment } from "@/lib/dashboard/sentiment";
-import {
-  Sparkle,
-  Newspaper,
-  ArrowSquareOut,
-} from "@phosphor-icons/react";
+import { Sparkles, Newspaper, ExternalLink } from "lucide-react";
 
 type NewsItem = {
   id: string;
@@ -24,10 +25,13 @@ type NewsItem = {
   sentiment?: "positive" | "neutral" | "negative";
 };
 
-// Duyarlılık renkleri — AIS tek istisna renkler (yeşil/kırmızı), gerisi nötr.
+// Didit açık-tema renkleri — yeşil/kırmızı tek istisna, gerisi nötr token.
+const UP = "var(--ais-green)";
+const DOWN = "#d93025";
+
 const sentColor: Record<NewsSentiment, string> = {
-  positive: AIS_UP,
-  negative: AIS_DOWN,
+  positive: UP,
+  negative: DOWN,
   neutral: "var(--ais-fg-muted)",
 };
 const sentLabelTr: Record<NewsSentiment, string> = {
@@ -37,11 +41,12 @@ const sentLabelTr: Record<NewsSentiment, string> = {
 };
 
 type Filter = "all" | NewsSentiment;
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: "all", label: "Tümü" },
-  { key: "positive", label: "Olumlu" },
-  { key: "neutral", label: "Nötr" },
-  { key: "negative", label: "Olumsuz" },
+// Seçili çip dolgu rengi (Didit soft): Tümü=accent mavi, Olumlu=yeşil, Nötr=gri, Olumsuz=kırmızı.
+const FILTERS: { key: Filter; label: string; bg: string; fg: string }[] = [
+  { key: "all", label: "Tümü", bg: "var(--ais-accent-bg)", fg: "var(--ais-accent)" },
+  { key: "positive", label: "Olumlu", bg: "var(--ais-green-bg)", fg: "var(--ais-green)" },
+  { key: "neutral", label: "Nötr", bg: "var(--ais-surface-2)", fg: "var(--ais-fg)" },
+  { key: "negative", label: "Olumsuz", bg: "rgba(217,48,37,0.10)", fg: "#d93025" },
 ];
 
 /** Türkçe göreli zaman — SADECE istemci tarafında (now parametresi mount sonrası). */
@@ -74,7 +79,7 @@ export default function NewsPage() {
   // Hidrasyon güvenliği: göreli zamanı yalnızca mount sonrası hesapla.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
-    setNow(Date.now());
+    setNow(Date.now()); // eslint-disable-line react-hooks/set-state-in-effect
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
   }, []);
@@ -142,20 +147,31 @@ export default function NewsPage() {
   return (
     <>
       <Topbar title="Haberler" />
-      <div className="ais min-h-[calc(100vh-64px)]">
-        <div className="max-w-7xl px-8 py-10">
-          <PageTitle
-            title="Haberler"
-            desc="Piyasayı hareket ettiren gelişmeler ve Finovela'nın günlük yorumu."
-          />
+      <div className="ais ais-light min-h-[calc(100vh-64px)]">
+        <div className="mx-auto max-w-5xl px-8 py-10">
+          {/* ───────── Başlık ───────── */}
+          <div>
+            <h1 className="d-title">Haberler</h1>
+            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+              Piyasayı hareket ettiren gelişmeler ve Finovela&apos;nın günlük yorumu.
+            </p>
+          </div>
 
-          {/* Günlük yapay zeka özeti */}
-          <SectionCard
-            label="Finovela'nın günlük piyasa özeti"
-            className="mt-6"
-            action={<IconChip icon={Sparkle} color={AIS_ACCENT} size={30} />}
-          >
-            <div>
+          {/* ───────── Günlük yapay zeka özeti ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <div className="mb-5 flex items-center gap-3">
+              <span
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
+                style={{ background: "var(--ais-accent-bg)", color: "var(--ais-accent)" }}
+              >
+                <Sparkles size={16} />
+              </span>
+              <h2 className="d-section">Finovela&apos;nın günlük piyasa özeti</h2>
+            </div>
+            <div
+              className="rounded-xl border p-5"
+              style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+            >
               {summaryLoading ? (
                 <div className="flex items-center gap-2 text-[13px] text-[var(--ais-fg-muted)]">
                   <span className="inline-flex gap-1">
@@ -166,93 +182,96 @@ export default function NewsPage() {
                   Özet hazırlanıyor…
                 </div>
               ) : summary ? (
-                <Markdown text={summary} />
+                <Markdown text={summary} tone="light" />
               ) : (
-                <p className="text-[13px] text-[var(--ais-fg-muted)]">
-                  Şu an özet bulunmuyor.
-                </p>
+                <p className="text-[13px] text-[var(--ais-fg-muted)]">Şu an özet bulunmuyor.</p>
               )}
             </div>
-          </SectionCard>
+          </section>
 
-          {/* Filtreler */}
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            {FILTERS.map((f) => {
-              const active = filter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
-                  className={`rounded-full border px-3.5 py-1.5 text-[12.5px] transition ${
-                    active
-                      ? "border-[var(--ais-line-strong)] bg-[var(--ais-surface-2)] text-[var(--ais-fg)]"
-                      : "border-[var(--ais-line)] text-[var(--ais-fg-muted)] hover:border-[var(--ais-line-strong)] hover:text-[var(--ais-fg)]"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
+          {/* ───────── Haber akışı ───────── */}
+          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+            <h2 className="d-section mb-4">Piyasa haberleri</h2>
 
-            {symbols.length > 0 && (
-              <>
-                <span className="mx-1 h-5 w-px bg-[var(--ais-line)]" />
-                {symbolFilter && (
+            {/* filtreler — Didit chip */}
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {FILTERS.map((f) => {
+                const active = filter === f.key;
+                return (
                   <button
-                    onClick={() => setSymbolFilter(null)}
-                    className="rounded-full border border-[var(--ais-line)] px-3.5 py-1.5 text-[12.5px] text-[var(--ais-fg-muted)] transition hover:border-[var(--ais-line-strong)] hover:text-[var(--ais-fg)]"
+                    key={f.key}
+                    onClick={() => setFilter(f.key)}
+                    className="rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium transition"
+                    style={{
+                      borderColor: active ? "transparent" : "var(--ais-line)",
+                      background: active ? f.bg : "transparent",
+                      color: active ? f.fg : "var(--ais-fg-muted)",
+                    }}
                   >
-                    Sembolü temizle
+                    {f.label}
                   </button>
-                )}
-                {symbols.map((sym) => {
-                  const active = symbolFilter === sym;
-                  return (
-                    <button
-                      key={sym}
-                      onClick={() => setSymbolFilter(active ? null : sym)}
-                      className={`rounded-full border px-3 py-1.5 text-[12.5px] transition ${
-                        active
-                          ? "border-[var(--ais-line-strong)] bg-[var(--ais-surface-2)] text-[var(--ais-fg)]"
-                          : "border-[var(--ais-line)] text-[var(--ais-fg-muted)] hover:border-[var(--ais-line-strong)] hover:text-[var(--ais-fg)]"
-                      }`}
-                    >
-                      {sym}
-                    </button>
-                  );
-                })}
-              </>
-            )}
-          </div>
+                );
+              })}
 
-          {/* Haber akışı */}
-          <SectionCard label="Piyasa haberleri" className="mt-3" bodyClassName="p-2">
-            {loading ? (
-              <div className="space-y-3 p-2">
-                {[0, 1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 px-2 py-3"
-                  >
-                    <div className="h-8 w-8 shrink-0 animate-pulse rounded-lg bg-[var(--ais-surface-2)]" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-3.5 w-3/4 animate-pulse rounded bg-[var(--ais-surface-2)]" />
-                      <div className="h-3 w-1/3 animate-pulse rounded bg-[var(--ais-surface-2)]" />
+              {symbols.length > 0 && (
+                <>
+                  <span className="mx-1 h-5 w-px" style={{ background: "var(--ais-line)" }} />
+                  {symbolFilter && (
+                    <button
+                      onClick={() => setSymbolFilter(null)}
+                      className="rounded-full border px-3.5 py-1.5 text-[12.5px] text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
+                      style={{ borderColor: "var(--ais-line)" }}
+                    >
+                      Sembolü temizle
+                    </button>
+                  )}
+                  {symbols.map((sym) => {
+                    const active = symbolFilter === sym;
+                    return (
+                      <button
+                        key={sym}
+                        onClick={() => setSymbolFilter(active ? null : sym)}
+                        className="rounded-full border px-3 py-1.5 text-[12.5px] transition"
+                        style={{
+                          borderColor: active ? "var(--ais-line-strong)" : "var(--ais-line)",
+                          background: active ? "var(--ais-surface-2)" : "transparent",
+                          color: active ? "var(--ais-fg)" : "var(--ais-fg-muted)",
+                        }}
+                      >
+                        {sym}
+                      </button>
+                    );
+                  })}
+                </>
+              )}
+            </div>
+
+            <div
+              className="overflow-hidden rounded-xl border"
+              style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+            >
+              {loading ? (
+                <div className="space-y-3 p-4">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-start gap-3 px-2 py-3">
+                      <div className="ais-skeleton h-8 w-8 shrink-0 rounded-lg" />
+                      <div className="flex-1 space-y-2">
+                        <div className="ais-skeleton h-3.5 w-3/4" />
+                        <div className="ais-skeleton h-3 w-1/3" />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : error ? (
-              <p className="py-8 text-center text-[13px] text-[var(--ais-fg-muted)]">
-                Haberler yüklenemedi. Lütfen daha sonra tekrar deneyin.
-              </p>
-            ) : filtered.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-[var(--ais-fg-muted)]">
-                Bu filtreye uygun haber bulunamadı.
-              </p>
-            ) : (
-              <div className="space-y-0.5">
-                {filtered.map((n) => {
+                  ))}
+                </div>
+              ) : error ? (
+                <p className="py-10 text-center text-[13px] text-[var(--ais-fg-muted)]">
+                  Haberler yüklenemedi. Lütfen daha sonra tekrar deneyin.
+                </p>
+              ) : filtered.length === 0 ? (
+                <p className="py-10 text-center text-[13px] text-[var(--ais-fg-muted)]">
+                  Bu filtreye uygun haber bulunamadı.
+                </p>
+              ) : (
+                filtered.map((n, i) => {
                   const sent = newsSentiment(n.headline);
                   return (
                     <a
@@ -260,13 +279,17 @@ export default function NewsPage() {
                       href={n.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ais-row group flex items-start gap-3 px-3 py-3"
+                      className="group flex items-start gap-3 px-4 py-3.5 transition hover:bg-[var(--ais-surface-2)]"
+                      style={{ borderTop: i === 0 ? "none" : "1px solid var(--ais-line)" }}
                     >
                       {n.related ? (
                         <TickerBadge symbol={n.related} size={30} />
                       ) : (
-                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--ais-line)] bg-[var(--ais-surface-2)] text-[var(--ais-fg-muted)]">
-                          <Newspaper size={15} weight="regular" />
+                        <span
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border text-[var(--ais-fg-muted)]"
+                          style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface-2)" }}
+                        >
+                          <Newspaper size={15} />
                         </span>
                       )}
 
@@ -275,7 +298,7 @@ export default function NewsPage() {
                           <p className="flex-1 text-[13.5px] font-medium text-[var(--ais-fg)]">
                             {n.headline}
                           </p>
-                          <ArrowSquareOut
+                          <ExternalLink
                             size={14}
                             className="mt-0.5 shrink-0 text-[var(--ais-fg-faint)] transition group-hover:text-[var(--ais-fg-muted)]"
                           />
@@ -308,10 +331,10 @@ export default function NewsPage() {
                       </div>
                     </a>
                   );
-                })}
-              </div>
-            )}
-          </SectionCard>
+                })
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </>

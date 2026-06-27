@@ -17,7 +17,7 @@ const ITEMS = [
     icon: ChatCircleDots,
     title: "Sohbetle Her Şeyi Yap",
     accent: "Claude Destekli Uzman Sohbet",
-    text: "Hisse analizinden portföy kurmaya, opsiyon stratejisinden risksiz işleme kadar — Finovela'ya günlük dille söyle, yetkin bir analist gibi akıl yürütüp harekete geçsin.",
+    text: "Hisse analizinden portföy kurgusuna, opsiyon stratejisinden risksiz sanal denemeye kadar — Finovela'ya günlük dille söyle, yetkin bir analist gibi akıl yürütüp içgörüsünü sunsun.",
   },
   {
     icon: Globe,
@@ -45,7 +45,7 @@ export function NoExpertise() {
       <CurveDivider color="#0a1838" />
       <div className="mx-auto max-w-[1100px] px-6 py-40 text-center">
         <h2 className="font-display text-[42px] font-bold leading-[1.3] text-white">
-          Sen Söyle, Finovela Yapsın
+          Sen Söyle, Finovela Araştırsın
           <br />
           Uzmanlık Gerekmez
         </h2>

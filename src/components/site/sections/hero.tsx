@@ -43,13 +43,20 @@ export function Hero() {
           </p>
           {/* Başlık — 52px/700, line-height 72px, TEK SATIR (RockFlow ölçüldü) */}
           <h1 className="font-display whitespace-nowrap text-[52px] font-bold leading-[72px] text-white">
-            7/24 Yapay Zeka Yatırım Asistanın
+            7/24 Yapay Zeka Yatırım Araştırma Asistanın
           </h1>
 
           {/* Alt satır — 16px/700, beyaz (RockFlow ölçüldü) */}
           <p className="mt-8 max-w-[560px] text-base font-bold leading-6 text-white">
             Claude destekli sohbet: piyasayı webden canlı tarar, yüklediğin
-            grafikleri okur, işlem açar ve dengeler. Risksiz dene — ücretsiz.
+            grafikleri okur, fikrini sanal portföyde test eder ve içgörü sunar.
+            Risksiz dene — ücretsiz.
+          </p>
+
+          {/* uyumluluk rozeti — zarif, göze batmadan görünür */}
+          <p className="mt-5 max-w-[560px] text-xs font-medium leading-5 text-white/60">
+            Yazılım &amp; eğitim aracı — yatırım danışmanlığı değil · paranı asla
+            tutmayız
           </p>
 
           {/* CTA — 18px/600, h56, gradient #cfe0ff → #e6f0ff, SİYAH metin (RockFlow ölçüldü) */}

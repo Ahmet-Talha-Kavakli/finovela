@@ -10,7 +10,7 @@ import type { PlanId } from "@/lib/plans";
 export const metadata: Metadata = {
   title: "Fiyatlandırma — Finovela",
   description:
-    "Ücretsiz başla. Sınırsız Claude destekli AI, web araştırma, otomasyon ve derin analiz için Finovela Pro veya Sınırsız'a geç. Şeffaf fiyatlandırma, sürpriz yok.",
+    "Ücretsiz başla. Sınırsız Claude destekli AI, web araştırma, simülasyon ve derin analiz için Finovela Pro veya Sınırsız'a geç. Şeffaf fiyatlandırma, sürpriz yok.",
 };
 
 const TIERS: {
@@ -28,7 +28,7 @@ const TIERS: {
     planId: "free",
     price: "$0",
     cadence: "sonsuza dek",
-    tagline: "AI ile yatırıma başlamak için gereken temel her şey.",
+    tagline: "AI ile araştırma ve analize başlamak için gereken temel her şey.",
     cta: "Ücretsiz başla",
     highlight: false,
     features: [
@@ -54,9 +54,9 @@ const TIERS: {
       "Web araştırma ve canlı kaynak gösterimi",
       "Dosya ve görsel yükleme (bilanço, grafik)",
       "Finovela 1.1 gelişmiş model",
-      "Sınırsız otomasyon kuralı ve dengeleme",
+      "Sınırsız simülasyon kuralı ve dengeleme analizi",
       "Sınırsız alarm ve hedef",
-      "Kopya işlem (copy trading)",
+      "Strateji kopyalama (simülasyonda)",
       "Gelişmiş teknik analiz ve Finovela Skoru",
     ],
   },
@@ -73,7 +73,7 @@ const TIERS: {
       "Finovela 1.2 — en güçlü model",
       "Derin araştırma (çok adımlı raporlar)",
       "Öncelikli yanıt ve en yüksek hız limiti",
-      "Vergi merkezi — zarar hasadı asistanı",
+      "Vergi merkezi — zarar mahsubu analiz asistanı",
       "Sınırsız dosya/görsel ve uzun bağlam",
       "Erken erişim özellikleri",
       "Öncelikli destek",
@@ -106,8 +106,8 @@ const COMPARE_GROUPS: {
       { label: "Paper trading", cells: [true, true, true] },
       { label: "Teknik analiz kartları", cells: ["Temel", "Gelişmiş", "Gelişmiş"] },
       { label: "Finovela Skoru", cells: [false, true, true] },
-      { label: "Otomasyon kuralları", cells: [false, "Sınırsız", "Sınırsız"] },
-      { label: "Kopya işlem (copy trading)", cells: [false, true, true] },
+      { label: "Simülasyon otomasyon kuralları", cells: [false, "Sınırsız", "Sınırsız"] },
+      { label: "Strateji kopyalama (simülasyon)", cells: [false, true, true] },
     ],
   },
   {
@@ -124,7 +124,7 @@ const COMPARE_GROUPS: {
 const FAQ = [
   {
     q: "Ücretsiz plan ne kadar sürüyor?",
-    a: "Ücretsiz plan sonsuza dek ücretsizdir. Finovela AI ile günde 20 mesaja, paper trading'e ve temel teknik analize erişirsin. Sınırsız AI, web araştırma ve otomasyon için Pro'ya yükseltebilirsin.",
+    a: "Ücretsiz plan sonsuza dek ücretsizdir. Finovela AI ile günde 20 mesaja, paper trading (simülasyon) alanına ve temel teknik analize erişirsin. Sınırsız AI, web araştırma ve simülasyon otomasyonu için Pro'ya yükseltebilirsin.",
   },
   {
     q: "Finovela 1, 1.1 ve 1.2 arasındaki fark ne?",
@@ -136,7 +136,7 @@ const FAQ = [
   },
   {
     q: "Pro için ücretsiz deneme var mı?",
-    a: "Evet, her yeni kullanıcı 14 günlük Pro denemesi alır — sınırsız AI, web araştırma ve otomasyonun tamamı. Başlamak için kart gerekmez.",
+    a: "Evet, her yeni kullanıcı 14 günlük Pro denemesi alır — sınırsız AI, web araştırma ve simülasyon otomasyonunun tamamı. Başlamak için kart gerekmez.",
   },
   {
     q: "Para iade garantisi var mı?",
@@ -176,10 +176,10 @@ export default function PricingPage() {
           <>
             Basit fiyatlandırma.
             <br />
-            Ciddi yatırım gücü.
+            Ciddi analiz gücü.
           </>
         }
-        subtitle="Ücretsiz başla ve Claude destekli Finovela ile yatırıma giriş yap. Sınırsız AI, web araştırma, otomasyon ve derin analiz istediğinde yükselt."
+        subtitle="Ücretsiz başla ve Claude destekli Finovela ile araştırmaya giriş yap. Sınırsız AI, web araştırma, simülasyon ve derin analiz istediğinde yükselt."
       />
 
       {/* fiyat kartları */}
@@ -349,8 +349,8 @@ export default function PricingPage() {
       </section>
 
       <CtaBand
-        title="Bugün AI ile yatırıma başla"
-        subtitle="Sonsuza dek ücretsiz başla. Claude destekli yatırım yardımcın bir mesaj uzağında."
+        title="Bugün AI ile araştırmaya başla"
+        subtitle="Sonsuza dek ücretsiz başla. Claude destekli araştırma ve analiz yardımcın bir mesaj uzağında."
       />
     </PageShell>
   );

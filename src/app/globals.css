@@ -419,6 +419,116 @@ html:has(.vela-dashboard-root) body { background: #0a0a0a; overscroll-behavior: 
   background: var(--ais-bg);
   color: var(--ais-fg);
 }
+
+/* ============================================================
+   DIDIT AÇIK TEMA (.ais.ais-light) — business.didit.me canlı CSS'inden
+   BİREBİR ÖLÇÜLDÜ (puppeteer). Tahmin yok; gerçek değerler:
+     font   : Inter
+     zemin  : #FEFEFE   metin: #1A1A1A / #5D5D5D / #6E6E73
+     mavi   : #2567FF   (yumuşak dolgu rgba(37,103,255,.10))
+     yeşil  : #41D97F / #0F7D4A   kenar: #EDEDED
+     soft bg: rgba(183,191,217,.10)   radius: butonlar 999px (pill), kart 8-12px
+   ============================================================ */
+.ais.ais-light {
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  /* Didit DNA: harfleri hafif sıkıştır (premium his). Ölçüldü: -0.07 → -0.78px.
+     Genel gövde için -0.01em uygundur; başlıklarda daha sıkı (aşağıda). */
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  --ais-bg: #fefefe;                        /* Didit zemini */
+  --ais-surface: #ffffff;                   /* kart — kenarla ayrışır */
+  --ais-surface-2: rgba(120,120,128,0.05);  /* hover / iç dolgu (Didit'in soft gri'si) */
+  --ais-line: #ededed;                       /* 1px açık-gri kenar (ölçüldü) */
+  --ais-line-strong: #e0e0e0;
+  --ais-fg: #1a1a1a;                          /* birincil metin */
+  --ais-fg-muted: #5d5d5d;                    /* ikincil */
+  --ais-fg-faint: #6e6e73;                    /* üçüncül / etiket */
+  --ais-accent: #2567ff;                      /* Didit mavisi (ölçüldü) */
+  --ais-accent-bg: rgba(37,103,255,0.10);     /* mavi yumuşak dolgu */
+  --ais-soft: rgba(183,191,217,0.10);         /* secondary buton/chip zemini */
+  --ais-overlay: rgba(120,120,128,0.05);
+  --ais-overlay-strong: rgba(120,120,128,0.16);
+  --ais-shimmer: rgba(15,23,42,0.04);
+  /* Didit yeşil/uyarı (rozetler) */
+  --ais-green: #0f7d4a;
+  --ais-green-bg: rgba(40,200,64,0.13);
+  --ais-amber: #b25e09;
+  --ais-amber-bg: rgba(245,158,11,0.12);
+}
+/* Kart materyali — Didit: beyaz, 1px kenar, KÖŞE 12px, gölge YOK denecek kadar az. */
+.ais.ais-light .ais-card {
+  border-radius: 12px;
+  box-shadow: none;
+}
+.ais.ais-light .ais-card-hover:hover {
+  box-shadow: 0 4px 16px -8px rgba(26,26,26,0.12);
+  transform: translateY(-1px);
+}
+
+/* Didit pill butonu — primary mavi (999px, Inter 14/500). */
+.ais.ais-light .pill-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 20px; border-radius: 999px;
+  background: var(--ais-accent); color: #fff;
+  font-size: 14px; font-weight: 500; line-height: 1;
+  transition: filter .15s ease;
+}
+.ais.ais-light .pill-primary:hover { filter: brightness(1.06); }
+
+/* Didit pill — secondary/soft (mavi-gri zemin, koyu metin). */
+.ais.ais-light .pill-soft {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 18px; border-radius: 999px;
+  background: var(--ais-soft); color: var(--ais-fg);
+  font-size: 14px; font-weight: 500; line-height: 1;
+  transition: background .15s ease;
+}
+.ais.ais-light .pill-soft:hover { background: rgba(183,191,217,0.18); }
+
+/* Didit soft rozet — pill, yumuşak pastel zemin. */
+.ais.ais-light .badge-soft {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; line-height: 1.2;
+}
+.ais.ais-light .badge-green { background: var(--ais-green-bg); color: var(--ais-green); }
+.ais.ais-light .badge-amber { background: var(--ais-amber-bg); color: var(--ais-amber); }
+.ais.ais-light .badge-blue  { background: var(--ais-accent-bg); color: var(--ais-accent); }
+
+/* ── Didit tipografi hiyerarşisi (ölçülen tam değerler) ── */
+/* Sayfa başlığı: "Welcome back" 26px/500/-0.39px */
+.ais.ais-light .d-title {
+  font-size: 26px; font-weight: 500; letter-spacing: -0.39px;
+  line-height: 1.25; color: var(--ais-fg);
+}
+/* Başlık altı sayaç/açıklama: 13-14px/400 gri */
+.ais.ais-light .d-subtitle {
+  font-size: 14px; font-weight: 400; letter-spacing: -0.011em;
+  color: var(--ais-fg-muted);
+}
+/* Bölüm başlığı (kart içi): 14-15px/500 */
+.ais.ais-light .d-section {
+  font-size: 15px; font-weight: 500; letter-spacing: -0.012em; color: var(--ais-fg);
+}
+/* Label / küçük güçlü metin: 14px/500 */
+.ais.ais-light .d-label {
+  font-size: 14px; font-weight: 500; letter-spacing: -0.007em; color: var(--ais-fg);
+}
+/* Didit'te kart başlıkları kalın değil; gövde metni rahat. Genel ağırlık 400-500. */
+
+/* Lucide ikonları Didit gibi İNCE: stroke-width 1.5 (Lucide default 2). Ölçüldü. */
+.ais.ais-light svg.lucide { stroke-width: 1.5px; }
+
+/* TEK FONT = Inter (Didit). Açık temada HER ŞEY Inter olmalı — sayılar (.num) ve
+   .mono dahil. Koyu .ais bunları --font-display'e (Hanken) zorluyordu; ais-light'ta
+   geri al ki Didit'in birebir fontu kullanılsın. */
+.ais.ais-light,
+.ais.ais-light .num,
+.ais.ais-light .mono {
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
 /* mat kart — dolgu + görünür border + hafif derinlik gölgesi */
 .ais .ais-card {
   background: var(--ais-surface);

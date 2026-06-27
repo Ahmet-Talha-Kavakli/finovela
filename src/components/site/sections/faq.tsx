@@ -11,15 +11,15 @@ const FAQS = [
   },
   {
     q: "How is this different from a normal robo-advisor?",
-    a: "Traditional robo-advisors use a static questionnaire and a fixed model portfolio. Finovela is conversational and agentic: you talk to it, it designs a custom strategy, explains the reasoning, and then automates the entire thing — including rebalancing and tax-loss harvesting.",
+    a: "Finovela is investment research software, not an advisor or a broker — we never hold or manage your money. It's conversational: you talk to it, it designs a custom strategy, explains the reasoning, and lets you test the whole thing risk-free in a paper-trading simulation, including simulated rebalancing.",
   },
   {
     q: "Do I need to know anything about investing?",
-    a: "No. That's the point. You describe your goal in plain English and Finovela handles the strategy, the math, and the execution. It always explains the “why” so you learn as you go.",
+    a: "No. That's the point. You describe your goal in plain English and Finovela handles the research, the strategy, and the math — then lets you try it in simulation. It always explains the “why” so you learn as you go.",
   },
   {
     q: "What can the AI actually do?",
-    a: "Finovela pulls live quotes, charts and news, compares securities, analyzes portfolio risk and overlap, designs and backtests strategies, and sets up automated rules — all from a single chat, with full memory of your conversation.",
+    a: "Finovela pulls live quotes, charts and news, compares securities, analyzes portfolio risk and overlap, designs and backtests strategies, and sets up automated rules you can run in simulation — all from a single chat, with full memory of your conversation.",
   },
   {
     q: "Can I copy other investors?",

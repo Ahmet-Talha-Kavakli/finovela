@@ -19,40 +19,40 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
-  title: "Vergi Optimizasyonu — Finovela",
+  title: "Vergi Raporlama ve Analizi — Finovela",
   description:
-    "Kazandığının daha fazlasını elinde tut. Finovela zararları otomatik mahsup eder, hangi lotların satılacağını optimize eder ve yıl boyunca vergi açısından verimli yatırım yapmana yardım eder.",
+    "Kazandığının daha fazlasını elinde tut. Finovela zarar mahsubu fırsatlarını analiz eder, hangi lotların satılmasının vergi açısından verimli olacağını modeller ve yıl boyu vergi-akıllı raporlar üretir — bir vergi raporlama/hesaplama yazılımıdır, vergi danışmanlığı değildir.",
 };
 
 const FEATURES: Feature[] = [
   {
     icon: TrendDown,
-    title: "Otomatik zarar mahsubu",
-    desc: "Finovela, kazançlarını dengeleyecek zararları gerçekleştirme fırsatlarını yakalar — sadece Aralık'ta değil, yıl boyunca otomatik olarak.",
+    title: "Zarar mahsubu analizi",
+    desc: "Finovela, kazançlarını dengeleyebilecek zarar mahsubu fırsatlarını işaretler — sadece Aralık'ta değil, yıl boyunca sürekli izleyip raporlar.",
     image: "/gen/card-tax-mahsup.png",
   },
   {
     icon: ArrowsClockwise,
     title: "Yapay satış (wash-sale) farkında",
-    desc: "Mahsup, kurallara uygun kalır. Finovela, ilişkili ama birebir aynı olmayan varlıklara yeniden yatırım yaparak yapay satış ihlallerinden kaçınır.",
+    desc: "Önerilen mahsup senaryoları kurallara uygun kalır. Finovela, yapay satış riskine yol açabilecek durumları işaretler; ilişkili alternatif varlıkları analiz ederek sana gösterir.",
     image: "/gen/card-tax-washsale.png",
   },
   {
     icon: Receipt,
-    title: "Akıllı lot seçimi",
-    desc: "Sattığında Finovela, vergi yükünü en aza indiren vergi lotlarını seçer — fayda sağladığı yerde kısa vade yerine uzun vadeyi tercih ederek.",
+    title: "Akıllı lot analizi",
+    desc: "Bir satışı modellediğinde Finovela, vergi yükünü en aza indirecek vergi lotlarını analiz eder — fayda sağladığı yerde kısa vade yerine uzun vadeyi önerir. Kararı sen verirsin.",
     image: "/gen/card-tax-lot.png",
   },
   {
     icon: PiggyBank,
-    title: "Vergi avantajlı hesaplar",
-    desc: "Bireysel emeklilik ve emeklilik hesapları üzerinden yatırım yap; Finovela doğru varlıkları doğru hesaplara yerleştirsin.",
+    title: "Vergi avantajlı hesap içgörüsü",
+    desc: "Bireysel emeklilik ve emeklilik hesaplarını da hesaba kat; Finovela hangi varlığın hangi hesapta vergi açısından daha verimli olacağını analiz edip önersin.",
     image: "/gen/card-tax-hesap.png",
   },
   {
     icon: Scales,
-    title: "Doğrudan endeksleme",
-    desc: "Bir endeksi tek tek hisseler olarak elinde tut; böylece Finovela zararları tekil hisse düzeyinde çok daha sık mahsup edebilir.",
+    title: "Doğrudan endeksleme analizi",
+    desc: "Bir endeksi tek tek hisseler olarak modelle; böylece Finovela zarar mahsubu fırsatlarını tekil hisse düzeyinde çok daha sık tespit edip raporlayabilir.",
     image: "/gen/card-tax-endeksleme.png",
   },
   {
@@ -76,10 +76,10 @@ export default function TaxPage() {
             daha fazlasını tut.
           </>
         }
-        subtitle="Vergiler getirileri sessizce yer. Finovela zararları mahsup eder, en akıllı lotları seçer ve vergi açısından verimli yatırım yapar — yıl boyunca otomatik olarak."
+        subtitle="Vergiler getirileri sessizce yer. Finovela zarar mahsubu fırsatlarını analiz eder, en akıllı lotları modeller ve vergi-akıllı raporlar üretir — yıl boyunca sürekli izleyerek. Kararı sen verirsin."
       >
         <GlassButton href="/app" tone="solid" size="xl">
-          Vergilerimi optimize et
+          Vergi analizini aç
         </GlassButton>
         <GlassButton href="/pricing" tone="glass" size="xl">
           Fiyatlandırmayı gör
@@ -90,7 +90,7 @@ export default function TaxPage() {
         <SectionHeading
           eyebrow="Özellikler"
           title="Varsayılan olarak vergi-akıllı"
-          subtitle="Varlık yöneticilerinin bir servet karşılığında sunduğu stratejiler — yerleşik, otomatik ve açıklamalı."
+          subtitle="Varlık yöneticilerinin bir servet karşılığında sunduğu analizler — yerleşik, sürekli ve açıklamalı raporlar olarak."
         />
         <FeatureGrid items={FEATURES} cols={3} cardStyle="B" />
       </Section>
@@ -104,9 +104,9 @@ export default function TaxPage() {
         />
         <div className="mx-auto mt-14 grid max-w-3xl gap-4 sm:grid-cols-3">
           {[
-            ["%1–2'ye kadar", "Mahsuptan gelen tahmini yıllık vergi sonrası katkı*"],
+            ["%1–2'ye kadar", "Mahsup analizinden gelen tahmini yıllık vergi sonrası katkı*"],
             ["365 gün", "Finovela sadece yıl sonunda değil, fırsatları sürekli izler"],
-            ["Sıfır çaba", "Tamamen otomatik — sen yatırıma devam et yeter"],
+            ["Az çaba", "Analiz ve raporlar hazır — kararı sen verirsin"],
           ].map(([v, l]) => (
             <div
               key={l}
@@ -119,14 +119,15 @@ export default function TaxPage() {
         </div>
         <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-white/35">
           *Temsilîdir. Gerçek sonuçlar vergi durumuna, hesap türüne ve piyasa
-          koşullarına bağlıdır. Finovela vergi danışmanlığı vermez — bir vergi
-          uzmanına danışın.
+          koşullarına bağlıdır. Finovela bir vergi raporlama/hesaplama yazılımıdır,
+          vergi danışmanlığı değildir ve vergi tavsiyesi vermez — bir vergi uzmanına
+          danışın.
         </p>
       </Section>
 
       <CtaBand
         title="Fazladan vergi ödemeyi bırak"
-        subtitle="Vergi optimizasyonunu aç, gerisini Finovela halletsin."
+        subtitle="Vergi analizini aç, fırsatları Finovela raporlasın — kararı sen ver."
         prev="#071026"
       />
     </PageShell>

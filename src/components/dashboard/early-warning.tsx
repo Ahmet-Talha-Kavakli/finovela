@@ -12,11 +12,11 @@ import { useLivePortfolio } from "@/lib/dashboard/use-portfolio";
 import { computeVelaScore } from "@/lib/dashboard/vela-score";
 import { GlassCard } from "@/components/dashboard/cinematic";
 import { TickerBadge } from "@/components/dashboard/ticker-badge";
-import { Warning, ShieldCheck, CaretRight } from "@phosphor-icons/react";
+import { AlertTriangle, ShieldCheck, ChevronRight } from "lucide-react";
 
-const DOWN = "#ff5c5c";
-const WARN = "#f5d77a";
-const UP = "#3ecf8e";
+const DOWN = "#d93025";
+const WARN = "#b8860b";
+const UP = "#1f9d57";
 
 function toneFor(score: number) {
   if (score >= 65) return UP;
@@ -51,21 +51,21 @@ export function EarlyWarning() {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {flagged.length > 0 ? (
-            <Warning size={18} weight="fill" style={{ color: WARN }} />
+            <AlertTriangle size={18} style={{ color: WARN }} />
           ) : (
-            <ShieldCheck size={18} weight="fill" style={{ color: UP }} />
+            <ShieldCheck size={18} style={{ color: UP }} />
           )}
-          <h2 className="font-display text-base font-bold text-white">Erken Uyarı Radarı</h2>
+          <h2 className="font-display text-base font-bold text-[var(--ais-fg)]">Erken Uyarı Radarı</h2>
         </div>
-        <span className="text-xs text-white/40">{positions.length} varlık tarandı</span>
+        <span className="text-xs text-[var(--ais-fg-faint)]">{positions.length} varlık tarandı</span>
       </div>
 
       {flagged.length === 0 ? (
-        <div className="flex items-center gap-3 rounded-2xl border border-[#3ecf8e]/20 bg-[#3ecf8e]/[0.06] p-4">
-          <ShieldCheck size={20} weight="fill" style={{ color: UP }} />
+        <div className="flex items-center gap-3 rounded-2xl border border-[#1f9d57]/20 bg-[#1f9d57]/[0.06] p-4">
+          <ShieldCheck size={20} style={{ color: UP }} />
           <div>
-            <p className="text-sm font-semibold text-white">Portföyün sağlıklı görünüyor</p>
-            <p className="text-xs text-white/55">
+            <p className="text-sm font-semibold text-[var(--ais-fg)]">Portföyün sağlıklı görünüyor</p>
+            <p className="text-xs text-[var(--ais-fg-muted)]">
               Hiçbir varlık zayıflık eşiğinin altında değil. Finovela izlemeye devam ediyor.
             </p>
           </div>
@@ -78,12 +78,12 @@ export function EarlyWarning() {
               <Link
                 key={s.symbol}
                 href={`/dashboard/stock/${s.symbol}`}
-                className="group flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 transition hover:border-white/12 hover:bg-white/[0.04]"
+                className="group flex items-center gap-3 rounded-2xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface-2)] p-3 transition hover:border-[var(--ais-accent)] hover:bg-[var(--ais-surface-2)]"
               >
                 <TickerBadge symbol={s.symbol} size={38} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-white">{s.symbol}</p>
+                    <p className="font-semibold text-[var(--ais-fg)]">{s.symbol}</p>
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px] font-bold"
                       style={{ background: `${tone}1f`, color: tone }}
@@ -91,20 +91,20 @@ export function EarlyWarning() {
                       Skor {s.score}
                     </span>
                   </div>
-                  <p className="truncate text-xs text-white/50">{s.summary}</p>
+                  <p className="truncate text-xs text-[var(--ais-fg-muted)]">{s.summary}</p>
                 </div>
                 {/* mini skor çubuğu */}
                 <div className="hidden w-20 shrink-0 sm:block">
-                  <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-[var(--ais-surface-2)]">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${s.score}%`, background: tone }}
                     />
                   </div>
                 </div>
-                <CaretRight
+                <ChevronRight
                   size={16}
-                  className="shrink-0 text-white/25 transition group-hover:text-white/60"
+                  className="shrink-0 text-[var(--ais-fg-faint)] transition group-hover:text-[var(--ais-fg)]"
                 />
               </Link>
             );
