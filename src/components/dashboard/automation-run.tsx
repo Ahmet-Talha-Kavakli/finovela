@@ -6,7 +6,8 @@
 
 import { useState, useEffect } from "react";
 import { AIS_ACCENT, AIS_UP, AIS_DOWN, AIS_WARN } from "@/components/dashboard/ais-kit";
-import { Sparkle, Spinner, X, TrendUp, TrendDown, Pause, CheckCircle, WarningCircle } from "@phosphor-icons/react";
+import { Overlay } from "@/components/dashboard/overlay";
+import { Sparkles, Loader2, X, TrendingUp, TrendingDown, Pause, CheckCircle2, AlertCircle } from "lucide-react";
 
 type Decision = {
   action: "buy" | "sell" | "hold";
@@ -29,7 +30,7 @@ export function AutomationRunButton({ rule, symbol }: { rule: string; symbol: st
         style={{ background: "var(--ais-accent-bg)", color: AIS_ACCENT }}
         title={symbol ? "AI ile çalıştır" : "Kuralda sembol bulunamadı"}
       >
-        <Sparkle size={14} weight="fill" /> AI ile çalıştır
+        <Sparkles size={14} fill="currentColor" /> AI ile çalıştır
       </button>
       {open && symbol && <RunModal rule={rule} symbol={symbol} onClose={() => setOpen(false)} />}
     </>
@@ -117,26 +118,35 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
 
   const actionMeta =
     decision?.action === "buy"
-      ? { label: "AL", color: AIS_UP, Icon: TrendUp }
+      ? { label: "AL", color: AIS_UP, Icon: TrendingUp }
       : decision?.action === "sell"
-        ? { label: "SAT", color: AIS_DOWN, Icon: TrendDown }
+        ? { label: "SAT", color: AIS_DOWN, Icon: TrendingDown }
         : { label: "BEKLE", color: AIS_WARN, Icon: Pause };
 
   return (
-    <div className="ais fixed inset-0 z-[60] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="vela-modal-card relative w-full max-w-md rounded-2xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] p-6" onClick={(e) => e.stopPropagation()}>
+    <Overlay>
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center p-4"
+      style={{
+        background: "rgba(17,17,20,0.28)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+      }}
+      onClick={onClose}
+    >
+      <div className="ais ais-light vela-modal-card relative w-full max-w-md rounded-2xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] p-6" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute right-5 top-5 text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]">
-          <X size={18} weight="regular" />
+          <X size={18} />
         </button>
         <div className="flex items-center gap-2">
-          <Sparkle size={20} weight="fill" style={{ color: AIS_ACCENT }} />
+          <Sparkles size={20} fill="currentColor" style={{ color: AIS_ACCENT }} />
           <h2 className="text-[16px] font-medium text-[var(--ais-fg)]">Finovela kararı</h2>
         </div>
         <p className="mt-1 text-[12.5px] text-[var(--ais-fg-muted)]">&ldquo;{rule}&rdquo;</p>
 
         {phase === "deciding" && (
           <div className="mt-6 flex items-center gap-2 text-[13px] text-[var(--ais-fg-muted)]">
-            <Spinner size={16} className="animate-spin" /> Piyasa ve portföy analiz ediliyor…
+            <Loader2 size={16} className="animate-spin" /> Piyasa ve portföy analiz ediliyor…
           </div>
         )}
 
@@ -144,7 +154,7 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
           <>
             <div className="mt-5 flex items-center gap-3 rounded-xl border border-[var(--ais-line)] p-4">
               <span className="grid h-11 w-11 place-items-center rounded-xl" style={{ background: `${actionMeta.color}1a`, color: actionMeta.color }}>
-                <actionMeta.Icon size={22} weight="regular" />
+                <actionMeta.Icon size={22} />
               </span>
               <div className="flex-1">
                 <p className="text-[15px] font-semibold" style={{ color: actionMeta.color }}>
@@ -158,7 +168,7 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
 
             {decision.action !== "hold" && !ctx?.hasConnection && (
               <p className="mt-3 flex items-start gap-1.5 text-[12px]" style={{ color: AIS_WARN }}>
-                <WarningCircle size={14} className="mt-px shrink-0" />
+                <AlertCircle size={14} className="mt-px shrink-0" />
                 Yürütmek için önce bir borsa bağla (Bağlantılar).
               </p>
             )}
@@ -174,7 +184,7 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
                   className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-medium transition disabled:opacity-50"
                   style={{ background: `${actionMeta.color}1a`, color: actionMeta.color }}
                 >
-                  {phase === "executing" ? <Spinner size={15} className="animate-spin" /> : <CheckCircle size={15} />}
+                  {phase === "executing" ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
                   Onayla & Yürüt
                 </button>
               )}
@@ -184,7 +194,7 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
 
         {phase === "done" && (
           <div className="mt-6 flex flex-col items-center text-center">
-            <CheckCircle size={40} weight="regular" style={{ color: AIS_UP }} />
+            <CheckCircle2 size={40} style={{ color: AIS_UP }} />
             <p className="mt-3 text-[14px] text-[var(--ais-fg)]">{result}</p>
             <button onClick={onClose} className="mt-5 rounded-lg px-5 py-2.5 text-[13px] font-medium" style={{ background: "var(--ais-accent-bg)", color: AIS_ACCENT }}>
               Bitti
@@ -195,7 +205,7 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
         {phase === "error" && (
           <div className="mt-5">
             <p className="flex items-start gap-1.5 text-[13px]" style={{ color: AIS_DOWN }}>
-              <WarningCircle size={15} className="mt-px shrink-0" /> {error}
+              <AlertCircle size={15} className="mt-px shrink-0" /> {error}
             </p>
             <button onClick={onClose} className="mt-4 w-full rounded-lg border border-[var(--ais-line-strong)] py-2.5 text-[13px] font-medium text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)]">
               Kapat
@@ -204,5 +214,6 @@ function RunModal({ rule, symbol, onClose }: { rule: string; symbol: string; onC
         )}
       </div>
     </div>
+    </Overlay>
   );
 }

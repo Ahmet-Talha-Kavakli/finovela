@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { Overlay } from "@/components/dashboard/overlay";
 import Link from "next/link";
 import { PLANS } from "@/lib/plans";
 import { Sparkles, Check, X, Crown } from "lucide-react";
@@ -85,6 +86,7 @@ export function UpgradeModal() {
   const unlimited = PLANS.unlimited;
 
   return (
+    <Overlay>
     <div
       className="fixed inset-0 z-[60] grid place-items-center p-4"
       style={{
@@ -156,6 +158,7 @@ export function UpgradeModal() {
         </div>
       </div>
     </div>
+    </Overlay>
   );
 }
 

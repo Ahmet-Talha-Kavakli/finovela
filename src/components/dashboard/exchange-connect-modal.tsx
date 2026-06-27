@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AIS_ACCENT, AIS_UP, AIS_DOWN, AIS_WARN } from "@/components/dashboard/ais-kit";
-import { X, ShieldCheck, WarningCircle, Spinner, ArrowSquareOut } from "@phosphor-icons/react";
+import { Overlay } from "@/components/dashboard/overlay";
+import { X, ShieldCheck, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 
 /**
  * Gerçek borsa bağlama modalı — API key + secret girilir, sunucuda DOĞRULANIR
@@ -60,17 +61,26 @@ export function ExchangeConnectModal({
       : "#";
 
   return (
-    <div className="ais fixed inset-0 z-[60] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
+    <Overlay>
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center p-4"
+      style={{
+        background: "rgba(17,17,20,0.28)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+      }}
+      onClick={onClose}
+    >
       <div
-        className="vela-modal-card relative w-full max-w-md rounded-2xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] p-6"
+        className="ais ais-light vela-modal-card relative w-full max-w-md rounded-2xl border border-[var(--ais-line-strong)] bg-[var(--ais-surface)] p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} className="absolute right-5 top-5 text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]">
-          <X size={18} weight="regular" />
+          <X size={18} />
         </button>
 
         <div className="flex items-center gap-2">
-          <ShieldCheck size={20} weight="regular" style={{ color: AIS_ACCENT }} />
+          <ShieldCheck size={20} style={{ color: AIS_ACCENT }} />
           <h2 className="text-[16px] font-medium text-[var(--ais-fg)]">{exchangeName} hesabını bağla</h2>
         </div>
         <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--ais-fg-muted)]">
@@ -98,7 +108,7 @@ export function ExchangeConnectModal({
         </div>
         {environment === "live" && (
           <div className="mt-2 flex items-start gap-1.5 text-[11.5px] leading-relaxed text-[var(--ais-fg-muted)]">
-            <WarningCircle size={13} weight="regular" className="mt-px shrink-0" style={{ color: AIS_WARN }} />
+            <AlertCircle size={13} className="mt-px shrink-0" style={{ color: AIS_WARN }} />
             <span>Canlı modda gerçek paranla işlem yapılır. Önce testnet ile dene.</span>
           </div>
         )}
@@ -137,12 +147,12 @@ export function ExchangeConnectModal({
           style={{ color: AIS_ACCENT }}
         >
           {environment === "testnet" ? "Testnet anahtarı nasıl alınır?" : "API anahtarı nasıl oluşturulur?"}
-          <ArrowSquareOut size={12} weight="regular" />
+          <ExternalLink size={12} />
         </a>
 
         {error && (
           <p className="mt-3 flex items-start gap-1.5 text-[12.5px] leading-relaxed" style={{ color: AIS_DOWN }}>
-            <WarningCircle size={14} weight="regular" className="mt-px shrink-0" />
+            <AlertCircle size={14} className="mt-px shrink-0" />
             {error}
           </p>
         )}
@@ -162,21 +172,22 @@ export function ExchangeConnectModal({
           >
             {busy ? (
               <>
-                <Spinner size={15} weight="regular" className="animate-spin" /> Doğrulanıyor…
+                <Loader2 size={15} className="animate-spin" /> Doğrulanıyor…
               </>
             ) : (
               <>
-                <ShieldCheck size={15} weight="regular" /> Doğrula & Bağla
+                <ShieldCheck size={15} /> Doğrula & Bağla
               </>
             )}
           </button>
         </div>
 
         <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-[var(--ais-fg-faint)]">
-          <ShieldCheck size={12} weight="fill" style={{ color: AIS_UP }} />
+          <ShieldCheck size={12} fill="currentColor" style={{ color: AIS_UP }} />
           Anahtarların AES-256 ile şifrelenir, asla düz metin saklanmaz.
         </p>
       </div>
     </div>
+    </Overlay>
   );
 }
