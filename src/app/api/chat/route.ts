@@ -38,7 +38,8 @@ const TIER_MAP: Record<string, { model: string; maxTokens: number }> = {
   "vela-1.1": { model: "claude-sonnet-4-6", maxTokens: 6144 },
   "vela-1.2": { model: MODEL, maxTokens: 8192 },
 };
-const DEFAULT_TIER = "vela-1.2";
+// Dengeli (Sonnet) varsayılan: Opus ilk-token gecikmesi "donma" gibi algılanıyordu.
+const DEFAULT_TIER = "vela-1.1";
 
 function resolveModel(tier: unknown): { model: string; maxTokens: number } {
   if (typeof tier === "string" && tier in TIER_MAP) return TIER_MAP[tier];

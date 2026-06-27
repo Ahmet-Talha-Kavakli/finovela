@@ -6,8 +6,9 @@
  *
  * Model kademeleri (kullanıcıya dostça ad gösterilir, gerçek model id sunucuda eşlenir):
  *  - "vela-1"   → hızlı/ucuz
- *  - "vela-1.1" → dengeli
- *  - "vela-1.2" → en yetenekli (varsayılan)
+ *  - "vela-1.1" → dengeli (VARSAYILAN — hızlı ilk yanıt + yüksek kalite; Opus
+ *                 varsayılanken ilk token 20-30sn sürüyor "donma" gibi algılanıyordu)
+ *  - "vela-1.2" → en yetenekli (kullanıcı seçerse; en yavaş)
  *
  * Ton:
  *  - "balanced"     → Dengeli (varsayılan, sistem tonunu değiştirmez)
@@ -29,7 +30,7 @@ export type AiPrefs = {
 const KEY = "vela.aiprefs.v1";
 
 const DEFAULT: AiPrefs = {
-  tier: "vela-1.2",
+  tier: "vela-1.1",
   tone: "balanced",
 };
 
