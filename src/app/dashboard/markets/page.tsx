@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/area-chart";
+import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { UNIVERSE, type AssetType } from "@/lib/market/universe";
 import { Search, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
@@ -132,6 +133,9 @@ export default function MarketsPage() {
   const losers = [...rows].sort((a, b) => a.changePct - b.changePct).slice(0, 5);
   const filtered = cls === "all" ? rows : rows.filter((r) => r.type === cls);
 
+  // Tüm görünen semboller (evren + endeks proxy'leri) için gerçek sparkline serisi — tek batch.
+  const series = useSparklines([...rows.map((r) => r.symbol), ...INDEX_PROXIES]);
+
   return (
     <>
       <Topbar title="Piyasalar" />
@@ -202,7 +206,7 @@ export default function MarketsPage() {
                       {loading ? (
                         <div className="ais-skeleton h-[20px] w-[50px]" />
                       ) : (
-                        <Sparkline seed={idx.proxy} up={chg >= 0} width={50} height={20} />
+                        <Sparkline seed={idx.proxy} up={chg >= 0} width={50} height={20} data={series[idx.proxy.toUpperCase()]} />
                       )}
                     </div>
                     {loading ? (
@@ -228,8 +232,8 @@ export default function MarketsPage() {
           <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
             <h2 className="d-section mb-5">Günün hareketleri</h2>
             <div className="grid gap-6 lg:grid-cols-2">
-              <MoverPanel title="En çok yükselenler" icon={TrendingUp} tone={UP} rows={gainers} loading={loading} />
-              <MoverPanel title="En çok düşenler" icon={TrendingDown} tone={DOWN} rows={losers} loading={loading} />
+              <MoverPanel title="En çok yükselenler" icon={TrendingUp} tone={UP} rows={gainers} loading={loading} series={series} />
+              <MoverPanel title="En çok düşenler" icon={TrendingDown} tone={DOWN} rows={losers} loading={loading} series={series} />
             </div>
           </section>
 
@@ -284,7 +288,7 @@ export default function MarketsPage() {
                       <td className="text-[var(--ais-fg-muted)]">{a.sector}</td>
                       <td className="num !text-right font-medium">{fmtMoney(a.price, a.currency)}</td>
                       <td className="!text-right"><Delta value={a.changePct} /></td>
-                      <td><Sparkline seed={a.symbol} up={a.changePct >= 0} width={70} /></td>
+                      <td><Sparkline seed={a.symbol} up={a.changePct >= 0} width={70} data={series[a.symbol.toUpperCase()]} /></td>
                     </tr>
                   ))}
                   {loading &&
@@ -329,12 +333,14 @@ function MoverPanel({
   tone,
   rows,
   loading,
+  series,
 }: {
   title: string;
   icon: typeof TrendingUp;
   tone: string;
   rows: Q[];
   loading?: boolean;
+  series?: Record<string, number[]>;
 }) {
   return (
     <div className="rounded-xl border" style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}>
@@ -372,7 +378,7 @@ function MoverPanel({
                 <p className="text-[13px] font-medium text-[var(--ais-fg)]">{m.symbol}</p>
                 <p className="truncate text-[12px] text-[var(--ais-fg-muted)]">{m.name}</p>
               </div>
-              <Sparkline seed={m.symbol + "m"} up={m.changePct >= 0} width={60} />
+              <Sparkline seed={m.symbol + "m"} up={m.changePct >= 0} width={60} data={series?.[m.symbol.toUpperCase()]} />
               <div className="w-20 text-right">
                 <p className="num text-[13px] font-medium text-[var(--ais-fg)]">{fmtMoney(m.price, m.currency)}</p>
                 <Delta value={m.changePct} />

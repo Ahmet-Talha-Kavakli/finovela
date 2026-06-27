@@ -9,6 +9,7 @@
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { AreaChart, Sparkline } from "@/components/dashboard/area-chart";
+import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { ChartFrame } from "@/components/dashboard/chart-frame";
 import { useLivePortfolio } from "@/lib/dashboard/use-portfolio";
 import { useEquityCurve } from "@/lib/dashboard/use-equity-curve";
@@ -55,6 +56,8 @@ export default function PortfolioPage() {
   const { positions, summary, orders, risk } = useLivePortfolio();
   const { curve, benchmark } = useEquityCurve("1Y");
   const sorted = [...positions].sort((a, b) => b.value - a.value);
+  // Tablo satırları için gerçek sparkline serisi.
+  const series = useSparklines(sorted.map((p) => p.symbol));
 
   const bySector = new Map<string, number>();
   for (const p of positions) bySector.set(p.sector, (bySector.get(p.sector) ?? 0) + p.value);
@@ -292,7 +295,7 @@ export default function PortfolioPage() {
                           <span className="ml-1 text-[11px] opacity-70">({p.plPct}%)</span>
                         </td>
                         <td>
-                          <Sparkline seed={p.symbol} up={p.plPct >= 0} width={70} />
+                          <Sparkline seed={p.symbol} up={p.plPct >= 0} width={70} data={series[p.symbol.toUpperCase()]} />
                         </td>
                       </tr>
                     ))}

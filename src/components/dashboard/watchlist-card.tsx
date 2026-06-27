@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Delta, TickerBadge } from "@/components/dashboard/ui";
 import { GlassCard, SectionLabel } from "@/components/dashboard/cinematic";
 import { Sparkline } from "@/components/dashboard/area-chart";
+import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { useWatchlist } from "@/lib/dashboard/use-watchlist";
 import { getUniverseEntry } from "@/lib/market/universe";
 import { fmtMoney } from "@/lib/dashboard/data";
@@ -15,6 +16,8 @@ export function WatchlistCard() {
   const { list, remove } = useWatchlist();
   const [quotes, setQuotes] = useState<Record<string, { price: number; changePct: number }>>({});
   const key = list.join(",");
+  // İzleme listesi sembolleri için gerçek sparkline serisi.
+  const series = useSparklines(list);
 
   useEffect(() => {
     if (!key) return;
@@ -59,7 +62,7 @@ export function WatchlistCard() {
                     <p className="font-semibold text-[var(--ais-fg)]">{sym}</p>
                     <p className="truncate text-xs text-[var(--ais-fg-faint)]">{u.name}</p>
                   </div>
-                  <Sparkline seed={sym + "x"} up={chg >= 0} width={64} />
+                  <Sparkline seed={sym + "x"} up={chg >= 0} width={64} data={series[sym.toUpperCase()]} />
                   <div className="w-20 text-right">
                     <p className="font-medium text-[var(--ais-fg)] tabular-nums">{fmtMoney(price, u.currency ?? "USD")}</p>
                     <Delta value={chg} className="text-xs" />

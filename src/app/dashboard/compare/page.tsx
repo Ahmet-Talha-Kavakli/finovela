@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/area-chart";
+import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { Search, Loader2, X, Scale, Plus } from "lucide-react";
 
@@ -153,6 +154,9 @@ export default function ComparePage() {
 
   const anyLoading = cols.some((c) => c.loading);
   const ready = cols.filter((c) => !c.loading);
+
+  // Karşılaştırılan semboller için gerçek sparkline serisi.
+  const series = useSparklines(cols.map((c) => c.symbol));
 
   return (
     <>
@@ -305,7 +309,7 @@ export default function ComparePage() {
                             <div className="ais-skeleton ml-auto h-[20px] w-[80px]" />
                           ) : (
                             <div className="flex justify-end">
-                              <Sparkline seed={c.symbol} up={c.changePct >= 0} width={80} height={24} />
+                              <Sparkline seed={c.symbol} up={c.changePct >= 0} width={80} height={24} data={series[c.symbol.toUpperCase()]} />
                             </div>
                           )}
                         </td>

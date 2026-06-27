@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/area-chart";
+import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { LiveAreaChart } from "@/components/dashboard/live-area-chart";
 import { ChartFrame } from "@/components/dashboard/chart-frame";
 import { LiveValue } from "@/components/dashboard/living";
@@ -41,6 +42,8 @@ export default function OverviewPage() {
   const [tf, setTf] = useState(3);
   const { curve, benchmark } = useEquityCurve(TIMEFRAMES[tf].range);
   const sorted = [...positions].sort((a, b) => b.value - a.value);
+  // Gösterilen pozisyonlar için gerçek sparkline serisi.
+  const series = useSparklines(positions.map((p) => p.symbol));
   const up = summary.totalPl >= 0;
   const dayUp = summary.dayPl >= 0;
 
@@ -175,7 +178,7 @@ export default function OverviewPage() {
                         <p className="text-[13px] font-medium text-[var(--ais-fg)]">{p.symbol}</p>
                         <p className="truncate text-[12px] text-[var(--ais-fg-muted)]">{p.name}</p>
                       </div>
-                      <Sparkline seed={p.symbol} up={p.changePct >= 0} />
+                      <Sparkline seed={p.symbol} up={p.changePct >= 0} data={series[p.symbol.toUpperCase()]} />
                       <div className="w-24 text-right">
                         <p className="num text-[13px] font-medium text-[var(--ais-fg)]">
                           <LiveValue value={p.price} format={(n) => fmtUsd(n)} jitter={0.0009} />
