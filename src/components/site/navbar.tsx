@@ -14,6 +14,7 @@ import {
   StackSimple,
   ChartLineUp,
   GraduationCap,
+  BookOpen,
   ShieldCheck,
   DownloadSimple,
   User,
@@ -38,6 +39,7 @@ const NAV = [
 ];
 
 const RESOURCES_MENU = [
+  { icon: BookOpen, label: "Kullanım Rehberi", desc: "Finovela'yı adım adım öğren", href: "/guide" },
   { icon: GraduationCap, label: "Akademi", desc: "Yapay zeka ile yatırımı öğren", href: "/academy" },
   { icon: ChartLineUp, label: "Piyasalar", desc: "Canlı fiyatlar ve yükselenler", href: "/markets" },
   { icon: StackSimple, label: "Varlık Listeleri", desc: "Özenle seçilmiş AI takip listeleri", href: "/markets/stocks" },
