@@ -26,15 +26,19 @@ export default function TermsPage() {
     >
       <LegalSection n={1} title="What Finovela Is — and Is Not">
         <p>
-          Finovela is a software platform that provides analytics, AI-assisted
-          insights, portfolio tracking, alerts, and tools that can automate orders on
-          trading accounts you connect. Finovela is a technology provider only.
+          Finovela is a <strong className="text-white">software and analytics platform</strong>. It
+          provides portfolio tracking, data visualization, market research, alerts, educational
+          content, and AI-assisted informational insights. It also offers optional automation tools
+          that act only within the permissions you grant on third-party accounts you choose to
+          connect. Finovela is a technology provider only.
         </p>
         <LegalCallout>
-          Finovela is <strong>not</strong> a broker-dealer, investment adviser,
-          exchange, money transmitter, bank, or custodian. We do not hold your funds or
-          assets, do not execute trades in our own name, and do not provide
-          personalized investment advice. See the{" "}
+          Finovela is <strong>not</strong> a broker-dealer, investment adviser, exchange, money
+          transmitter, bank, or custodian. We do <strong>not</strong> hold, transfer, or manage your
+          funds or assets (Finovela is fully non-custodial). Nothing in the product is investment,
+          financial, legal, or tax advice, a recommendation, a trading signal, or a guarantee of any
+          outcome. All information is provided for informational and educational purposes only, and
+          all decisions are made solely by you. See the{" "}
           <a href="/disclaimer" className="text-[#7fb0ff] hover:text-white">Risk Disclaimer</a>.
         </LegalCallout>
       </LegalSection>
@@ -72,15 +76,46 @@ export default function TermsPage() {
 
       <LegalSection n={5} title="Subscriptions, Plans & Billing">
         <p>
-          Some features require a paid subscription or credits. Prices, plan limits,
-          and features are described at checkout and may change with notice.
-          Subscriptions renew automatically until cancelled. Except where required by
-          law, payments are non-refundable. Failure to pay may result in suspension or
-          downgrade of your account. Taxes may apply based on your location.
+          Some features require a paid subscription. Prices, plan limits, and features are described
+          on our{" "}
+          <a href="/pricing" className="text-[#7fb0ff] hover:text-white">pricing page</a>{" "}
+          and at checkout, and may change with notice. Subscriptions renew automatically until
+          cancelled. You may cancel at any time from your account; access continues until the end of
+          the current billing period. Taxes (including VAT/sales tax) may apply based on your
+          location and are calculated at checkout.
+        </p>
+        <p>
+          We offer a{" "}
+          <strong className="text-white">30-day money-back guarantee</strong> on paid plans. See our{" "}
+          <a href="/refund" className="text-[#7fb0ff] hover:text-white">Refund &amp; Cancellation Policy</a>{" "}
+          for full details.
         </p>
       </LegalSection>
 
-      <LegalSection n={6} title="Acceptable Use">
+      <LegalSection n={6} title="Payments & Merchant of Record">
+        <p>
+          Our order process is conducted by our online reseller{" "}
+          <strong className="text-white">Paddle.com</strong>. Paddle.com is the Merchant of Record
+          for all our orders. Paddle handles payment processing, billing, sales tax/VAT collection,
+          customer billing inquiries, refunds, and returns on our behalf.
+        </p>
+        <p>
+          By completing a purchase, you also agree to Paddle&apos;s{" "}
+          <a
+            href="https://www.paddle.com/legal/checkout-buyer-terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#7fb0ff] hover:text-white"
+          >
+            Buyer Terms
+          </a>
+          , which are presented to you at checkout. Paddle is an authorised reseller of the Finovela
+          subscription; your payment contract is with Paddle, and your use of the Finovela software is
+          governed by these Terms.
+        </p>
+      </LegalSection>
+
+      <LegalSection n={7} title="Acceptable Use">
         <p>You agree not to:</p>
         <ul className="list-disc space-y-1.5 pl-6">
           <li>use the platform for any unlawful purpose or market manipulation;</li>
@@ -91,7 +126,7 @@ export default function TermsPage() {
         </ul>
       </LegalSection>
 
-      <LegalSection n={7} title="Intellectual Property">
+      <LegalSection n={8} title="Intellectual Property">
         <p>
           Finovela and all related software, designs, trademarks, and content are owned
           by us or our licensors. We grant you a limited, non-exclusive,
@@ -101,7 +136,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={8} title="Third-Party Services">
+      <LegalSection n={9} title="Third-Party Services">
         <p>
           The platform integrates third-party services (exchanges, brokers, data,
           payment, and AI providers). We are not responsible for their acts, omissions,
@@ -110,7 +145,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={9} title="Disclaimers">
+      <LegalSection n={10} title="Disclaimers">
         <p>
           The platform is provided &quot;as is&quot; and &quot;as available&quot;
           without warranties of any kind, whether express or implied, including
@@ -120,7 +155,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={10} title="Limitation of Liability">
+      <LegalSection n={11} title="Limitation of Liability">
         <p>
           To the maximum extent permitted by law, Finovela and its operators, owners,
           employees, and affiliates will not be liable for any indirect, incidental,
@@ -132,7 +167,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={11} title="Indemnification">
+      <LegalSection n={12} title="Indemnification">
         <p>
           You agree to indemnify and hold harmless Finovela and its affiliates from any
           claims, damages, losses, and expenses (including reasonable legal fees)
@@ -141,7 +176,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={12} title="Termination">
+      <LegalSection n={13} title="Termination">
         <p>
           You may stop using Finovela and delete your account at any time. We may
           suspend or terminate access if you violate these Terms, create risk or legal
@@ -151,7 +186,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={13} title="Changes to These Terms">
+      <LegalSection n={14} title="Changes to These Terms">
         <p>
           We may update these Terms from time to time. Material changes will be
           notified through the platform or by email. Your continued use after changes
@@ -159,7 +194,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={14} title="Governing Law & Disputes">
+      <LegalSection n={15} title="Governing Law & Disputes">
         <p>
           These Terms are governed by the laws of the Republic of Türkiye, without
           regard to conflict-of-law rules. The courts and enforcement offices of
@@ -169,7 +204,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection n={15} title="Contact">
+      <LegalSection n={16} title="Contact">
         <p>
           Questions about these Terms? Contact us at{" "}
           <a href="mailto:legal@finovela.com" className="text-[#7fb0ff] hover:text-white">

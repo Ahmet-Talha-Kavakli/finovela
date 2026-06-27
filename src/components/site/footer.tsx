@@ -26,9 +26,11 @@ const RESOURCES = [
   ["Fiyatlandırma", "/pricing"],
 ];
 const LEGAL = [
-  ["Risk Bildirimi", "/disclaimer"],
-  ["Gizlilik", "/privacy"],
   ["Kullanım Şartları", "/terms"],
+  ["Gizlilik", "/privacy"],
+  ["İade Politikası", "/refund"],
+  ["Risk Bildirimi", "/disclaimer"],
+  ["İletişim", "/contact"],
   ["KVKK", "/kvkk"],
   ["Çerezler", "/cookies"],
 ];
@@ -173,6 +175,11 @@ export function Footer() {
               Risk Bildirimi
             </Link>{" "}
             metnimizi inceleyiniz.
+          </p>
+          <p className="mt-3 text-white/35">
+            Siparişleriniz, online satıcımız ve Kayıtlı Satıcısı (Merchant of Record){" "}
+            <strong className="text-white/50">Paddle.com</strong> tarafından işlenir; ödeme,
+            faturalandırma, vergi ve iadeler Paddle üzerinden yürütülür.
           </p>
         </div>
       </div>

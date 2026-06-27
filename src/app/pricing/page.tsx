@@ -138,6 +138,14 @@ const FAQ = [
     q: "Pro için ücretsiz deneme var mı?",
     a: "Evet, her yeni kullanıcı 14 günlük Pro denemesi alır — sınırsız AI, web araştırma ve otomasyonun tamamı. Başlamak için kart gerekmez.",
   },
+  {
+    q: "Para iade garantisi var mı?",
+    a: "Evet — ücretli planlarda 30 gün koşulsuz para iade garantisi sunuyoruz. Memnun kalmazsan ilk 30 gün içinde support@finovela.com adresine yaz, tutarın tamamı iade edilir. Soru sormuyoruz. Ayrıntı için İade Politikamıza bakabilirsin.",
+  },
+  {
+    q: "Ödemeyi kim işliyor?",
+    a: "Ödeme, faturalandırma, vergi ve iadeler online satıcımız ve Kayıtlı Satıcımız (Merchant of Record) Paddle.com tarafından güvenli şekilde yürütülür. Finovela paranı asla tutmaz; sadece yazılım erişimi için ücret alınır.",
+  },
 ];
 
 function CellValue({ value }: { value: Cell }) {
