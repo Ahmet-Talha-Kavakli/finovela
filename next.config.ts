@@ -17,12 +17,15 @@ const isProduction =
 */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline'",
+  // Paddle.js (cdn.paddle.com + sandbox) ödeme overlay'i için script izni eklendi.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://cdn.paddle.com https://sandbox-cdn.paddle.com",
+  "style-src 'self' 'unsafe-inline' https://cdn.paddle.com https://sandbox-cdn.paddle.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https:",
-  "frame-src 'self' https://*.clerk.accounts.dev https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com",
+  // Paddle API (live + sandbox) bağlantı izni.
+  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com https://clerk.finovela.com https://*.finovela.com https://api.anthropic.com https://*.paddle.com https:",
+  // Paddle checkout overlay (iframe) — buy.paddle.com / sandbox-buy.paddle.com / *.paddle.com.
+  "frame-src 'self' https://*.clerk.accounts.dev https://clerk.finovela.com https://*.finovela.com https://challenges.cloudflare.com https://*.paddle.com https://buy.paddle.com https://sandbox-buy.paddle.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
