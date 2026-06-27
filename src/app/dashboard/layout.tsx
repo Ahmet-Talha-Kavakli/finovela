@@ -29,7 +29,7 @@ export default async function DashboardLayout({
 
   return (
     <ConfirmProvider>
-      <div className="vela-dashboard-root min-h-screen bg-[#0a0a0a]">
+      <div className="vela-dashboard-root min-h-screen bg-[#fefefe]">
         <SyncProvider />
         <AlertEngineMount />
         <CommandPalette />

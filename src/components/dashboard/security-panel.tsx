@@ -327,9 +327,9 @@ function Modal({ children, onClose }: { children: React.ReactNode; onClose: () =
     <div
       className="fixed inset-0 z-50 grid place-items-center p-4"
       style={{
-        background: "rgba(17,17,20,0.32)",
-        backdropFilter: "blur(8px) saturate(120%)",
-        WebkitBackdropFilter: "blur(8px) saturate(120%)",
+        background: "rgba(17,17,20,0.28)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
       }}
       onClick={onClose}
     >

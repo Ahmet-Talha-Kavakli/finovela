@@ -241,10 +241,12 @@ body {
 }
 
 /* Scrollbar */
-/* Dashboard'da overscroll/sınır zemini mor değil siyah olsun (body --bg mor;
-   landing mor kalır). :has ile yalnız dashboard sayfalarında html'i koyula. */
-html:has(.vela-dashboard-root) { background: #0a0a0a; }
-html:has(.vela-dashboard-root) body { background: #0a0a0a; overscroll-behavior: none; }
+/* Dashboard Didit açık-tema: overscroll/sınır + modal arka zemini açık olsun
+   (landing mor/koyu kalır). :has ile yalnız dashboard sayfalarında html'i açık tut.
+   ÖNEMLİ: modal/overlay position:fixle body'ye taşındığında arkada bu zemini görür —
+   açık olmazsa modal açıkken arka koyu-gri blok görünür (eski bug). */
+html:has(.vela-dashboard-root) { background: #fefefe; }
+html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: none; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -592,6 +594,8 @@ html:has(.vela-dashboard-root) body { background: #0a0a0a; overscroll-behavior: 
 }
 .ais .ais-input::placeholder { color: var(--ais-fg-faint); }
 .ais .ais-input:focus { border-color: var(--ais-accent); }
+/* PIN gibi geniş harf-aralıklı inputlarda placeholder dağılmasın (girilen rakamlar geniş kalır). */
+.ais .ais-input::placeholder { letter-spacing: normal; }
 
 /* Modal giriş animasyonu (Vercel/Clerk hissi — backdrop blur fade + kart scale). */
 @keyframes vela-modal-in {
