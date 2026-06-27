@@ -171,21 +171,21 @@ export function SupportWidget() {
           className="ais ais-light flex h-[600px] max-h-[calc(100vh-7rem)] w-[420px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-[28px] border bg-[var(--ais-surface)] shadow-[0_24px_70px_-20px_rgba(0,0,0,0.30)]"
           style={{ borderColor: "var(--ais-line)", animation: "support-pop 0.18s ease-out" }}
         >
-          {/* Başlık — sade: sadece Fin + kapat */}
+          {/* Başlık — mavi zemin (sohbet alanından ayrışır) */}
           <div
-            className="flex items-center gap-3 border-b px-4 py-3.5"
-            style={{ borderColor: "var(--ais-line)" }}
+            className="flex items-center gap-3 px-4 py-3.5"
+            style={{ background: "#2567ff" }}
           >
             <span
-              className="grid h-9 w-9 place-items-center rounded-full"
-              style={{ background: "var(--ais-accent-bg)", color: "var(--ais-accent)" }}
+              className="grid h-9 w-9 place-items-center rounded-full text-white"
+              style={{ background: "rgba(255,255,255,0.18)" }}
             >
               <VelaMark className="h-5 w-5" />
             </span>
-            <p className="flex-1 text-[14px] font-semibold text-[var(--ais-fg)]">Fin</p>
+            <p className="flex-1 text-[14px] font-semibold text-white">Fin</p>
             <button
               onClick={() => setOpen(false)}
-              className="grid h-8 w-8 place-items-center rounded-full text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
+              className="grid h-8 w-8 place-items-center rounded-full text-white/80 transition hover:bg-white/20 hover:text-white"
               aria-label="Kapat"
             >
               <X size={16} />
