@@ -265,15 +265,15 @@ export function SupportWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="group flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_12px_32px_-8px_rgba(37,103,255,0.6)] transition hover:scale-105 active:scale-95"
+          className="group flex h-[68px] w-[68px] items-center justify-center rounded-full text-white shadow-[0_14px_38px_-8px_rgba(37,103,255,0.65)] transition hover:scale-105 active:scale-95"
           style={{ background: "#2567ff" }}
           aria-label="Canlı destek"
         >
           <span className="relative">
-            <MessageCircle size={24} fill="currentColor" />
-            <span className="absolute -right-1 -top-1 flex h-3 w-3">
+            <MessageCircle size={30} fill="currentColor" />
+            <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0f7d4a] opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-[#0f7d4a]" />
+              <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#0f7d4a]" />
             </span>
           </span>
         </button>
