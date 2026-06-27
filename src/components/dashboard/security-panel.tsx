@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Overlay } from "@/components/dashboard/overlay";
 import { useConfirm } from "@/components/dashboard/confirm";
 import { useSecurity } from "@/lib/dashboard/use-security";
 import { CLERK_ENABLED } from "@/lib/auth";
@@ -321,32 +322,38 @@ export function SecurityPanel() {
   );
 }
 
-/* ── Didit açık-tema modal — şeffaf karartma + blur overlay, .ais-light sadece kartta ── */
+/* ── Didit açık-tema modal — şeffaf karartma + blur overlay, .ais-light sadece kartta ──
+   ÖNEMLİ: createPortal ile <body>'ye taşınır. Aksi halde modal, settings sayfasının
+   .ais-light DOM ağacının İÇİNDE kalır ve backdrop-filter:blur arkadaki AÇIK içerik
+   kutusunu koyu-gri bloğa çevirir (eski bug — kullanıcı bildirmişti). Body'ye taşınınca
+   blur arkadaki açık html/body zeminine uygulanır → koyu blok oluşmaz. */
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center p-4"
-      style={{
-        background: "rgba(17,17,20,0.28)",
-        backdropFilter: "blur(4px)",
-        WebkitBackdropFilter: "blur(4px)",
-      }}
-      onClick={onClose}
-    >
+    <Overlay>
       <div
-        className="ais ais-light relative w-full max-w-sm rounded-2xl border bg-[var(--ais-surface)] p-6 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.45)]"
-        style={{ borderColor: "var(--ais-line)" }}
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-50 grid place-items-center p-4"
+        style={{
+          background: "rgba(17,17,20,0.28)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
+        }}
+        onClick={onClose}
       >
-        <button
-          onClick={onClose}
-          className="absolute right-5 top-5 text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]"
-          aria-label="Kapat"
+        <div
+          className="ais ais-light relative w-full max-w-sm rounded-2xl border bg-[var(--ais-surface)] p-6 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.45)]"
+          style={{ borderColor: "var(--ais-line)" }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <X size={18} />
-        </button>
-        {children}
+          <button
+            onClick={onClose}
+            className="absolute right-5 top-5 text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]"
+            aria-label="Kapat"
+          >
+            <X size={18} />
+          </button>
+          {children}
+        </div>
       </div>
-    </div>
+    </Overlay>
   );
 }
