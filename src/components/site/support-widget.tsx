@@ -161,11 +161,13 @@ export function SupportWidget() {
   if (!isClient) return null;
 
   return (
-    <div className="ais ais-light fixed bottom-5 left-5 z-[90] flex flex-col items-start gap-3">
+    // Kapsayıcı ŞEFFAF: .ais ais-light buraya verilmez (o zemin rengi uygular →
+    // balonun arkasında beyaz kare oluşuyordu). Tema sınıfı yalnız pencereye + balona.
+    <div className="fixed bottom-5 left-5 z-[90] flex flex-col items-start gap-3">
       {/* Sohbet penceresi */}
       {open && (
         <div
-          className="flex h-[480px] w-[360px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-[28px] border bg-[var(--ais-surface)] shadow-[0_24px_70px_-20px_rgba(0,0,0,0.30)]"
+          className="ais ais-light flex h-[600px] max-h-[calc(100vh-7rem)] w-[420px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-[28px] border bg-[var(--ais-surface)] shadow-[0_24px_70px_-20px_rgba(0,0,0,0.30)]"
           style={{ borderColor: "var(--ais-line)", animation: "support-pop 0.18s ease-out" }}
         >
           {/* Başlık — sade: sadece Fin + kapat */}
@@ -258,19 +260,20 @@ export function SupportWidget() {
         </div>
       )}
 
-      {/* Açma balonu — pencere açıkken gizlenir (kapatma zaten başlıktaki X). */}
+      {/* Açma balonu — pencere açıkken gizlenir (kapatma zaten başlıktaki X).
+          Tema scope'u dışında: sabit hex (token kullanılırsa şeffaf kapsayıcıda çözülmez). */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
           className="group flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_12px_32px_-8px_rgba(37,103,255,0.6)] transition hover:scale-105 active:scale-95"
-          style={{ background: "var(--ais-accent)" }}
+          style={{ background: "#2567ff" }}
           aria-label="Canlı destek"
         >
           <span className="relative">
             <MessageCircle size={24} fill="currentColor" />
             <span className="absolute -right-1 -top-1 flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--ais-green)] opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--ais-green)]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0f7d4a] opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-[#0f7d4a]" />
             </span>
           </span>
         </button>
