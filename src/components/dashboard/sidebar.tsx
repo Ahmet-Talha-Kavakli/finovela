@@ -128,7 +128,7 @@ export function Sidebar() {
           href="/dashboard/chat"
           title="Finovela'ya sor"
           className={cn(
-            "mt-7 flex items-center rounded-xl bg-white font-semibold text-black transition hover:bg-white/90",
+            "vela-ask-glow mt-7 flex items-center rounded-xl bg-white font-semibold text-black transition hover:bg-white/90",
             isCollapsed ? "justify-center px-0 py-3" : "gap-2.5 px-4 py-3 text-sm",
           )}
         >

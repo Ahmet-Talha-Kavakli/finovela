@@ -10,6 +10,7 @@
  */
 
 import { useEffect, useRef, useState, useSyncExternalStore, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { X, Send, Mic } from "lucide-react";
 import { VelaMark } from "@/components/brand/logo";
 
@@ -26,6 +27,7 @@ function useIsClient() {
 
 export function SupportWidget() {
   const isClient = useIsClient();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -160,6 +162,8 @@ export function SupportWidget() {
   }
 
   if (!isClient) return null;
+  // Dashboard'da gösterme — orada zaten Finovela Sohbet var. Sadece landing/pazarlama.
+  if (pathname?.startsWith("/dashboard")) return null;
 
   return (
     // Kapsayıcı ŞEFFAF: .ais ais-light buraya verilmez (o zemin rengi uygular →

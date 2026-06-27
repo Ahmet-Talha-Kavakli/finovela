@@ -248,6 +248,10 @@ body {
 html:has(.vela-dashboard-root) { background: #fefefe; }
 html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: none; }
 
+/* Metin seçimi — koyu mavi seçim metni okunmuyordu; açık mavi tonu + koyu metin. */
+::selection { background: rgba(37,103,255,0.22); color: inherit; }
+::-moz-selection { background: rgba(37,103,255,0.22); color: inherit; }
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -596,6 +600,26 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 .ais .ais-input:focus { border-color: var(--ais-accent); }
 /* PIN gibi geniş harf-aralıklı inputlarda placeholder dağılmasın (girilen rakamlar geniş kalır). */
 .ais .ais-input::placeholder { letter-spacing: normal; }
+
+/* "Finovela'ya sor" butonu — dikkat çeken ince parlama (shimmer geçişi). */
+.vela-ask-glow { position: relative; overflow: hidden; }
+.vela-ask-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(37,103,255,0.18) 47%, rgba(37,103,255,0.30) 50%, rgba(37,103,255,0.18) 53%, transparent 70%);
+  transform: translateX(-130%);
+  animation: vela-ask-shimmer 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes vela-ask-shimmer {
+  0%, 100% { transform: translateX(-130%); }
+  /* parlama hızlı geçer, sonra uzun süre bekler (rahatsız etmez) */
+  18%, 82% { transform: translateX(130%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vela-ask-glow::after { animation: none; }
+}
 
 /* Canlı destek widget açılış animasyonu (sol-alttan yumuşak pop). */
 @keyframes support-pop {
