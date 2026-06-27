@@ -29,7 +29,6 @@ const UP = "var(--ais-green)";
 const DOWN = "#d93025";
 const ACCENT = "var(--ais-accent)";
 
-const FDIC_LIMIT = 5_000_000;
 const STAKE_SYMBOLS: StakePosition["symbol"][] = ["BTC", "ETH", "SOL"];
 const MONTHS = ["Şu an", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a"];
 
@@ -223,7 +222,7 @@ export default function EarnPage() {
                     </span>
                     <div>
                       <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">Yüksek Getirili Nakit</p>
-                      <p className="text-[12px] text-[var(--ais-fg-faint)]">FDIC güvenceli</p>
+                      <p className="text-[12px] text-[var(--ais-fg-faint)]">Simülasyon · kâğıt-portföy</p>
                     </div>
                   </div>
                   <span
@@ -280,7 +279,7 @@ export default function EarnPage() {
                   </div>
                   <div className="mt-4 flex items-center gap-1.5 text-[12px] text-[var(--ais-fg-faint)]">
                     <ShieldCheck size={14} />
-                    {fmtUsd(FDIC_LIMIT, 0)} tutarına kadar FDIC güvenceli
+                    Eğitim amaçlı simülasyon — gerçek para tutulmaz
                   </div>
                 </div>
               </div>

@@ -19,34 +19,38 @@ export const metadata: Metadata = {
 };
 
 const TOPICS = [
-  { icon: Wallet, name: "Para yatırma ve çekme", desc: "Yatırma, transfer ve paranı alma.", image: "/gen/card-support-para.png" },
+  { icon: BookOpen, name: "Başlangıç", desc: "Hesabını ve portföyünü birkaç dakikada kur.", image: "/gen/card-support-otomasyon.png" },
   { icon: Robot, name: "Finovela AI kullanımı", desc: "Sohbet, ses, portföyler ve otomasyon.", image: "/gen/card-support-aikullanim.png" },
   { icon: ShieldCheck, name: "Hesap ve güvenlik", desc: "Giriş, 2FA ve hesabını güvende tutma.", image: "/gen/card-support-hesap.png" },
-  { icon: Question, name: "İşlem ve emirler", desc: "Emir verme, düzenleme ve anlama.", image: "/gen/card-support-islem.png" },
+  { icon: Question, name: "Abonelik ve faturalama", desc: "Plan yükseltme, iptal ve Paddle ödemeleri.", image: "/gen/card-support-islem.png" },
   { icon: Lock, name: "Gizlilik ve veri", desc: "Bilgilerini nasıl koruduğumuz ve işlediğimiz.", image: "/gen/card-support-veri.png" },
-  { icon: BookOpen, name: "Başlangıç", desc: "Hesabını birkaç dakikada kur.", image: "/gen/card-support-otomasyon.png" },
+  { icon: Wallet, name: "Bağlantılar", desc: "Kendi borsa hesabını güvenle bağla ve yönet.", image: "/gen/card-support-para.png" },
 ];
 
 const FAQ = [
   {
     q: "Finovela'ya nasıl başlarım?",
-    a: "Uygulamayı indir ya da web'den kaydol, hızlı bir doğrulamayı tamamla, hesabını fonla ve Finovela ile sohbete başla. Tüm süreç birkaç dakika sürer.",
+    a: "Web'den ya da uygulamadan kaydol, kısa bir başlangıç akışıyla risk profilini ve hedeflerini belirle, sonra portföyünü kur ve Finovela ile araştırmaya başla. Tüm süreç birkaç dakika sürer.",
   },
   {
-    q: "Param Finovela'da güvende mi?",
-    a: "Evet. Menkul kıymet hesapları 500.000$'a kadar SIPC ile korunur, nakdin sigortalı partner bankalarda tutulur ve her şey uçtan uca şifrelenir. Finovela onayın olmadan asla işlem yapmaz.",
+    q: "Finovela bir aracı kurum mu, paramı tutar mı?",
+    a: "Hayır. Finovela bir yazılım (SaaS) ve eğitim/araştırma aracıdır — aracı kurum veya yatırım danışmanı DEĞİLDİR ve fonlarını ASLA tutmaz. Uygulama içindeki portföy ve işlemler simülasyon (kâğıt-portföy) üzerinde çalışır. İstersen kendi borsa hesabını API anahtarıyla bağlarsın; o zaman işlemler senin kendi hesabında, verdiğin yetki kadar gerçekleşir — Finovela aracılık etmez.",
+  },
+  {
+    q: "Verilerim güvende mi?",
+    a: "Evet. Her şey uçtan uca şifrelenir, bağladığın API anahtarları AES-256 ile saklanır, kimlik doğrulama güvenli bir sağlayıcıyla (Clerk) yapılır. Finovela kişisel verini asla satmaz.",
   },
   {
     q: "Finovela finansal tavsiye veriyor mu?",
-    a: "Finovela, kendi kararlarını vermene yardımcı olmak için AI destekli analiz, eğitim ve araçlar sunar. Lisanslı bir uzmandan alınacak kişiye özel finansal tavsiyenin yerini tutmaz.",
+    a: "Hayır. Finovela, kendi kararlarını vermene yardımcı olmak için yapay zekâ destekli analiz, eğitim ve araçlar sunar. Hiçbir çıktısı yatırım tavsiyesi değildir; lisanslı bir uzmandan alınacak kişiye özel danışmanlığın yerini tutmaz. Kararlar tamamen sana aittir.",
   },
   {
     q: "Maliyeti nedir?",
-    a: "Finovela, $0 komisyonlu hisse ve ETF'lerle başlaması ücretsizdir. Pro, aylık abonelikle sınırsız AI, otomasyon ve gelişmiş verinin kilidini açar. Ayrıntılar için fiyatlandırma sayfasına bak.",
+    a: "Finovela ücretsiz başlar (günlük sınırlı yapay zekâ + temel özellikler). Pro ve Unlimited, aylık abonelikle sınırsız sohbet, otomasyon ve gelişmiş analizin kilidini açar. Ödeme, Merchant of Record'umuz Paddle ile alınır. Ayrıntılar için fiyatlandırma sayfasına bak.",
   },
   {
     q: "Bir insana nasıl ulaşırım?",
-    a: "7/24 destek için uygulamadaki sohbet balonuna dokun ya da support@finovela.com adresine e-posta gönder. Genellikle birkaç saat içinde yanıt veririz.",
+    a: "Sol-alttaki canlı destek balonuna (Fin) tıklayarak anında yanıt alabilir ya da support@finovela.com adresine e-posta gönderebilirsin. Genellikle birkaç saat içinde dönüş yaparız.",
   },
 ];
 
