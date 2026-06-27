@@ -10,7 +10,8 @@
  */
 
 import { useEffect, useRef, useState, useSyncExternalStore, useCallback } from "react";
-import { MessageCircle, X, Send, Sparkles, Mic } from "lucide-react";
+import { X, Send, Mic } from "lucide-react";
+import { VelaMark } from "@/components/brand/logo";
 
 type Msg = { id: number; role: "user" | "assistant"; text: string; streaming?: boolean };
 
@@ -179,7 +180,7 @@ export function SupportWidget() {
               className="grid h-9 w-9 place-items-center rounded-full"
               style={{ background: "var(--ais-accent-bg)", color: "var(--ais-accent)" }}
             >
-              <Sparkles size={17} fill="currentColor" />
+              <VelaMark className="h-5 w-5" />
             </span>
             <p className="flex-1 text-[14px] font-semibold text-[var(--ais-fg)]">Fin</p>
             <button
@@ -270,8 +271,8 @@ export function SupportWidget() {
           aria-label="Canlı destek"
         >
           <span className="relative">
-            <MessageCircle size={30} fill="currentColor" />
-            <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
+            <VelaMark className="h-8 w-8 text-white" />
+            <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0f7d4a] opacity-75" />
               <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#0f7d4a]" />
             </span>
