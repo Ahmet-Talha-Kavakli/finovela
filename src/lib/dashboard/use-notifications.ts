@@ -13,10 +13,10 @@ export type Notif = {
 
 const KEY = "vela.notifs.v1";
 
+// Yeni kullanıcı sadece karşılama bildirimiyle başlar — sahte "BUY 10 NVDA" /
+// "AAPL earnings" demo bildirimleri artık yüklenmez (boş portföyle çelişiyordu).
 const SEED: Notif[] = [
-  { id: "n1", kind: "order", text: "Order filled: BUY 10 NVDA", ts: 0, read: false },
-  { id: "n2", kind: "earnings", text: "AAPL reports earnings tomorrow", ts: 0, read: false },
-  { id: "n3", kind: "info", text: "Welcome to Finovela — your AI co-pilot is ready", ts: 0, read: true },
+  { id: "n_welcome", kind: "info", text: "Finovela'ya hoş geldin — AI yatırım asistanın hazır.", ts: 0, read: false },
 ];
 
 let cache: Notif[] | null = null;

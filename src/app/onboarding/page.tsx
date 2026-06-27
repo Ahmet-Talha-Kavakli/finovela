@@ -139,6 +139,38 @@ export default function OnboardingPage() {
   const [address, setAddress] = useState("");
   const [docFront, setDocFront] = useState<string | null>(null);
   const [kycBusy, setKycBusy] = useState(false);
+  // Didit (gerçek otomatik KYC) — açıksa tek-tıkla doğrulama; kapalıysa form moduna düşer.
+  const [diditMode, setDiditMode] = useState<boolean | null>(null); // null=bilinmiyor
+  const [diditBusy, setDiditBusy] = useState(false);
+  const [diditError, setDiditError] = useState<string | null>(null);
+  const [diditStarted, setDiditStarted] = useState(false); // doğrulama penceresi açıldı
+
+  // Gerçek otomatik KYC başlat — Didit oturumu aç, kullanıcıyı doğrulama sayfasına götür.
+  async function startDiditVerification() {
+    if (diditBusy) return;
+    setDiditBusy(true);
+    setDiditError(null);
+    try {
+      const res = await fetch("/api/kyc/session", { method: "POST" });
+      const d = (await res.json()) as { ok: boolean; url?: string; demo?: boolean; error?: string };
+      if (d.demo) {
+        // Servis kapalı → form moduna geç.
+        setDiditMode(false);
+        return;
+      }
+      if (d.ok && d.url) {
+        setDiditMode(true);
+        setDiditStarted(true);
+        window.open(d.url, "_blank", "noopener");
+      } else {
+        setDiditError(d.error ?? "Doğrulama başlatılamadı.");
+      }
+    } catch {
+      setDiditError("Bağlantı hatası. Tekrar dene.");
+    } finally {
+      setDiditBusy(false);
+    }
+  }
   // adım 3 — Telefon
   const [phone, setPhone] = useState("");
   const [smsCode, setSmsCode] = useState("");
@@ -159,7 +191,10 @@ export default function OnboardingPage() {
     step === 1
       ? name.trim() !== "" && /\S+@\S+\.\S+/.test(email) && country !== ""
       : step === 2
-        ? birthDate !== "" && idType !== "" && idNumber.trim().length >= 5
+        ? // Didit modunda: doğrulama başlatıldıysa ileri. Form modunda: alanlar dolu.
+          diditMode === false
+          ? birthDate !== "" && idType !== "" && idNumber.trim().length >= 5
+          : diditStarted
         : step === 3
           ? phoneVerified
           : step === 4
@@ -196,8 +231,9 @@ export default function OnboardingPage() {
 
   const next = async () => {
     if (!canContinue) return;
-    // KYC adımında ileri → başvuruyu kaydet (başarısız olsa da akış engellenmesin).
-    if (step === 2) void submitKycStep();
+    // KYC FORM modunda ileri → başvuruyu kaydet. Didit modunda kayıt /api/kyc/session'da
+    // yapıldı, webhook durumu güncelliyor; burada tekrar yazma.
+    if (step === 2 && diditMode === false) void submitKycStep();
     setDir(1);
     setStep((s) => Math.min(LAST_STEP, s + 1));
   };
@@ -206,14 +242,68 @@ export default function OnboardingPage() {
     setStep((s) => Math.max(1, s - 1));
   };
 
-  // Telefon doğrulama — Clerk phone hazırsa gerçek SMS; değilse demo (6 haneli kod).
-  function sendSms() {
-    if (phone.trim().length < 7) return;
-    setSmsSent(true);
+  // Telefon doğrulama — Netgsm ile GERÇEK SMS (anahtarlar girilince aktif).
+  // Servis kapalıyken (demo) kod yanıtta döner ve ekranda gösterilir; akış kilitlenmez.
+  const [smsBusy, setSmsBusy] = useState(false);
+  const [smsError, setSmsError] = useState<string | null>(null);
+  const [smsPhoneE164, setSmsPhoneE164] = useState<string | null>(null);
+  const [smsDevCode, setSmsDevCode] = useState<string | null>(null); // demo modda gösterilen kod
+
+  // Ülke seçimine göre telefon varsayılan ülke kodu (TR aksi halde US).
+  const phoneCountry: "TR" | "US" = country === "Türkiye" ? "TR" : "US";
+
+  async function sendSms() {
+    if (phone.trim().length < 7 || smsBusy) return;
+    setSmsBusy(true);
+    setSmsError(null);
+    try {
+      const res = await fetch("/api/phone/send", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ phone: phone.trim(), country: phoneCountry }),
+      });
+      const d = (await res.json()) as {
+        ok: boolean; error?: string; phone?: string; demo?: boolean; devCode?: string;
+      };
+      if (!d.ok) {
+        setSmsError(d.error ?? "Kod gönderilemedi.");
+        return;
+      }
+      if (d.phone) setSmsPhoneE164(d.phone); // normalize edilmiş E.164
+      setSmsDevCode(d.demo && d.devCode ? d.devCode : null); // demo modda kodu göster
+      setSmsSent(true);
+    } catch {
+      setSmsError("Bağlantı hatası. Tekrar dene.");
+    } finally {
+      setSmsBusy(false);
+    }
   }
-  function verifySms() {
-    // Demo: 6 hane girilince doğrulanmış say. (Clerk phone açıksa gerçek doğrulamaya bağlanır.)
-    if (smsCode.trim().length >= 4) setPhoneVerified(true);
+
+  async function verifySms() {
+    if (smsCode.trim().length < 4 || smsBusy) return;
+    setSmsBusy(true);
+    setSmsError(null);
+    try {
+      const res = await fetch("/api/phone/verify", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          phone: smsPhoneE164 ?? phone.trim(),
+          code: smsCode.trim(),
+          country: phoneCountry,
+        }),
+      });
+      const d = (await res.json()) as { ok: boolean; verified?: boolean; error?: string };
+      if (d.ok && d.verified) {
+        setPhoneVerified(true);
+      } else {
+        setSmsError(d.error ?? "Kod hatalı. Tekrar dene.");
+      }
+    } catch {
+      setSmsError("Bağlantı hatası. Tekrar dene.");
+    } finally {
+      setSmsBusy(false);
+    }
   }
 
   // Kimlik belgesi yükleme → data URL (küçük tut).
@@ -336,6 +426,49 @@ export default function OnboardingPage() {
                   <ShieldCheck size={15} weight="fill" className="mt-px shrink-0 text-[#7fb0ff]" />
                   <span>Yatırım hesabı açmak yasal olarak kimlik doğrulaması gerektirir (KYC). Bilgilerin şifreli saklanır, üçüncü kişilerle paylaşılmaz.</span>
                 </div>
+
+                {/* Gerçek otomatik doğrulama (Didit). diditMode false olana kadar bunu öner. */}
+                {diditMode !== false && (
+                  <div className="space-y-3 rounded-2xl border border-[#3b6dff]/25 bg-[#3b6dff]/[0.07] p-4">
+                    <div className="flex items-center gap-2">
+                      <IdentificationCard size={20} weight="duotone" className="text-[#7fb0ff]" />
+                      <span className="text-[14px] font-semibold text-white">Hızlı kimlik doğrulama</span>
+                    </div>
+                    <p className="text-[12px] leading-relaxed text-white/55">
+                      Kimliğini ve selfie&apos;ni güvenli doğrulama ekranında çek — saniyeler içinde otomatik onaylanır.
+                    </p>
+                    {diditStarted ? (
+                      <div className="flex items-center gap-2 rounded-xl border border-[#81c995]/30 bg-[#81c995]/[0.08] p-3 text-[13px] text-white/80">
+                        <Check size={16} weight="bold" className="text-[#81c995]" />
+                        Doğrulama penceresi açıldı. Bitirince bu sekmeye dön ve devam et.
+                      </div>
+                    ) : (
+                      <button
+                        onClick={startDiditVerification}
+                        disabled={diditBusy}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#5b8cff] to-[#3b6dff] py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                      >
+                        {diditBusy ? "Hazırlanıyor…" : "Kimliğimi doğrula"}
+                        {!diditBusy && <ArrowRight size={16} weight="bold" />}
+                      </button>
+                    )}
+                    {diditError && (
+                      <p className="flex items-center gap-1.5 text-[12px] text-[#ff8a8a]">
+                        <WarningCircle size={14} weight="fill" /> {diditError}
+                      </p>
+                    )}
+                    <button
+                      onClick={() => setDiditMode(false)}
+                      className="text-[12px] text-white/40 underline transition hover:text-white/70"
+                    >
+                      Bunun yerine belge yükleyerek devam et
+                    </button>
+                  </div>
+                )}
+
+                {/* Manuel form — yalnızca servis kapalıysa ya da kullanıcı belge-yükleme seçtiyse. */}
+                {diditMode === false && (
+                <>
                 <Field label="Doğum tarihi">
                   <input type="date" className={INPUT} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} style={{ colorScheme: "dark" }} />
                 </Field>
@@ -374,6 +507,8 @@ export default function OnboardingPage() {
                   </label>
                 </Field>
                 {kycBusy && <p className="text-[12px] text-white/40">Kaydediliyor…</p>}
+                </>
+                )}
               </div>
             )}
 
@@ -395,10 +530,10 @@ export default function OnboardingPage() {
                     />
                     <button
                       onClick={sendSms}
-                      disabled={phone.trim().length < 7 || phoneVerified}
+                      disabled={phone.trim().length < 7 || phoneVerified || smsBusy}
                       className="shrink-0 rounded-xl border border-white/12 px-4 text-[13px] font-medium text-white transition hover:bg-white/8 disabled:opacity-40"
                     >
-                      {smsSent ? "Tekrar gönder" : "Kod gönder"}
+                      {smsBusy && !smsSent ? "Gönderiliyor…" : smsSent ? "Tekrar gönder" : "Kod gönder"}
                     </button>
                   </div>
                 </Field>
@@ -414,13 +549,24 @@ export default function OnboardingPage() {
                       />
                       <button
                         onClick={verifySms}
-                        disabled={smsCode.trim().length < 4}
+                        disabled={smsCode.trim().length < 4 || smsBusy}
                         className="shrink-0 rounded-xl bg-gradient-to-r from-[#5b8cff] to-[#3b6dff] px-4 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
                       >
-                        Doğrula
+                        {smsBusy ? "…" : "Doğrula"}
                       </button>
                     </div>
                   </Field>
+                )}
+                {smsError && (
+                  <p className="flex items-center gap-1.5 text-[12px] text-[#ff8a8a]">
+                    <WarningCircle size={14} weight="fill" /> {smsError}
+                  </p>
+                )}
+                {smsDevCode && !phoneVerified && (
+                  <p className="rounded-lg border border-[#7fb0ff]/25 bg-[#7fb0ff]/[0.08] px-3 py-2 text-[12px] text-white/70">
+                    Demo modu (SMS servisi henüz aktif değil) — kodun:{" "}
+                    <strong className="font-mono text-white">{smsDevCode}</strong>
+                  </p>
                 )}
                 {phoneVerified && (
                   <div className="flex items-center gap-2 rounded-xl border border-[#81c995]/30 bg-[#81c995]/[0.08] p-3 text-[13px] text-white/80">

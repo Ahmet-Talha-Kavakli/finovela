@@ -7,8 +7,14 @@
  * (Demo: gerçek para yok; ama tam işlevsel paper-trade akışı.)
  */
 
-import { HOLDINGS, CASH, type Holding } from "./data";
+import { type Holding } from "./data";
 import { notifStore } from "./use-notifications";
+
+// Yeni kullanıcı SIFIRDAN başlar: boş portföy + sanal nakit. Eskiden seed() demo
+// portföyü (NVDA/TSLA/BTC...) yüklüyordu; bu yüzden HERKES aynı sahte pozisyonları
+// görüyor, üstteki ~$127K toplam ile boş grafik tutarsız oluyordu. Artık temiz
+// başlangıç: kullanıcı kendi işlemlerini yapar, portföy ve grafik birlikte dolar.
+const STARTING_CASH = 100_000;
 
 // Benzersiz emir id'si — orders.length tabanlı eski yöntem (iki kod yolu aynı
 // uzunlukta çakışıp duplicate React key üretiyordu) yerine monotonik sayaç + ts.
@@ -45,7 +51,7 @@ export type PaperState = {
 const KEY = "vela.paper.v1";
 
 function seed(): PaperState {
-  return { holdings: HOLDINGS.map((h) => ({ ...h })), cash: CASH, orders: [], pendingOrders: [] };
+  return { holdings: [], cash: STARTING_CASH, orders: [], pendingOrders: [] };
 }
 
 // SSR snapshot — useSyncExternalStore'un getServerSnapshot'ı için DONMUŞ sabit
@@ -65,7 +71,7 @@ function load(): PaperState {
       // Eski kayıtlarda pendingOrders olmayabilir — migrasyon.
       state = {
         holdings: parsed.holdings ?? seed().holdings,
-        cash: parsed.cash ?? CASH,
+        cash: parsed.cash ?? STARTING_CASH,
         orders: parsed.orders ?? [],
         pendingOrders: parsed.pendingOrders ?? [],
       };

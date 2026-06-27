@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { GlassCard } from "@/components/dashboard/cinematic";
 import { useLivePortfolio } from "@/lib/dashboard/use-portfolio";
-import { AI_BRIEFING, fmtUsd } from "@/lib/dashboard/data";
+import { fmtUsd } from "@/lib/dashboard/data";
 import { Sparkle, ArrowRight, ArrowsClockwise } from "@phosphor-icons/react";
+
+// Portföy boşken gösterilecek gerçek-dürüst özet (sahte TSLA/SOL önerileri DEĞİL).
+const EMPTY_BRIEF = [
+  "Portföyün şu an boş — ilk işlemini yaparak başlayabilirsin.",
+  "Sanal $100.000 ile risksiz dene; Finovela her hamleni analiz eder.",
+  "Bir hisse ya da kripto ara, Finovela'ya \"ne alayım?\" diye sor.",
+];
 
 /**
  * Proaktif AI günlük brifing — kullanıcının CANLI portföyüne göre Vela'nın
@@ -33,9 +40,9 @@ export function DailyBrief() {
         body: JSON.stringify({ portfolio }),
       });
       const d = (await res.json()) as { lines?: string[] };
-      setLines(d.lines && d.lines.length ? d.lines : AI_BRIEFING);
+      setLines(d.lines && d.lines.length ? d.lines : EMPTY_BRIEF);
     } catch {
-      setLines(AI_BRIEFING);
+      setLines(EMPTY_BRIEF);
     } finally {
       setLoading(false);
     }
@@ -47,7 +54,8 @@ export function DailyBrief() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positions.length]);
 
-  const shown = lines ?? AI_BRIEFING;
+  // Boş portföyde sahte AI_BRIEFING yerine dürüst boş-durum metni göster.
+  const shown = lines ?? (positions.length === 0 ? EMPTY_BRIEF : EMPTY_BRIEF);
 
   return (
     <GlassCard hover className="flex h-full flex-col">

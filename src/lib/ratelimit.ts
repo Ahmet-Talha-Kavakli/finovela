@@ -103,6 +103,10 @@ export const RATE_LIMITS = {
   order: { limit: 30, windowMs: FIVE_MIN } satisfies RateLimitConfig,
   // KYC / profil — düşük frekanslı işlemler.
   profile: { limit: 10, windowMs: FIVE_MIN } satisfies RateLimitConfig,
+  // SMS gönderme — gerçek para + suistimal riski; çok katı (kod bombalama koruması).
+  smsSend: { limit: 5, windowMs: FIVE_MIN } satisfies RateLimitConfig,
+  // SMS kod kontrolü — brute-force koruması.
+  smsCheck: { limit: 10, windowMs: FIVE_MIN } satisfies RateLimitConfig,
 } as const;
 
 /**

@@ -28,21 +28,9 @@ export type Goal = {
 
 const KEY = "vela.goals.v1";
 
-// Demo başlangıç hedefi — kullanıcı düzenleyene kadar örnek gösterir.
-const SEED: Goal[] = [
-  {
-    id: "g_seed_main",
-    kind: "main",
-    title: "Uzun vadeli servet büyütme",
-    detail: "Düşük volatiliteyle istikrarlı büyüme; teknoloji ağırlığını dengede tut.",
-    targetValue: 100000,
-    currency: "USD",
-    riskTolerance: "medium",
-    status: "active",
-    progress: 18,
-    createdAt: 0,
-  },
-];
+// Yeni kullanıcı SIFIR hedefle başlar — sahte örnek hedef (%18 ilerleme) artık
+// yüklenmez; bu boş portföyle çelişiyordu. Kullanıcı kendi hedeflerini ekler.
+const SEED: Goal[] = [];
 
 // Donmuş SSR snapshot (hydration güvenli).
 const SSR: Goal[] = Object.freeze(SEED.map((g) => Object.freeze({ ...g }))) as Goal[];

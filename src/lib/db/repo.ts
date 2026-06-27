@@ -5,9 +5,68 @@
 // Promise döndürür — çağıranlar await etmeli.
 
 import { eq, desc } from "drizzle-orm";
+import { createHash } from "node:crypto";
 import { db, schema, ready } from "./index";
 
-const { users, userState, goals, brainSettings, decisionLog, exchangeConnections, kyc } = schema;
+const { users, userState, goals, brainSettings, decisionLog, exchangeConnections, kyc, phoneVerifications } = schema;
+
+// ── phone_verifications: SMS kod doğrulama (Netgsm) ───────────────────────────
+
+/** Kodu düz saklamayız — userId tuzlu sha256 hash'i. */
+function hashCode(code: string, userId: string): string {
+  return createHash("sha256").update(`${code}:${userId}`).digest("hex");
+}
+
+/** Yeni doğrulama kodu kaydet (eski kaydı ezer). expiresAt: epoch ms. */
+export async function savePhoneCode(
+  userId: string,
+  phone: string,
+  code: string,
+  expiresAt: number,
+  now: number,
+) {
+  await ready();
+  await db
+    .insert(phoneVerifications)
+    .values({ userId, phone, codeHash: hashCode(code, userId), expiresAt, attempts: 0, createdAt: now })
+    .onConflictDoUpdate({
+      target: phoneVerifications.userId,
+      set: { phone, codeHash: hashCode(code, userId), expiresAt, attempts: 0, createdAt: now },
+    })
+    .run();
+}
+
+/**
+ * Girilen kodu doğrula. Süre/deneme kontrolü dahil.
+ * Dönüş: "ok" | "expired" | "too_many" | "wrong" | "none"
+ */
+export async function checkPhoneCode(
+  userId: string,
+  code: string,
+  now: number,
+): Promise<{ result: "ok" | "expired" | "too_many" | "wrong" | "none"; phone?: string }> {
+  await ready();
+  const row = await db
+    .select()
+    .from(phoneVerifications)
+    .where(eq(phoneVerifications.userId, userId))
+    .get();
+  if (!row) return { result: "none" };
+  if (now > row.expiresAt) return { result: "expired" };
+  if (row.attempts >= 5) return { result: "too_many" };
+
+  if (row.codeHash !== hashCode(code, userId)) {
+    await db
+      .update(phoneVerifications)
+      .set({ attempts: row.attempts + 1 })
+      .where(eq(phoneVerifications.userId, userId))
+      .run();
+    return { result: "wrong" };
+  }
+  // Doğru → kaydı temizle (tek kullanımlık).
+  await db.delete(phoneVerifications).where(eq(phoneVerifications.userId, userId)).run();
+  return { result: "ok", phone: row.phone };
+}
 
 // ── kyc: kimlik doğrulama ─────────────────────────────────────────────────────
 
@@ -61,6 +120,41 @@ export async function submitKyc(input: KycInput) {
 export async function setKycStatus(userId: string, status: "verified" | "rejected") {
   await ready();
   await db.update(kyc).set({ status, reviewedAt: Date.now() }).where(eq(kyc.userId, userId)).run();
+}
+
+/**
+ * Didit doğrulama oturumu başlat — kyc satırını 'pending' yapıp session id'yi sakla.
+ * (Webhook geldiğinde userId vendor_data ile, session_id ile eşleşir.)
+ */
+export async function startDiditKyc(userId: string, sessionId: string) {
+  await ready();
+  const existing = await db.select().from(kyc).where(eq(kyc.userId, userId)).get();
+  if (existing) {
+    await db
+      .update(kyc)
+      .set({ status: "pending", diditSessionId: sessionId, submittedAt: Date.now(), reviewedAt: null })
+      .where(eq(kyc.userId, userId))
+      .run();
+  } else {
+    await db
+      .insert(kyc)
+      .values({ userId, status: "pending", diditSessionId: sessionId, submittedAt: Date.now() })
+      .run();
+  }
+}
+
+/** Didit webhook → status eşle. Didit durumları: Approved/Declined/In Review/... */
+export async function applyDiditStatus(userId: string, diditStatus: string) {
+  await ready();
+  const s = diditStatus.toLowerCase();
+  const status: "verified" | "rejected" | "pending" =
+    s === "approved" ? "verified" : s === "declined" || s === "expired" || s === "abandoned" ? "rejected" : "pending";
+  await db
+    .update(kyc)
+    .set({ status, reviewedAt: status === "pending" ? null : Date.now() })
+    .where(eq(kyc.userId, userId))
+    .run();
+  return status;
 }
 
 // ── exchange_connections: borsa/aracı kurum bağlantıları ──────────────────────
@@ -169,6 +263,12 @@ export async function getUserRow(userId: string) {
 export async function setUserPlan(userId: string, plan: string) {
   await ready();
   await db.update(users).set({ plan }).where(eq(users.id, userId)).run();
+}
+
+/** Doğrulanmış telefonu kaydet (Twilio Verify onayı sonrası). */
+export async function setUserPhone(userId: string, phone: string) {
+  await ready();
+  await db.update(users).set({ phone, phoneVerified: 1 }).where(eq(users.id, userId)).run();
 }
 
 /** Stripe customer ID'sini kaydet (checkout sırasında). */

@@ -26,12 +26,9 @@ export type Alert = {
 
 const KEY = "vela.alerts.v1";
 
-/** Tohum alarmlar — module-top'ta Date.now() ÇAĞIRMA, sabit createdAt kullan. */
-const SEED: Alert[] = [
-  { id: "al1", symbol: "NVDA", condition: "above", price: 220, status: "active", createdAt: 0 },
-  { id: "al2", symbol: "TSLA", condition: "below", price: 350, status: "active", createdAt: 0 },
-  { id: "al3", symbol: "AAPL", condition: "above", price: 260, status: "triggered", createdAt: 0 },
-];
+// Yeni kullanıcı SIFIR alarmla başlar — sahte demo alarmlar (NVDA>220 vb.)
+// artık yüklenmez. Kullanıcı kendi fiyat alarmlarını kurar.
+const SEED: Alert[] = [];
 
 let cache: Alert[] | null = null;
 const listeners = new Set<() => void>();

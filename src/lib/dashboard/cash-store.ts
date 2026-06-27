@@ -39,8 +39,10 @@ export const STAKE_APY: Record<StakePosition["symbol"], number> = {
 };
 
 function seed(): CashState {
+  // Yeni kullanıcı SIFIR High-Yield bakiyesiyle başlar — sahte $25K demo bakiyesi
+  // artık yüklenmez. Kullanıcı para yatırınca dolar. APY oranı bilgi amaçlı kalır.
   return {
-    balance: 25000,
+    balance: 0,
     apy: 3.3,
     accruedTotal: 0,
     lastAccrue: 0, // 0 = henüz işletilmedi; ilk accrue'da now() ile başlatılır

@@ -1,8 +1,12 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { AUTOMATIONS, type Automation } from "./data";
+import { type Automation } from "./data";
 import { UNIVERSE } from "@/lib/market/universe";
+
+// Yeni kullanıcı SIFIR otomasyonla başlar — sahte demo kurallar (haftalık QQQ al,
+// NVDA dip-al vb.) artık yüklenmez. Kullanıcı kendi kurallarını oluşturur.
+const SEED_AUTOMATIONS: Automation[] = [];
 
 // Tüm evren sembolleri (uzun olanlar önce → GRAMALTIN, USDTRY önce eşleşsin).
 const KNOWN_SYMBOLS = UNIVERSE.map((u) => u.symbol).sort((a, b) => b.length - a.length);
@@ -14,12 +18,12 @@ const listeners = new Set<() => void>();
 
 function load(): Automation[] {
   if (cache) return cache;
-  if (typeof window === "undefined") return AUTOMATIONS;
+  if (typeof window === "undefined") return SEED_AUTOMATIONS;
   try {
     const raw = localStorage.getItem(KEY);
-    cache = raw ? (JSON.parse(raw) as Automation[]) : AUTOMATIONS.map((a) => ({ ...a }));
+    cache = raw ? (JSON.parse(raw) as Automation[]) : SEED_AUTOMATIONS.map((a) => ({ ...a }));
   } catch {
-    cache = AUTOMATIONS.map((a) => ({ ...a }));
+    cache = SEED_AUTOMATIONS.map((a) => ({ ...a }));
   }
   return cache;
 }
@@ -45,7 +49,7 @@ export function useAutomations() {
       return () => listeners.delete(cb);
     },
     load,
-    () => AUTOMATIONS,
+    () => SEED_AUTOMATIONS,
   );
 
   return {

@@ -47,6 +47,10 @@ CREATE TABLE IF NOT EXISTS holdings (
 CREATE TABLE IF NOT EXISTS accounts (
   user_id TEXT PRIMARY KEY, cash REAL NOT NULL DEFAULT 12480.55
 );
+CREATE TABLE IF NOT EXISTS phone_verifications (
+  user_id TEXT PRIMARY KEY, phone TEXT NOT NULL, code_hash TEXT NOT NULL,
+  expires_at INTEGER NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL
+);
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY, user_id TEXT NOT NULL, ts INTEGER NOT NULL,
   side TEXT NOT NULL, symbol TEXT NOT NULL, shares REAL NOT NULL, price REAL NOT NULL
@@ -130,6 +134,9 @@ async function migrateUserColumns(): Promise<void> {
   const adds = [
     "ALTER TABLE users ADD COLUMN stripe_customer_id TEXT",
     "ALTER TABLE users ADD COLUMN sub_status TEXT",
+    "ALTER TABLE users ADD COLUMN phone TEXT",
+    "ALTER TABLE users ADD COLUMN phone_verified INTEGER DEFAULT 0",
+    "ALTER TABLE kyc ADD COLUMN didit_session_id TEXT",
   ];
   for (const sql of adds) {
     try {

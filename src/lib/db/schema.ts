@@ -12,6 +12,8 @@ export const users = sqliteTable("users", {
   riskProfile: text("risk_profile"),
   stripeCustomerId: text("stripe_customer_id"), // Stripe müşteri kimliği
   subStatus: text("sub_status"), // active | trialing | past_due | canceled | null
+  phone: text("phone"), // E.164 doğrulanmış telefon
+  phoneVerified: integer("phone_verified").default(0), // 0/1
   createdAt: integer("created_at").notNull(),
 });
 
@@ -28,6 +30,20 @@ export const holdings = sqliteTable("holdings", {
 export const accounts = sqliteTable("accounts", {
   userId: text("user_id").primaryKey(),
   cash: real("cash").notNull().default(12480.55),
+});
+
+/**
+ * Telefon doğrulama kodları (Netgsm SMS). Twilio Verify'dan farklı: kodu biz
+ * üretip burada HASH'li tutarız (düz kod ASLA saklanmaz), 5 dk geçerli, deneme
+ * sayısı sınırlı (brute-force koruması). Kullanıcı başına tek aktif kayıt.
+ */
+export const phoneVerifications = sqliteTable("phone_verifications", {
+  userId: text("user_id").primaryKey(),
+  phone: text("phone").notNull(), // E.164
+  codeHash: text("code_hash").notNull(), // sha256(code + userId)
+  expiresAt: integer("expires_at").notNull(), // epoch ms
+  attempts: integer("attempts").notNull().default(0),
+  createdAt: integer("created_at").notNull(),
 });
 
 /** Emir geçmişi. */
@@ -182,6 +198,7 @@ export const kyc = sqliteTable("kyc", {
   docFront: text("doc_front"), // belge referansı (data URL / harici depo anahtarı)
   docBack: text("doc_back"),
   status: text("status").notNull().default("pending"), // pending | verified | rejected
+  diditSessionId: text("didit_session_id"), // Didit doğrulama oturumu (webhook eşleştirme)
   submittedAt: integer("submitted_at"),
   reviewedAt: integer("reviewed_at"),
 });
