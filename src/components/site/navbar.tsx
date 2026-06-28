@@ -15,6 +15,7 @@ import {
   ChartLineUp,
   GraduationCap,
   BookOpen,
+  Plugs,
   ShieldCheck,
   DownloadSimple,
   User,
@@ -40,6 +41,7 @@ const NAV = [
 
 const RESOURCES_MENU = [
   { icon: BookOpen, label: "Kullanım Rehberi", desc: "Finovela'yı adım adım öğren", href: "/guide" },
+  { icon: Plugs, label: "MCP — AI Bağlantısı", desc: "Claude/ChatGPT/Gemini Finovela'ya bağlanır", href: "/mcp" },
   { icon: GraduationCap, label: "Akademi", desc: "Yapay zeka ile yatırımı öğren", href: "/academy" },
   { icon: ChartLineUp, label: "Piyasalar", desc: "Canlı fiyatlar ve yükselenler", href: "/markets" },
   { icon: StackSimple, label: "Varlık Listeleri", desc: "Özenle seçilmiş AI takip listeleri", href: "/markets/stocks" },

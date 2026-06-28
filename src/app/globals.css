@@ -756,6 +756,50 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
   .vela-ask-glow::after { animation: none; }
 }
 
+/* ── AI Bağlantı Işını (MCP sayfası) — kablo akışı + node parlaması ── */
+/* Kablo boyunca akan ışık: dash segmenti merkeze doğru kayar. */
+.beam-flow-path {
+  stroke-dasharray: 14 86;
+  animation: beam-flow var(--cycle, 3.5s) linear infinite;
+}
+@keyframes beam-flow {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+/* Çevre logosu: ışık ulaşınca (döngünün sonuna doğru) parlar, sonra söner. */
+.beam-node-chip {
+  transition: none;
+  animation: beam-node-glow var(--cycle, 3.5s) ease-in-out infinite;
+}
+@keyframes beam-node-glow {
+  0%, 60% { box-shadow: none; }
+  /* ışık tam ulaştığında parla */
+  78% {
+    box-shadow: 0 0 22px -2px rgba(127,176,255,0.9), inset 0 0 0 1px rgba(127,176,255,0.5);
+    background: rgba(37,103,255,0.18);
+  }
+  100% { box-shadow: none; }
+}
+.beam-node-chip img { transition: opacity .3s ease; }
+.beam-node:hover .beam-node-chip img { opacity: 1; }
+/* parlama anında logo da netleşsin */
+@keyframes beam-node-img {
+  0%, 60%, 100% { opacity: 0.55; }
+  78% { opacity: 1; }
+}
+.beam-node-chip { will-change: box-shadow, background; }
+.beam-node .beam-node-chip img { animation: beam-node-img var(--cycle, 3.5s) ease-in-out infinite; animation-delay: inherit; }
+/* merkez nabız */
+.beam-core-pulse { animation: beam-core 3s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes beam-core {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .beam-flow-path, .beam-node-chip, .beam-node .beam-node-chip img, .beam-core-pulse { animation: none; }
+  .beam-node-chip img { opacity: 0.85; }
+}
+
 /* Canlı destek widget açılış animasyonu (sol-alttan yumuşak pop). */
 @keyframes support-pop {
   from { opacity: 0; transform: translateY(12px) scale(0.97); }

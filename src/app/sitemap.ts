@@ -11,6 +11,7 @@ const ROUTES: { path: string; priority: number; changeFreq: MetadataRoute.Sitema
   { path: "/", priority: 1.0, changeFreq: "weekly" },
   { path: "/pricing", priority: 0.9, changeFreq: "weekly" },
   { path: "/guide", priority: 0.8, changeFreq: "monthly" },
+  { path: "/mcp", priority: 0.7, changeFreq: "monthly" },
   { path: "/product/ai", priority: 0.8, changeFreq: "monthly" },
   { path: "/product/portfolio", priority: 0.7, changeFreq: "monthly" },
   { path: "/product/strategy", priority: 0.7, changeFreq: "monthly" },
