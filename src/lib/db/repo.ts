@@ -241,7 +241,7 @@ export async function upsertUser(u: UpsertUserInput) {
       .set({ email: u.email ?? existing.email, name: u.name ?? existing.name })
       .where(eq(users.id, u.id))
       .run();
-    return existing;
+    return { ...existing, created: false as const };
   }
   const row = {
     id: u.id,
@@ -252,7 +252,8 @@ export async function upsertUser(u: UpsertUserInput) {
     createdAt: Date.now(),
   };
   await db.insert(users).values(row).run();
-  return row;
+  // created:true → çağıran (dashboard layout) hoş geldin maili tetikler.
+  return { ...row, created: true as const };
 }
 
 export async function getUserRow(userId: string) {
@@ -306,6 +307,37 @@ export async function getUserByPaddleCustomer(paddleCustomerId: string) {
 export async function setUserSubscription(userId: string, plan: string, subStatus: string | null) {
   await ready();
   await db.update(users).set({ plan, subStatus }).where(eq(users.id, userId)).run();
+}
+
+// ── credits: tek-seferlik kredi paketi bakiyesi ───────────────────────────────
+
+/** Kullanıcının güncel kredi bakiyesi (yoksa 0). */
+export async function getCredits(userId: string): Promise<number> {
+  await ready();
+  const row = await db.select().from(users).where(eq(users.id, userId)).get();
+  return row?.credits ?? 0;
+}
+
+/** Krediyi mevcut bakiyeye EKLE (kredi paketi alımı). Yeni bakiyeyi döndürür. */
+export async function addCredits(userId: string, amount: number): Promise<number> {
+  await ready();
+  const row = await db.select().from(users).where(eq(users.id, userId)).get();
+  const next = (row?.credits ?? 0) + amount;
+  await db.update(users).set({ credits: next }).where(eq(users.id, userId)).run();
+  return next;
+}
+
+/**
+ * Krediden n adet düş (varsa). Yeterli bakiye varsa düşer ve true,
+ * yoksa dokunmaz ve false döner (AI sohbet/araç havuzu harcaması).
+ */
+export async function spendCredit(userId: string, n = 1): Promise<boolean> {
+  await ready();
+  const row = await db.select().from(users).where(eq(users.id, userId)).get();
+  const current = row?.credits ?? 0;
+  if (current < n) return false;
+  await db.update(users).set({ credits: current - n }).where(eq(users.id, userId)).run();
+  return true;
 }
 
 // ── user_state: tüm client-store'ların tek-satır JSON yedeği ──────────────────

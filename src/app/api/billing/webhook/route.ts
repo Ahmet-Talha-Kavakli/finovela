@@ -11,8 +11,10 @@
 
 import { NextResponse } from "next/server";
 import { PADDLE_ENABLED, planForPriceId, verifyPaddleSignature } from "@/lib/paddle";
-import { getUserByPaddleCustomer, setPaddleIds, setUserSubscription } from "@/lib/db/repo";
-import type { PlanId } from "@/lib/plans";
+import { getUserByPaddleCustomer, getUserRow, setPaddleIds, setUserSubscription, addCredits } from "@/lib/db/repo";
+import { sendEmail } from "@/lib/email/send";
+import { subscriptionActiveEmail, creditsPurchasedEmail } from "@/lib/email/templates";
+import { CREDIT_PACKS, PLANS, type PlanId } from "@/lib/plans";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,7 +24,7 @@ type PaddleSubscription = {
   id?: string;
   status?: string; // active | trialing | past_due | canceled | paused
   customer_id?: string;
-  custom_data?: { userId?: string; plan?: string } | null;
+  custom_data?: { userId?: string; plan?: string; kind?: string; pack?: string } | null;
   items?: Array<{ price?: { id?: string } | null }> | null;
 };
 
@@ -30,6 +32,17 @@ type PaddleEvent = {
   event_type?: string;
   data?: PaddleSubscription;
 };
+
+/**
+ * Mail gönderimi ana akışı ASLA bloklamaz/bozmaz — hata yutulur.
+ * EMAIL_ENABLED false ise sendEmail zaten no-op.
+ */
+async function safeSend(to: string | null | undefined, mail: { subject: string; html: string; text: string }): Promise<void> {
+  if (!to) return;
+  await sendEmail({ to, subject: mail.subject, html: mail.html, text: mail.text }).catch((e) => {
+    console.error("[webhook] mail gönderilemedi:", e);
+  });
+}
 
 export async function POST(req: Request) {
   if (!PADDLE_ENABLED) {
@@ -78,6 +91,41 @@ export async function POST(req: Request) {
         });
         // Aktif/deneme → planı uygula; aksi (past_due/paused) → durumu yansıt, planı düşürme.
         await setUserSubscription(userId, active ? plan : plan, status);
+
+        // Mail: yalnızca YENİ aktivasyonda (created/activated) + aktif/deneme durumunda.
+        // updated'da tekrar gönderme (yoksa her yenilemede mail gider).
+        if ((type === "subscription.created" || type === "subscription.activated") && active && plan !== "free") {
+          const user = await getUserRow(userId);
+          await safeSend(user?.email, subscriptionActiveEmail(PLANS[plan].name));
+        }
+        break;
+      }
+      case "transaction.completed": {
+        // Tek-seferlik kredi paketi alımı. Aboneliklerin de transaction'ı olur —
+        // sadece kredi paketi price ID'siyle eşleşeni işle (mükerrer plan tetiği yok).
+        const tx = event.data ?? {};
+        const priceIds = (tx.items ?? []).map((i) => i?.price?.id).filter(Boolean) as string[];
+
+        // Önce custom_data ile (checkout kind:"credits" + pack), yoksa price ID eşleşmesi.
+        let pack =
+          tx.custom_data?.kind === "credits" && tx.custom_data.pack
+            ? CREDIT_PACKS.find((p) => p.id === tx.custom_data?.pack)
+            : undefined;
+        if (!pack) {
+          pack = CREDIT_PACKS.find((p) => {
+            const envPriceId = process.env[p.priceEnvKey]?.trim();
+            return !!envPriceId && priceIds.includes(envPriceId);
+          });
+        }
+        if (!pack) break; // kredi paketi değil (örn. abonelik transaction'ı) → atla
+
+        const userId = await resolveUserId(tx);
+        if (!userId) break;
+
+        await addCredits(userId, pack.credits);
+
+        const user = await getUserRow(userId);
+        await safeSend(user?.email, creditsPurchasedEmail(pack.credits));
         break;
       }
       case "subscription.canceled": {

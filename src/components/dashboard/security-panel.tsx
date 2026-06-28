@@ -116,6 +116,12 @@ export function SecurityPanel() {
       return;
     }
     setPin(pin);
+    // Güvenlik bildirimi maili — fire-and-forget, hata UI'ı bozmaz.
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind: "pin_set" }),
+    }).catch(() => {});
     setPinOpen(false);
     setPinVal("");
     setPin2("");

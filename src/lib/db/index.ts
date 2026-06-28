@@ -38,7 +38,8 @@ function ensureSchema(): Promise<void> {
       .executeMultiple(`
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY, email TEXT, name TEXT, plan TEXT DEFAULT 'free',
-  risk_profile TEXT, stripe_customer_id TEXT, sub_status TEXT, created_at INTEGER NOT NULL
+  risk_profile TEXT, stripe_customer_id TEXT, sub_status TEXT,
+  credits INTEGER DEFAULT 0, created_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS holdings (
   id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL,
@@ -143,6 +144,7 @@ async function migrateUserColumns(): Promise<void> {
     "ALTER TABLE users ADD COLUMN phone_verified INTEGER DEFAULT 0",
     "ALTER TABLE users ADD COLUMN paddle_customer_id TEXT",
     "ALTER TABLE users ADD COLUMN paddle_subscription_id TEXT",
+    "ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 0",
     "ALTER TABLE kyc ADD COLUMN didit_session_id TEXT",
   ];
   for (const sql of adds) {

@@ -16,6 +16,7 @@ export const users = sqliteTable("users", {
   subStatus: text("sub_status"), // active | trialing | past_due | canceled | null
   phone: text("phone"), // E.164 doğrulanmış telefon
   phoneVerified: integer("phone_verified").default(0), // 0/1
+  credits: integer("credits").default(0), // tek-seferlik kredi paketi bakiyesi (AI sohbet/araç havuzu)
   createdAt: integer("created_at").notNull(),
 });
 

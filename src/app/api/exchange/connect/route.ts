@@ -11,7 +11,10 @@ import {
   upsertExchangeConnection,
   listExchangeConnections,
   deleteExchangeConnection,
+  getUserRow,
 } from "@/lib/db/repo";
+import { sendEmail } from "@/lib/email/send";
+import { connectionAddedEmail } from "@/lib/email/templates";
 import { encryptSecret, decryptSecret, maskKey } from "@/lib/crypto/secrets";
 import { validateKeys, type BinanceEnv } from "@/lib/exchange/binance";
 import { canAddMore } from "@/lib/plan-access";
@@ -94,6 +97,17 @@ export async function POST(req: Request) {
       canTrade: v.canTrade ? 1 : 0,
       canWithdraw: v.canWithdraw ? 1 : 0,
     });
+
+    // 2.5) Güvenlik bildirimi maili — bağlantı eklendi. Hata ana akışı bozmaz.
+    try {
+      const user = await getUserRow(userId);
+      if (user?.email) {
+        const mail = connectionAddedEmail(exchange);
+        await sendEmail({ to: user.email, subject: mail.subject, html: mail.html, text: mail.text }).catch(() => {});
+      }
+    } catch {
+      /* bildirim hatası bağlantıyı bozmaz */
+    }
 
     // 3) Sonuç — para çekme yetkisi varsa kullanıcıyı uyar
     return NextResponse.json({
