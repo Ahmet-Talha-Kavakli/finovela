@@ -13,14 +13,16 @@
 // → varsayılan marka rengi gelir). Yalnız CDN'de var olan (200) slug'lar kullanıldı;
 // OpenAI/Grok simple-icons'ta yok (404) → marka karşılığı çalışan AI'larla dolduruldu.
 // Konum: 0=üst, saat yönünde. cx/cy yüzde (viewBox 0-100).
+// 8 logo, eşit açıyla (45°) dağıtılmış daire — merkez (50,50), yarıçap ~44.
 const NODES = [
-  { id: "claude", name: "Claude", slug: "claude", x: 50, y: 8, delay: 0 },
-  { id: "gemini", name: "Gemini", slug: "googlegemini", x: 85, y: 22, delay: 0.5 },
-  { id: "perplexity", name: "Perplexity", slug: "perplexity", x: 95, y: 55, delay: 1.0 },
-  { id: "deepseek", name: "DeepSeek", slug: "deepseek", x: 78, y: 88, delay: 1.5 },
-  { id: "mistral", name: "Mistral", slug: "mistralai", x: 22, y: 88, delay: 2.0 },
-  { id: "huggingface", name: "Hugging Face", slug: "huggingface", x: 5, y: 55, delay: 2.5 },
-  { id: "meta", name: "Llama (Meta)", slug: "meta", x: 15, y: 22, delay: 3.0 },
+  { id: "claude", name: "Claude", slug: "claude", x: 50, y: 6, delay: 0 },
+  { id: "gemini", name: "Gemini", slug: "googlegemini", x: 81, y: 19, delay: 0.4 },
+  { id: "perplexity", name: "Perplexity", slug: "perplexity", x: 94, y: 50, delay: 0.8 },
+  { id: "openrouter", name: "OpenRouter", slug: "openrouter", x: 81, y: 81, delay: 1.2 },
+  { id: "deepseek", name: "DeepSeek", slug: "deepseek", x: 50, y: 94, delay: 1.6 },
+  { id: "mistral", name: "Mistral", slug: "mistralai", x: 19, y: 81, delay: 2.0 },
+  { id: "huggingface", name: "Hugging Face", slug: "huggingface", x: 6, y: 50, delay: 2.4 },
+  { id: "meta", name: "Llama (Meta)", slug: "meta", x: 19, y: 19, delay: 2.8 },
 ];
 
 const CENTER = { x: 50, y: 50 };
