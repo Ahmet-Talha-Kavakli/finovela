@@ -7,8 +7,8 @@
  * İşlevsellik (deposit/withdraw/stake/tick/faiz) AYNEN korunur; yalnız görsel.
  */
 
-import { useState, useEffect } from "react";
-import { AreaChart, RadialGauge } from "@/components/dashboard/area-chart";
+import { useId, useState, useEffect } from "react";
+import { AreaChart } from "@/components/dashboard/area-chart";
 import { Topbar } from "@/components/dashboard/topbar";
 import { ChartFrame } from "@/components/dashboard/chart-frame";
 import { AnimatedNumber, LiveDot } from "@/components/dashboard/animated-number";
@@ -129,12 +129,11 @@ export default function EarnPage() {
                 style={{ borderColor: "var(--ais-line)" }}
               >
                 <div className="flex items-center gap-6">
-                  <RadialGauge
+                  <LightGauge
                     value={gaugeVal}
                     size={132}
                     label={`${cash.apy.toFixed(2)}%`}
                     sublabel="Nakit APY"
-                    tone="up"
                   />
                   <div className="lg:hidden">
                     <p className="text-[12px] text-[var(--ais-fg-faint)]">Öngörülen yıllık gelir</p>
@@ -427,6 +426,78 @@ function MiniMetric({
       <p className="num mt-2 text-[20px] font-medium tracking-tight" style={{ color: color ?? "var(--ais-fg)" }}>
         <AnimatedNumber value={animate} format={format} />
       </p>
+    </div>
+  );
+}
+
+/**
+ * Açık-tema (Didit) radyal gösterge — beyaz zeminde okunur.
+ * Track token gri (var(--ais-line)), ilerleme yeşil (#1f9d57, SVG yeşili),
+ * merkez etiket token renkleri. Koyu-tema RadialGauge yerine bu sayfa için.
+ */
+function LightGauge({
+  value,
+  size = 132,
+  stroke = 10,
+  label,
+  sublabel,
+}: {
+  value: number;
+  size?: number;
+  stroke?: number;
+  label?: string;
+  sublabel?: string;
+}) {
+  const uid = useId().replace(/:/g, "");
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const pct = Math.max(0, Math.min(100, value));
+  const dash = (pct / 100) * c;
+  const GREEN = "#1f9d57";
+  const GREEN_HI = "#2bb96a";
+
+  return (
+    <div className="relative grid place-items-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          <linearGradient id={`lg-${uid}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={GREEN} />
+            <stop offset="100%" stopColor={GREEN_HI} />
+          </linearGradient>
+        </defs>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--ais-line)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={`url(#lg-${uid})`}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${c - dash}`}
+        />
+      </svg>
+      {(label || sublabel) && (
+        <div className="absolute inset-0 grid place-items-center text-center">
+          <div>
+            {label && (
+              <p className="num text-2xl font-semibold tracking-tight text-[var(--ais-fg)]">{label}</p>
+            )}
+            {sublabel && (
+              <p className="mt-0.5 text-[11px] uppercase tracking-wide text-[var(--ais-fg-faint)]">
+                {sublabel}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

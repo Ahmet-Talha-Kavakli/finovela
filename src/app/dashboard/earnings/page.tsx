@@ -97,7 +97,10 @@ export default function EarningsPage() {
         const res = await fetch("/api/market/earnings", { cache: "no-store" });
         const data = await res.json();
         if (cancelled || !data.ok) return;
-        const up = (data.upcoming as ApiEarning[]).map((e) => mapApi(e, "upcoming"));
+        const up = (data.upcoming as ApiEarning[])
+          .map((e) => mapApi(e, "upcoming"))
+          // EPS tahmini OLAN şirketler üstte (boş "—" satırlar altta toplanır).
+          .sort((a, b) => (b.epsEst > 0 ? 1 : 0) - (a.epsEst > 0 ? 1 : 0));
         const rep = (data.reported as ApiEarning[]).map((e) => mapApi(e, "reported"));
         if (up.length) setUpcoming(up);
         if (rep.length) setReported(rep);
@@ -217,7 +220,9 @@ export default function EarningsPage() {
                       </div>
                       <div className="text-right text-[12px]">
                         <p className="text-[var(--ais-fg-faint)]">Tahmini EPS</p>
-                        <p className="num font-medium text-[var(--ais-fg)]">${e.epsEst.toFixed(2)}</p>
+                        <p className="num font-medium text-[var(--ais-fg)]">
+                          {e.epsEst != null && e.epsEst > 0 ? `$${e.epsEst.toFixed(2)}` : "—"}
+                        </p>
                       </div>
                       <button
                         onClick={() => getRecap(e.symbol)}
@@ -249,7 +254,8 @@ export default function EarningsPage() {
                         <div className="min-w-0 flex-1">
                           <p className="text-[13.5px] font-medium text-[var(--ais-fg)]">{e.symbol}</p>
                           <p className="num truncate text-[12px] text-[var(--ais-fg-faint)]">
-                            EPS ${e.epsActual?.toFixed(2)} (tahmin ${e.epsEst.toFixed(2)})
+                            EPS ${e.epsActual?.toFixed(2)}
+                            {e.epsEst > 0 ? ` (tahmin $${e.epsEst.toFixed(2)})` : ""}
                           </p>
                         </div>
                         <span
