@@ -164,11 +164,11 @@ export function Sidebar() {
           href="/dashboard/chat"
           title="Finovela'ya sor"
           className={cn(
-            "vela-ask-glow mt-7 flex items-center rounded-xl bg-white font-semibold text-black transition hover:bg-white/90",
-            isCollapsed ? "justify-center px-0 py-3" : "gap-2.5 px-4 py-3 text-sm",
+            "vela-ask-glow mt-7 flex items-center justify-center rounded-xl bg-white font-semibold text-black transition hover:bg-white/90",
+            isCollapsed ? "h-11 w-11 mx-auto p-0" : "gap-2.5 px-4 py-3 text-sm",
           )}
         >
-          <Image src="/vela-mark.png" alt="" width={28} height={28} className="shrink-0" />
+          <Image src="/vela-mark.png" alt="" width={26} height={26} className="block shrink-0" />
           {!isCollapsed && "Finovela'ya sor"}
         </Link>
 

@@ -12,9 +12,9 @@
  */
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { PLANS, type PlanId } from "@/lib/plans";
 import { useUsage } from "@/lib/dashboard/use-usage";
-import { openUpgrade } from "@/components/dashboard/upgrade-modal";
 import { Lock, Sparkles } from "lucide-react";
 
 type Feature =
@@ -96,19 +96,20 @@ export function PlanGate({
         {children}
       </div>
 
-      {/* Kilit overlay — FIXED, viewport ortasında sabit, kapatılamaz (madde 12).
-          Arka plan blur + hafif karartma; kart ortada asılı kalır, scroll kilitli. */}
+      {/* Kilit overlay — FIXED, içerik alanının ortasında (SIDEBAR HARİÇ — kullanıcı
+          geri gidebilsin). Kapatılamaz, scroll kilitli (madde 12). Sidebar serbest:
+          overlay sol kenarı sidebar genişliği kadar içeride başlar (lg). */}
       {!resolving && (
         <div
-          className="ais ais-light fixed inset-0 z-[70] grid place-items-center px-6"
+          className="ais ais-light fixed inset-x-0 bottom-0 top-16 z-[55] grid place-items-center px-6 lg:left-[var(--vela-sidebar-w,248px)]"
           style={{
-            background: "rgba(17,17,20,0.22)",
+            background: "rgba(17,17,20,0.20)",
             backdropFilter: "blur(3px)",
             WebkitBackdropFilter: "blur(3px)",
           }}
         >
           <div
-            className="max-w-sm rounded-2xl border bg-[var(--ais-surface)] p-7 text-center shadow-[0_32px_80px_-24px_rgba(0,0,0,0.45)]"
+            className="w-full max-w-md rounded-2xl border bg-[var(--ais-surface)] p-9 text-center shadow-[0_32px_80px_-24px_rgba(0,0,0,0.45)]"
             style={{ borderColor: "var(--ais-line)", animation: "support-pop 0.2s ease-out" }}
           >
             <span
@@ -117,20 +118,28 @@ export function PlanGate({
             >
               <Lock size={22} />
             </span>
-            <h3 className="mt-4 text-[16px] font-semibold text-[var(--ais-fg)]">
+            <h3 className="mt-4 text-[17px] font-semibold text-[var(--ais-fg)]">
               {label} {reqPlan}&apos;a özel
             </h3>
-            <p className="mx-auto mt-1.5 max-w-xs text-[13px] leading-relaxed text-[var(--ais-fg-muted)]">
+            <p className="mx-auto mt-2 max-w-xs text-[13.5px] leading-relaxed text-[var(--ais-fg-muted)]">
               Bu özelliği kullanmak için Finovela {reqPlan} planına yükselt. İçerik önizleme amaçlı bulanıklaştırıldı.
             </p>
-            <button
-              onClick={() => openUpgrade({ reason: "feature", feature })}
-              className="mx-auto mt-5 flex items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition"
+            {/* Doğrudan billing'e — upgrade-modal AÇMA (yoksa iki kart üst üste biniyordu). */}
+            <Link
+              href="/dashboard/billing"
+              className="mx-auto mt-6 flex w-full items-center justify-center gap-1.5 rounded-xl px-5 py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
               style={{ background: "var(--ais-accent)" }}
             >
-              <Sparkles size={15} />
+              <Sparkles size={16} />
               {reqPlan}&apos;a yükselt
-            </button>
+            </Link>
+            {/* Geri dön — kullanıcı kilitli sayfada kapana kısılmasın. */}
+            <Link
+              href="/dashboard"
+              className="mt-3 inline-block text-[12.5px] font-medium text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
+            >
+              ← Panele dön
+            </Link>
           </div>
         </div>
       )}
