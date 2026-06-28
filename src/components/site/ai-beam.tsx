@@ -84,15 +84,15 @@ export function AIBeam() {
         >
           {/* iç sarmalayıcı ters döner → logo dik kalır (yan yatmaz). */}
           <div className="beam-node-counter">
-            <div className="beam-node-chip grid h-14 w-14 place-items-center rounded-xl">
+            <div className="beam-node-chip grid h-16 w-16 place-items-center rounded-xl">
               {/* GERÇEK RENKLİ marka logosu — ŞEFFAF zemin (kutu yok). */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`https://cdn.simpleicons.org/${n.slug}`}
                 alt={n.name}
-                width={40}
-                height={40}
-                className="h-10 w-10"
+                width={52}
+                height={52}
+                className="h-[52px] w-[52px]"
                 loading="lazy"
               />
             </div>
