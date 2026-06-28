@@ -111,6 +111,7 @@ type Msg = {
   streaming?: boolean;
   writing?: boolean; // ilk harf geldi mi (logo durumu için; metni state'e koymadan)
   attachments?: MsgAttachment[]; // in-memory ek küçük resimleri (persist edilmez)
+  usedTools?: string[]; // Glass-Box: bu yanıtta kullanılan araçların izi (şeffaflık)
 };
 
 const SUGGESTIONS = [
@@ -212,6 +213,7 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
             ...(m.quotes ? { quotes: m.quotes as Msg["quotes"] } : {}),
             ...(m.automation ? { automation: m.automation as Msg["automation"] } : {}),
             ...(m.rebalance ? { rebalance: m.rebalance as Msg["rebalance"] } : {}),
+            ...(rec.usedTools ? { usedTools: rec.usedTools as string[] } : {}),
             ...(rec.technicals ? { technicals: rec.technicals as Msg["technicals"] } : {}),
             ...(rec.velaScore ? { velaScore: rec.velaScore as Msg["velaScore"] } : {}),
             ...(rec.whatif ? { whatif: rec.whatif as Msg["whatif"] } : {}),
@@ -248,6 +250,7 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
           ...(m.quotes ? { quotes: m.quotes } : {}),
           ...(m.automation ? { automation: m.automation } : {}),
           ...(m.rebalance ? { rebalance: m.rebalance } : {}),
+          ...(m.usedTools ? { usedTools: m.usedTools } : {}),
           ...(m.technicals ? { technicals: m.technicals } : {}),
           ...(m.velaScore ? { velaScore: m.velaScore } : {}),
           ...(m.whatif ? { whatif: m.whatif } : {}),
@@ -553,7 +556,14 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
             if (ev === "text") {
               queueText(data.delta);
             } else if (ev === "tool") {
-              patch((m) => ({ ...m, tool: data.name }));
+              // Glass-Box: araç adını anlık göster + kalıcı ize ekle (tekrarsız).
+              patch((m) => ({
+                ...m,
+                tool: data.name,
+                usedTools: m.usedTools?.includes(data.name)
+                  ? m.usedTools
+                  : [...(m.usedTools ?? []), data.name],
+              }));
             } else if (ev === "tool_result") {
               patch((m) => ({ ...m, tool: null }));
               const d = data.data;
@@ -1163,6 +1173,48 @@ function BrainQuickSettings({ onClose }: { onClose: () => void }) {
   );
 }
 
+/* Glass-Box kaynak izi — yanıtın hangi gerçek araçlarla üretildiğini gösterir.
+   Kullanıcı güveni: "kara kutu değil, şu verilere dayandı". Kısa etiketler. */
+const SOURCE_LABEL: Record<string, string> = {
+  get_quote: "Canlı fiyat",
+  get_company_profile: "Şirket profili",
+  get_news: "Haberler",
+  get_technicals: "Teknik analiz",
+  get_sentiment: "Duyarlılık",
+  get_vela_score: "Finovela Skoru",
+  get_fundamentals: "Değerleme",
+  compare_assets: "Karşılaştırma",
+  analyze_portfolio_risk: "Portföy riski",
+  whatif_simulation: "What-If simülasyonu",
+  search_symbols: "Sembol arama",
+  web_search: "Web araştırması",
+  propose_order: "Emir önerisi",
+  rebalance_portfolio: "Dengeleme",
+  create_automation: "Otomasyon",
+  create_alert: "Alarm",
+};
+
+function SourceTrail({ tools }: { tools: string[] }) {
+  const labels = tools.map((t) => SOURCE_LABEL[t]).filter(Boolean);
+  if (labels.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="text-[10.5px] font-medium text-[var(--ais-fg-faint)]">
+        Kaynak:
+      </span>
+      {labels.map((l, i) => (
+        <span
+          key={`${l}-${i}`}
+          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-medium"
+          style={{ background: "var(--ais-accent-bg)", color: "var(--ais-accent)" }}
+        >
+          {l}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 const MessageRow = memo(function MessageRow({
   m,
   onRegenerate,
@@ -1253,6 +1305,11 @@ const MessageRow = memo(function MessageRow({
         {m.sentiment && <SentimentCard s={m.sentiment} />}
         {m.news && <NewsCard n={m.news} />}
         {m.profile && <ProfileCard p={m.profile} />}
+
+        {/* Glass-Box: bu yanıt hangi araçlarla üretildi — şeffaflık izi. */}
+        {!m.streaming && m.usedTools && m.usedTools.length > 0 && (
+          <SourceTrail tools={m.usedTools} />
+        )}
 
         {!m.streaming && m.text && (
           <>
