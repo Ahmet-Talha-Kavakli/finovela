@@ -6,12 +6,12 @@
  * bölümler, soft rozetler, token renkleri (beyaz-sabit YOK).
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { Markdown } from "@/components/dashboard/markdown";
 import { newsSentiment, type NewsSentiment } from "@/lib/dashboard/sentiment";
-import { Sparkles, Newspaper, ExternalLink } from "lucide-react";
+import { Sparkles, Newspaper, ExternalLink, RefreshCw } from "lucide-react";
 
 type NewsItem = {
   id: string;
@@ -76,6 +76,10 @@ export default function NewsPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [symbolFilter, setSymbolFilter] = useState<string | null>(null);
 
+  // Güncellik: son tazeleme zamanı + manuel/periyodik yenileme durumu.
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+
   // Hidrasyon güvenliği: göreli zamanı yalnızca mount sonrası hesapla.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -84,20 +88,22 @@ export default function NewsPage() {
     return () => clearInterval(id);
   }, []);
 
-  // Haberleri çek + günlük özet iste.
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch("/api/market/news");
-        if (!res.ok) throw new Error("fetch failed");
-        const data = (await res.json()) as { news?: NewsItem[] };
-        const news = data.news ?? [];
-        if (cancelled) return;
-        setItems(news);
-        setLoading(false);
+  // Haberleri (ve özeti) çek — mount, periyodik (2 dk) ve manuel "Yenile" çağırır.
+  // cache-buster (_t) ile her tazelemede taze veri; API 5 dk TTL'i upstream'i korur.
+  const loadNews = useCallback(async (manual = false) => {
+    if (manual) setRefreshing(true);
+    try {
+      const res = await fetch(`/api/market/news?_t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("fetch failed");
+      const data = (await res.json()) as { news?: NewsItem[] };
+      const news = data.news ?? [];
+      setItems(news);
+      setError(false);
+      setLoading(false);
+      setLastUpdated(Date.now());
 
-        // Günlük özet — başlıkları AI'a yolla.
+      // Günlük özet — başlıkları AI'a yolla (yalnız ilk yüklemede, kredi yakmasın).
+      if (summaryLoading) {
         const headlines = news.map((n) => n.headline).filter(Boolean);
         try {
           const sres = await fetch("/api/news-summary", {
@@ -106,25 +112,31 @@ export default function NewsPage() {
             body: JSON.stringify({ headlines }),
           });
           const sdata = (await sres.json()) as { summary?: string };
-          if (!cancelled) setSummary(sdata.summary ?? "");
+          setSummary(sdata.summary ?? "");
         } catch {
-          if (!cancelled)
-            setSummary(
-              "Günlük özet şu an hazırlanamadı. Aşağıdaki haber akışından güncel gelişmeleri inceleyebilirsiniz.",
-            );
+          setSummary(
+            "Günlük özet şu an hazırlanamadı. Aşağıdaki haber akışından güncel gelişmeleri inceleyebilirsiniz.",
+          );
         } finally {
-          if (!cancelled) setSummaryLoading(false);
+          setSummaryLoading(false);
         }
-      } catch {
-        if (cancelled) return;
-        setError(true);
-        setLoading(false);
-        setSummaryLoading(false);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    } catch {
+      setError(true);
+      setLoading(false);
+      setSummaryLoading(false);
+    } finally {
+      if (manual) setRefreshing(false);
+    }
+  }, [summaryLoading]);
+
+  // Mount + periyodik (2 dk) otomatik tazeleme → her zaman güncel.
+  useEffect(() => {
+    void loadNews(); // eslint-disable-line react-hooks/set-state-in-effect -- async; setState yalnız resolve sonrası
+    const id = setInterval(() => void loadNews(), 120_000);
+    return () => clearInterval(id);
+    // loadNews summaryLoading'e bağlı; ilk yüklemeden sonra referansı sabit kalır.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Haberdeki ilgili semboller (sembol filtresi çipleri için).
@@ -150,11 +162,29 @@ export default function NewsPage() {
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
-          <div>
-            <h1 className="d-title">Haberler</h1>
-            <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
-              Piyasayı hareket ettiren gelişmeler ve Finovela&apos;nın günlük yorumu.
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="d-title">Haberler</h1>
+              <p className="d-subtitle mt-2 max-w-2xl leading-relaxed">
+                Piyasayı hareket ettiren gelişmeler ve Finovela&apos;nın günlük yorumu.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <button
+                onClick={() => void loadNews(true)}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[13px] font-medium transition hover:bg-[var(--ais-surface-2)] disabled:opacity-50"
+                style={{ borderColor: "var(--ais-line)", color: "var(--ais-fg)" }}
+              >
+                <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+                Yenile
+              </button>
+              {lastUpdated && now && (
+                <span className="text-[11.5px] text-[var(--ais-fg-faint)]">
+                  Güncellendi: {Math.max(0, Math.round((now - lastUpdated) / 60000))} dk önce
+                </span>
+              )}
+            </div>
           </div>
 
           {/* ───────── Günlük yapay zeka özeti ───────── */}
