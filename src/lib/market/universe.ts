@@ -120,6 +120,17 @@ export const SYMBOL_DOMAIN: Record<string, string> = {
   ADA: "cardano.org",
   DOGE: "dogecoin.com",
   AVAX: "avax.network",
+  // BIST — FMP boş dönerse Google favicon ile gerçek kurum logosu gelsin.
+  THYAO: "turkishairlines.com",
+  ASELS: "aselsan.com.tr",
+  GARAN: "garantibbva.com.tr",
+  AKBNK: "akbank.com",
+  KCHOL: "koc.com.tr",
+  TUPRS: "tupras.com.tr",
+  BIMAS: "bim.com.tr",
+  EREGL: "erdemir.com.tr",
+  FROTO: "fordotosan.com.tr",
+  SISE: "sisecam.com.tr",
 };
 
 /**
@@ -180,31 +191,39 @@ export function logoUrl(symbol: string): string | null {
 
 /**
  * Çok-kaynaklı logo zinciri — ticker-badge sırayla dener (img onError → sıradaki).
- * Öncelik: domain varsa Clearbit (yüksek kalite, güvenilir) → FMP → kripto/BIST CDN.
- * FMP'nin "XX"/yamuk/eksik logo sorununu Clearbit fallback ile çözer.
+ * Öncelik (en güvenilirden başla, hep gerçek logoya in, asla boş kalma):
+ *   1) FMP image-stock — doğrulanmış 200, anahtarsız, temiz PNG.
+ *   2) Clearbit — yüksek kalite şeffaf PNG (FMP "XX"/yamuk verirse).
+ *   3) Google favicon (sz=128) — her domain için çalışır SON-ÇARE gerçek logo;
+ *      Clearbit erişilemese/ölse bile marka logosu yine gelir → harf-rozetine
+ *      ancak domaini olmayan enstrümanlarda (forex/metal/emtia) inilir.
  * Boş dizi dönerse harf-rozetine düşülür.
  */
 export function logoSources(symbol: string): string[] {
   const sym = symbol.toUpperCase();
   const out: string[] = [];
+  const domain = SYMBOL_DOMAIN[sym];
   const crypto = CRYPTO_ICON[sym];
   if (crypto) {
     out.push(`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${crypto}.png`);
-    // Kripto domain'i varsa Clearbit yedek (spothq bazı yeni coinlerde eksik).
-    if (SYMBOL_DOMAIN[sym]) out.push(`https://logo.clearbit.com/${SYMBOL_DOMAIN[sym]}`);
+    // Kripto domain'i varsa: Clearbit + Google favisi yedek (spothq yeni coinlerde eksik).
+    if (domain) out.push(`https://logo.clearbit.com/${domain}`, gfavicon(domain));
     return out;
-  }
-  const domain = SYMBOL_DOMAIN[sym];
-  if (domain) {
-    // Clearbit önce — temiz, kare, şeffaf PNG. FMP yedek.
-    out.push(`https://logo.clearbit.com/${domain}`);
   }
   if (BIST_SYMBOLS.has(sym)) {
     out.push(`https://financialmodelingprep.com/image-stock/${sym}.IS.png`);
   } else if (domain) {
     out.push(`https://financialmodelingprep.com/image-stock/${sym}.png`);
   }
+  if (domain) {
+    out.push(`https://logo.clearbit.com/${domain}`, gfavicon(domain));
+  }
   return out;
+}
+
+/** Google favicon servisi — her domain için 128px logo döndürür (sansürsüz son-çare). */
+function gfavicon(domain: string): string {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 }
 
 export const BY_SYMBOL = new Map(UNIVERSE.map((e) => [e.symbol, e]));

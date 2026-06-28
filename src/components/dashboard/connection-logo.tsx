@@ -28,32 +28,38 @@ export const CONNECTION_BRAND: Record<string, string> = {
  * Logo kaynak zinciri — id başına denenecek URL'ler (sırayla).
  * - simple-icons CDN: https://cdn.simpleicons.org/{slug}  (renkli marka SVG)
  * - Clearbit:        https://logo.clearbit.com/{domain}   (şirket logosu)
+ * - Google favicon:  her domain için çalışır, 128px (son-çare gerçek logo).
+ *   simple-icons'ta olmayan (metamask/alpaca/ibkr) ve Clearbit'in tutmadığı
+ *   TR markaları (ziraat/midas) burada yakalanır → harf-rozete inilmez.
  */
 function logoSources(id: string): string[] {
   const si = (slug: string) => `https://cdn.simpleicons.org/${slug}`;
   const cb = (domain: string) => `https://logo.clearbit.com/${domain}`;
-  switch (id) {
-    case "binance":
-      return [si("binance"), cb("binance.com")];
-    case "coinbase":
-      return [si("coinbase"), cb("coinbase.com")];
-    case "metamask":
-      return [si("metamask"), cb("metamask.io")];
-    case "alpaca":
-      return [si("alpaca"), cb("alpaca.markets")];
-    case "ibkr":
-      return [cb("interactivebrokers.com")];
-    case "midas":
-      return [cb("midas.com.tr")];
-    case "ziraat":
-      return [cb("ziraatbank.com.tr")];
-    case "finnhub":
-      return [cb("finnhub.io")];
-    case "twelvedata":
-      return [cb("twelvedata.com")];
-    default:
-      return [];
-  }
+  const gf = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  // Her platformun birincil alan adı (Clearbit + Google favicon ortak kullanır).
+  const DOMAIN: Record<string, string> = {
+    binance: "binance.com",
+    coinbase: "coinbase.com",
+    metamask: "metamask.io",
+    alpaca: "alpaca.markets",
+    ibkr: "interactivebrokers.com",
+    midas: "midas.com.tr",
+    ziraat: "ziraatbank.com.tr",
+    finnhub: "finnhub.io",
+    twelvedata: "twelvedata.com",
+  };
+  const domain = DOMAIN[id];
+  // simple-icons'ta DOĞRULANMIŞ renkli SVG'si olanlar (CDN'de 200 dönen slug'lar).
+  // metamask/alpaca/ibkr/finnhub/twelvedata CDN'de 404 → simple-icons atlanır,
+  // Clearbit + Google favicon devreye girer (harf-rozete inilmez).
+  const SI_SLUG: Record<string, string> = {
+    binance: "binance",
+    coinbase: "coinbase",
+  };
+  const out: string[] = [];
+  if (SI_SLUG[id]) out.push(si(SI_SLUG[id]));
+  if (domain) out.push(cb(domain), gf(domain));
+  return out;
 }
 
 /**
