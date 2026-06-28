@@ -66,10 +66,11 @@ const PALETTES: Record<MarkdownTone, Palette> = {
 function normalizeMd(text: string): string {
   return (
     text
-      // "...cümle.### Başlık" veya "...cümle.## Başlık" → başlık yeni satıra
-      .replace(/([^\n])(\s*)(#{1,6}\s)/g, "$1\n\n$3")
-      // "...cümle:---" yatay çizgi yapışması
-      .replace(/([^\n])(\s*)(---+)(\s|$)/g, "$1\n\n$3$4")
+      // "...cümle.### Başlık" → başlık yeni satıra. Önceki karakter harf/rakam/
+      // noktalama OLMALI (boşluk veya # DEĞİL) ki zaten ayrı başlıkları bozmayalım.
+      .replace(/([^\s#\n])(#{1,6}\s)/g, "$1\n\n$2")
+      // "...cümle---" yatay çizgi yapışması (önü harf/rakam/noktalama)
+      .replace(/([^\s\-\n])(---+)(\s|$)/g, "$1\n\n$2$3")
   );
 }
 
