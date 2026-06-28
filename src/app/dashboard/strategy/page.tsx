@@ -249,10 +249,11 @@ export default function StrategyPage() {
                   style={{ borderColor: "var(--ais-line)", background: "var(--ais-line)" }}
                 >
                   {results.slice(0, 2).map(([l, v, c]) => (
-                    <div key={l} className="px-4 py-3.5" style={{ background: "var(--ais-surface)" }}>
-                      <p className="text-[11.5px] text-[var(--ais-fg-faint)]">{l}</p>
+                    <div key={l} className="flex flex-col px-4 py-3.5" style={{ background: "var(--ais-surface)" }}>
+                      {/* label 2 satıra kadar yer kaplar → iki kutudaki değerler aynı hizada başlar */}
+                      <p className="min-h-[2.4em] text-[11.5px] leading-[1.2] text-[var(--ais-fg-faint)]">{l}</p>
                       <p
-                        className="num mt-1.5 text-[24px] font-medium leading-none tracking-tight"
+                        className="num mt-auto pt-1.5 text-[24px] font-medium leading-none tracking-tight"
                         style={{ color: c }}
                       >
                         {v}

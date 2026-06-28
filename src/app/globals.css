@@ -503,9 +503,10 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 .ais.ais-light .badge-blue  { background: var(--ais-accent-bg); color: var(--ais-accent); }
 
 /* ── Didit tipografi hiyerarşisi (ölçülen tam değerler) ── */
-/* Sayfa başlığı: "Welcome back" 26px/500/-0.39px */
+/* Sayfa başlığı — Topbar başlığıyla aynı his (Inter, 600, hafif sıkı). Kullanıcı
+   önceki -0.39px sıkı varyantı beğenmedi; Topbar'daki net görünümle hizalandı. */
 .ais.ais-light .d-title {
-  font-size: 26px; font-weight: 500; letter-spacing: -0.39px;
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em;
   line-height: 1.25; color: var(--ais-fg);
 }
 /* Başlık altı sayaç/açıklama: 13-14px/400 gri */
