@@ -9,8 +9,8 @@ import { mobileNav } from "@/lib/dashboard/use-mobile-nav";
 export function Topbar({ title }: { title: string }) {
   return (
     <header
-      className="vela-topbar-dark sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.08] px-4 backdrop-blur-xl sm:px-6"
-      style={{ background: "rgba(10,10,10,0.72)" }}
+      className="vela-topbar-dark sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.08] px-4 sm:px-6"
+      style={{ background: "#000000" }}
     >
       <button
         onClick={() => mobileNav.toggle()}

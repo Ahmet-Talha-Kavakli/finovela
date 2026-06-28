@@ -219,8 +219,8 @@ export default function ComparePage() {
 
             {focused && hits.length > 0 && cols.length < MAX && (
               <div
-                className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border p-1 shadow-[0_16px_40px_-16px_rgba(26,26,26,0.2)]"
-                style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+                className="absolute left-0 right-0 top-full z-[60] mt-2 overflow-hidden rounded-xl border p-1 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.28)]"
+                style={{ borderColor: "var(--ais-line)", background: "#ffffff" }}
               >
                 {hits.map((h) => {
                   const added = cols.some((c) => c.symbol === h.symbol);

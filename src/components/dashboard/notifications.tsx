@@ -122,11 +122,11 @@ export function Notifications() {
 
           <div className="border-t border-white/[0.08] px-4 py-2.5 text-center">
             <Link
-              href="/dashboard/alerts"
+              href="/dashboard/notifications"
               onClick={() => setOpen(false)}
               className="text-xs font-medium text-white/45 transition hover:text-white"
             >
-              Tüm alarmları gör
+              Tüm bildirimleri gör
             </Link>
           </div>
         </div>

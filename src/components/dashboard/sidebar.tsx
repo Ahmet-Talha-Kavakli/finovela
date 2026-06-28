@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useMobileNav, mobileNav } from "@/lib/dashboard/use-mobile-nav";
 import { useSidebarCollapsed } from "@/lib/dashboard/use-sidebar";
 import { UserChip } from "@/components/dashboard/user-chip";
+import { SidebarBalance } from "@/components/dashboard/sidebar-balance";
 import {
   SquaresFour,
   ChatCircleDots,
@@ -61,7 +62,7 @@ const NAV_GROUPS: NavGroup[] = [
     title: "Portföy",
     items: [
       { href: "/dashboard/portfolio", label: "Portföy", icon: ChartPieSlice },
-      { href: "/dashboard/analytics", label: "Analizler", icon: ChartBar },
+      { href: "/dashboard/analytics", label: "Analizler", icon: ChartBar, plan: "pro" },
       { href: "/dashboard/goals", label: "Hedefler", icon: Target },
       { href: "/dashboard/whatif", label: "What-If Stüdyosu", icon: Flask },
       { href: "/dashboard/transactions", label: "Geçmiş İşlemler", icon: ClockCounterClockwise },
@@ -75,19 +76,19 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard/compare", label: "Karşılaştır", icon: ArrowsLeftRight },
       { href: "/dashboard/news", label: "Haberler", icon: Newspaper },
       { href: "/dashboard/earnings", label: "Bilançolar", icon: CalendarBlank },
-      { href: "/dashboard/pulse", label: "Finovela Pulse", icon: Pulse },
+      { href: "/dashboard/pulse", label: "Finovela Pulse", icon: Pulse, plan: "pro" },
     ],
   },
   {
     title: "Araçlar",
     items: [
       { href: "/dashboard/portfolios", label: "Akıllı Portföyler", icon: Stack },
-      { href: "/dashboard/generated", label: "Yapay Zeka Portföyleri", icon: SparkleIcon },
-      { href: "/dashboard/strategy", label: "Strateji", icon: StackSimple },
+      { href: "/dashboard/generated", label: "Yapay Zeka Portföyleri", icon: SparkleIcon, plan: "pro" },
+      { href: "/dashboard/strategy", label: "Strateji", icon: StackSimple, plan: "pro" },
       { href: "/dashboard/automation", label: "Otomasyon", icon: Robot },
       { href: "/dashboard/alerts", label: "Alarmlar", icon: BellSimple },
-      { href: "/dashboard/options", label: "Opsiyonlar", icon: Cards },
-      { href: "/dashboard/bonds", label: "Tahviller", icon: Receipt },
+      { href: "/dashboard/options", label: "Opsiyonlar", icon: Cards, plan: "pro" },
+      { href: "/dashboard/bonds", label: "Tahviller", icon: Receipt, plan: "pro" },
       { href: "/dashboard/earn", label: "Kazan", icon: Coins },
       { href: "/dashboard/tax", label: "Vergi Merkezi", icon: Scales, plan: "unlimited" },
     ],
@@ -173,6 +174,9 @@ export function Sidebar() {
           <VelaMark className={cn("shrink-0 text-[#2567ff]", isCollapsed ? "h-7 w-7" : "h-5 w-5")} />
           {!isCollapsed && "Finovela'ya sor"}
         </Link>
+
+        {/* Canlı paper bakiye — tıkla: toplam ↔ nakit */}
+        <SidebarBalance collapsed={isCollapsed} />
 
         {/* kaydırılabilir nav — mantıksal gruplar (madde 5) */}
         <nav className="mt-6 flex flex-1 flex-col gap-0.5 overflow-y-auto overflow-x-hidden pr-1 [scrollbar-width:thin]">
