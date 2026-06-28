@@ -3,6 +3,7 @@ import { PageShell } from "@/components/site/page-shell";
 import { PageHero, FaqList, CtaBand } from "@/components/site/page-parts";
 import { GlassButton } from "@/components/ui/glass-button";
 import { PlanCta } from "@/components/site/plan-cta";
+import { GlowOrbs } from "@/components/site/glow-orbs";
 import { Fragment } from "react";
 import { Check, Minus, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import type { PlanId } from "@/lib/plans";
@@ -182,20 +183,20 @@ export default function PricingPage() {
         subtitle="Ücretsiz başla ve Claude destekli Finovela ile araştırmaya giriş yap. Sınırsız AI, web araştırma, simülasyon ve derin analiz istediğinde yükselt."
       />
 
-      {/* fiyat kartları */}
+      {/* fiyat kartları — animasyonlu cam (glassmorphism) */}
       <section className="relative overflow-hidden bg-[#0a1838]">
-        <div className="mx-auto grid max-w-[1200px] gap-6 px-6 pb-32 lg:grid-cols-3">
+        {/* süzülen blur'lu küreler — canlı cam arka planı */}
+        <GlowOrbs />
+        <div className="relative mx-auto grid max-w-[1200px] gap-6 px-6 pb-32 lg:grid-cols-3">
           {TIERS.map((t) => (
             <div
               key={t.name}
-              className={`relative flex flex-col rounded-3xl p-8 ${
-                t.highlight
-                  ? "border-2 border-brand bg-[linear-gradient(180deg,rgba(59,109,255,0.16),rgba(59,109,255,0.03))] shadow-[0_0_60px_rgba(59,109,255,0.3)]"
-                  : "border border-white/10 bg-white/[0.03]"
+              className={`glass-price-card relative flex flex-col rounded-3xl p-8 ${
+                t.highlight ? "is-popular lg:-translate-y-2 lg:scale-[1.02]" : ""
               }`}
             >
               {t.highlight && (
-                <span className="absolute -top-3 left-8 inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">
+                <span className="absolute -top-3 left-8 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#3b6dff] to-[#5b8cff] px-3 py-1 text-xs font-bold text-white shadow-[0_4px_16px_rgba(59,109,255,0.5)]">
                   <Sparkle size={13} weight="fill" /> En popüler
                 </span>
               )}
@@ -206,7 +207,13 @@ export default function PricingPage() {
                 {t.tagline}
               </p>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="font-display text-5xl font-bold text-white">
+                <span
+                  className={`font-display text-5xl font-bold ${
+                    t.highlight
+                      ? "bg-gradient-to-br from-white to-[#a5c4ff] bg-clip-text text-transparent"
+                      : "text-white"
+                  }`}
+                >
                   {t.price}
                 </span>
                 <span className="text-sm text-white/50">{t.cadence}</span>
@@ -218,11 +225,13 @@ export default function PricingPage() {
                     key={f}
                     className="flex items-start gap-2.5 text-sm text-white/75"
                   >
-                    <Check
-                      size={17}
-                      weight="bold"
-                      className="mt-0.5 shrink-0 text-brand"
-                    />
+                    <span
+                      className={`mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full ${
+                        t.highlight ? "bg-brand/25 text-[#a5c4ff]" : "bg-white/10 text-brand"
+                      }`}
+                    >
+                      <Check size={12} weight="bold" />
+                    </span>
                     {f}
                   </li>
                 ))}

@@ -916,3 +916,44 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 @media (prefers-reduced-motion: reduce) {
   .onb-card, .onb-video { animation: none; }
 }
+
+/* ───────── GlowOrbs — pricing animasyonlu cam arka planı ───────── */
+.orb { will-change: transform; }
+.orb-a { top: -60px; left: 8%; animation: orb-float-a 18s ease-in-out infinite; }
+.orb-b { bottom: -80px; right: 10%; animation: orb-float-b 22s ease-in-out infinite; }
+.orb-c { top: 30%; left: 45%; animation: orb-float-c 26s ease-in-out infinite; }
+@keyframes orb-float-a {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(60px,40px) scale(1.08); }
+}
+@keyframes orb-float-b {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-50px,-30px) scale(1.12); }
+}
+@keyframes orb-float-c {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-40px,50px) scale(0.92); }
+}
+/* Cam fiyat kartı — hover'da hafif yükselir, kenarı parlar */
+.glass-price-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s, border-color .35s;
+}
+.glass-price-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(127,176,255,0.35);
+  box-shadow: 0 24px 60px -20px rgba(37,103,255,0.45);
+}
+.glass-price-card.is-popular {
+  background: linear-gradient(180deg, rgba(59,109,255,0.18), rgba(59,109,255,0.04));
+  border-color: rgba(91,140,255,0.55);
+  box-shadow: 0 0 70px -10px rgba(59,109,255,0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .orb-a, .orb-b, .orb-c { animation: none; }
+  .glass-price-card { transition: none; }
+  .glass-price-card:hover { transform: none; }
+}
