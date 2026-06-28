@@ -601,6 +601,24 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 /* PIN gibi geniş harf-aralıklı inputlarda placeholder dağılmasın (girilen rakamlar geniş kalır). */
 .ais .ais-input::placeholder { letter-spacing: normal; }
 
+/* Sidebar Pro/Ultra etiketi — cam (glass) his, koyu sidebar üstünde (madde 5). */
+.vela-plan-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #cfe0ff;
+  background: linear-gradient(180deg, rgba(120,160,255,0.22), rgba(120,160,255,0.10));
+  border: 1px solid rgba(140,175,255,0.30);
+  box-shadow: 0 1px 6px rgba(37,103,255,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 /* "Finovela'ya sor" butonu — dikkat çeken ince parlama (shimmer geçişi). */
 .vela-ask-glow { position: relative; overflow: hidden; }
 .vela-ask-glow::after {

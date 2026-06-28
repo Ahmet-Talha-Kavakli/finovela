@@ -9,20 +9,17 @@ import { mobileNav } from "@/lib/dashboard/use-mobile-nav";
 export function Topbar({ title }: { title: string }) {
   return (
     <header
-      className="ais ais-light sticky top-0 z-30 flex h-16 items-center gap-3 border-b px-4 backdrop-blur-xl sm:px-6"
-      style={{
-        borderColor: "var(--ais-line)",
-        background: "color-mix(in srgb, var(--ais-bg) 82%, transparent)",
-      }}
+      className="vela-topbar-dark sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.08] px-4 backdrop-blur-xl sm:px-6"
+      style={{ background: "rgba(10,10,10,0.72)" }}
     >
       <button
         onClick={() => mobileNav.toggle()}
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)] lg:hidden"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-white/55 transition hover:bg-white/[0.06] hover:text-white lg:hidden"
         aria-label="Menü"
       >
         <Menu size={20} />
       </button>
-      <h1 className="text-[17px] font-semibold text-[var(--ais-fg)]">{title}</h1>
+      <h1 className="text-[17px] font-semibold text-white">{title}</h1>
 
       <div className="ml-auto flex items-center gap-3">
         <button
@@ -31,23 +28,19 @@ export function Topbar({ title }: { title: string }) {
               new KeyboardEvent("keydown", { key: "k", metaKey: true }),
             )
           }
-          className="hidden items-center gap-2 rounded-full border px-4 py-2 text-sm text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)] md:flex"
-          style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
+          className="hidden items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-sm text-white/50 transition hover:text-white/80 md:flex"
         >
           <Search size={16} />
           <span>Piyasalarda ara…</span>
-          <kbd
-            className="ml-6 rounded px-1.5 py-0.5 text-[10px] text-[var(--ais-fg-faint)]"
-            style={{ background: "var(--ais-surface-2)" }}
-          >
+          <kbd className="ml-6 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-white/45">
             ⌘K
           </kbd>
         </button>
         <Notifications />
         <Link
           href="/dashboard/chat"
-          className="flex h-10 items-center gap-2 rounded-full px-5 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ background: "var(--ais-accent)" }}
+          className="flex h-10 items-center gap-2 rounded-full px-5 text-sm font-semibold text-white transition hover:brightness-110"
+          style={{ background: "#2567ff" }}
         >
           <Plus size={16} strokeWidth={2.5} />
           Yeni işlem
