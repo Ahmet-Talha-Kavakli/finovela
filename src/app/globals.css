@@ -772,23 +772,16 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
   animation: beam-node-glow var(--cycle, 3.5s) ease-in-out infinite;
 }
 @keyframes beam-node-glow {
-  0%, 60% { box-shadow: none; }
-  /* ışık tam ulaştığında parla */
+  0%, 60% { box-shadow: 0 2px 10px -4px rgba(0,0,0,0.4); transform: scale(1); }
+  /* ışık tam ulaştığında parla (mavi hale + hafif büyüme) */
   78% {
-    box-shadow: 0 0 22px -2px rgba(127,176,255,0.9), inset 0 0 0 1px rgba(127,176,255,0.5);
-    background: rgba(37,103,255,0.18);
+    box-shadow: 0 0 26px 0 rgba(127,176,255,0.85), 0 0 0 2px rgba(127,176,255,0.45);
+    transform: scale(1.08);
   }
-  100% { box-shadow: none; }
+  100% { box-shadow: 0 2px 10px -4px rgba(0,0,0,0.4); transform: scale(1); }
 }
-.beam-node-chip img { transition: opacity .3s ease; }
-.beam-node:hover .beam-node-chip img { opacity: 1; }
-/* parlama anında logo da netleşsin */
-@keyframes beam-node-img {
-  0%, 60%, 100% { opacity: 0.55; }
-  78% { opacity: 1; }
-}
-.beam-node-chip { will-change: box-shadow, background; }
-.beam-node .beam-node-chip img { animation: beam-node-img var(--cycle, 3.5s) ease-in-out infinite; animation-delay: inherit; }
+/* Renkli logolar beyaz çipte her zaman net (opacity sabit 1). */
+.beam-node-chip { will-change: box-shadow, transform; }
 /* merkez nabız */
 .beam-core-pulse { animation: beam-core 3s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
 @keyframes beam-core {

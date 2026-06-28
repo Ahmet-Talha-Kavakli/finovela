@@ -9,16 +9,18 @@
  * Salt SVG + CSS animasyon (JS state yok) → hafif. prefers-reduced-motion saygılı.
  */
 
-// Çevre AI logoları — simple-icons CDN (gerçek marka logoları, beyaz varyant).
+// Çevre AI logoları — simple-icons CDN, GERÇEK MARKA RENGİ (slug'tan sonra renk yok
+// → varsayılan marka rengi gelir). Yalnız CDN'de var olan (200) slug'lar kullanıldı;
+// OpenAI/Grok simple-icons'ta yok (404) → marka karşılığı çalışan AI'larla dolduruldu.
 // Konum: 0=üst, saat yönünde. cx/cy yüzde (viewBox 0-100).
 const NODES = [
-  { id: "claude", name: "Claude", slug: "anthropic", x: 50, y: 8, delay: 0 },
-  { id: "openai", name: "ChatGPT", slug: "openai", x: 85, y: 22, delay: 0.5 },
-  { id: "gemini", name: "Gemini", slug: "googlegemini", x: 95, y: 55, delay: 1.0 },
-  { id: "perplexity", name: "Perplexity", slug: "perplexity", x: 78, y: 88, delay: 1.5 },
-  { id: "grok", name: "Grok", slug: "x", x: 22, y: 88, delay: 2.0 },
-  { id: "mistral", name: "Mistral", slug: "mistralai", x: 5, y: 55, delay: 2.5 },
-  { id: "meta", name: "Llama", slug: "meta", x: 15, y: 22, delay: 3.0 },
+  { id: "claude", name: "Claude", slug: "claude", x: 50, y: 8, delay: 0 },
+  { id: "gemini", name: "Gemini", slug: "googlegemini", x: 85, y: 22, delay: 0.5 },
+  { id: "perplexity", name: "Perplexity", slug: "perplexity", x: 95, y: 55, delay: 1.0 },
+  { id: "deepseek", name: "DeepSeek", slug: "deepseek", x: 78, y: 88, delay: 1.5 },
+  { id: "mistral", name: "Mistral", slug: "mistralai", x: 22, y: 88, delay: 2.0 },
+  { id: "huggingface", name: "Hugging Face", slug: "huggingface", x: 5, y: 55, delay: 2.5 },
+  { id: "meta", name: "Llama (Meta)", slug: "meta", x: 15, y: 22, delay: 3.0 },
 ];
 
 const CENTER = { x: 50, y: 50 };
@@ -89,14 +91,16 @@ export function AIBeam() {
           style={{ left: `${n.x}%`, top: `${n.y}%`, animationDelay: `${n.delay}s`, ["--cycle" as string]: `${CYCLE}s` }}
           title={n.name}
         >
-          <div className="beam-node-chip grid h-11 w-11 place-items-center rounded-xl bg-white/[0.06] ring-1 ring-white/10 backdrop-blur-sm">
+          <div className="beam-node-chip grid h-11 w-11 place-items-center rounded-xl bg-white/95 ring-1 ring-white/15 backdrop-blur-sm">
+            {/* GERÇEK RENKLİ marka logosu (simple-icons varsayılan marka rengi). Beyaz
+                çip zemininde net dursun; renk parametresi YOK → markanın kendi rengi. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://cdn.simpleicons.org/${n.slug}/ffffff`}
+              src={`https://cdn.simpleicons.org/${n.slug}`}
               alt={n.name}
               width={22}
               height={22}
-              className="h-[22px] w-[22px] opacity-70"
+              className="h-[22px] w-[22px]"
               loading="lazy"
             />
           </div>
