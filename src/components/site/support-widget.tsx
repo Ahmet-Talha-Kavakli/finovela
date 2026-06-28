@@ -163,7 +163,10 @@ export function SupportWidget() {
 
   if (!isClient) return null;
   // Dashboard'da gösterme — orada zaten Finovela Sohbet var. Sadece landing/pazarlama.
+  // Dashboard iki yolla açılır: finovela.com/dashboard (pathname) VE app.finovela.com
+  // (host rewrite → pathname "/" görünür ama aslında dashboard). İkisini de gizle.
   if (pathname?.startsWith("/dashboard")) return null;
+  if (typeof window !== "undefined" && window.location.hostname.startsWith("app.")) return null;
 
   return (
     // Kapsayıcı ŞEFFAF: .ais ais-light buraya verilmez (o zemin rengi uygular →

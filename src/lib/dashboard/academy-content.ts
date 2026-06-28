@@ -177,6 +177,32 @@ AI hata yapabilir; senin paran (gerçekte) senin sorumluluğunda.`,
         },
         applyHint: "Sohbet'te bir öneri al, altındaki 'Kaynak:' rozetlerine bak.",
       },
+      {
+        slug: "sohbetle-portfoy",
+        title: "Sohbetle portföy kurmak",
+        minutes: 5,
+        xp: 90,
+        body: `Finovela ile portföyünü adım adım, konuşarak inşa edebilirsin — tablo doldurmaya, karmaşık ekranlara gerek yok.
+
+## Nasıl?
+- Hedefini söyle: "uzun vadeli, dengeli bir portföy istiyorum"
+- Finovela öneri + gerekçe sunar (hangi sektör, neden, ne ağırlık)
+- Beğenmediğini değiştir: "kriptoyu azalt, temettü hissesi ekle"
+- Onayladığını **paper portföyünde** uygula, sonucu izle
+
+## Diyalog = kontrol
+Güzel yanı: her adımda sen karar verirsin. AI hızlı taslak çıkarır, sen ince ayar yaparsın. Bu, sıfırdan tek tek hisse seçmekten çok daha hızlı ve öğreticidir — çünkü Finovela her önerinin **nedenini** açıklar.`,
+        quiz: {
+          question: "Sohbetle portföy kurmanın en güçlü yanı nedir?",
+          options: [
+            { text: "AI her şeyi senin yerine, sorgusuz yapar", correct: false },
+            { text: "Her adımda gerekçe görüp sen ince ayar yaparsın", correct: true },
+            { text: "Hiç karar vermene gerek kalmaz", correct: false },
+          ],
+          explain: "Finovela hızlı taslak ve gerekçe sunar; nihai kararı ve ince ayarı sen yaparsın — bu hem hızlı hem öğreticidir.",
+        },
+        applyHint: "Sohbet'e 'dengeli uzun vadeli portföy öner' yaz, gerekçeleri oku.",
+      },
     ],
   },
   {
@@ -238,6 +264,31 @@ Bir teknoloji şirketinin yüksek F/K'si büyüme beklentisini yansıtabilir; ay
         },
         applyHint: "Sohbet'e 'AAPL'in temel verilerini özetle' diye sor.",
       },
+      {
+        slug: "fiyati-ne-hareket-ettirir",
+        title: "Fiyatı gerçekte ne hareket ettirir?",
+        minutes: 5,
+        xp: 90,
+        body: `Kısa vadede fiyat, şirketin "değerinden" çok **beklenti ve duyguyla** hareket eder. Bunu anlamak, panik ve FOMO'dan korur.
+
+## Başlıca itici güçler
+- **Beklenti vs gerçekleşen:** Şirket iyi bilanço açıklasa bile, beklentinin altındaysa fiyat **düşebilir**. Önemli olan sürprizdir.
+- **Haber ve duygu:** Sektör haberi, faiz kararı, genel piyasa korkusu/açgözlülüğü fiyatı sürükler.
+- **Arz-talep:** Sonuçta fiyat, almak isteyenle satmak isteyenin dengesidir.
+
+## Uzun vade farkı
+Uzun vadede fiyat, şirketin gerçek **kazanç gücüne** yaklaşma eğilimindedir. Yani kısa vadeli gürültüye kapılmadan, temel veriye ve kendi planına bağlı kalmak çoğu zaman daha sağlıklıdır. Finovela Pulse, senin varlıklarını etkileyen haberleri süzerek bu gürültüyü yönetmene yardım eder.`,
+        quiz: {
+          question: "Bir şirket iyi bilanço açıkladığı halde hissesi neden düşebilir?",
+          options: [
+            { text: "İyi bilanço her zaman fiyatı düşürür", correct: false },
+            { text: "Sonuç beklentinin altında kalmış olabilir", correct: true },
+            { text: "Bilançonun fiyata etkisi yoktur", correct: false },
+          ],
+          explain: "Piyasa beklentiyi fiyatlar; gerçekleşen sonuç beklentinin altındaysa, iyi olsa bile fiyat düşebilir. Önemli olan sürprizdir.",
+        },
+        applyHint: "Finovela Pulse'ta varlıklarını etkileyen haberleri incele.",
+      },
     ],
   },
   {
@@ -270,6 +321,57 @@ Opsiyonlar kaldıraçlıdır: küçük hareketler büyük kâr/zarar yaratabilir
           explain: "Call, belirli fiyattan alma hakkı verir — fiyat yükselirse değer kazanır.",
         },
         applyHint: "Opsiyonlar sayfasında bir opsiyon zincirini incele (paper).",
+      },
+      {
+        slug: "spread",
+        title: "Spread: riski sınırlamak",
+        minutes: 5,
+        xp: 100,
+        body: `Tek bir opsiyon almak risklidir; **spread**, iki opsiyonu birlikte kullanarak hem maliyeti hem riski azaltır.
+
+## Mantığı
+Bir opsiyon **alırsın**, aynı anda başka bir opsiyon **satarsın**. Sattığın opsiyon sana prim kazandırır, böylece toplam maliyetin düşer.
+
+- **Boğa call spread:** Yükseliş beklersin ama sınırlı. Düşük strike call al, yüksek strike call sat.
+- **Sonuç:** Hem kazancın hem kaybın **tavanlanmış** olur — sürpriz yok.
+
+## Neden kullanılır?
+Spread, "fiyat şu aralıkta hareket eder" görüşünü ucuza ve **tanımlı riskle** ifade etmenin yoludur. Yeni başlayanlar için tek-bacaklı opsiyondan daha güvenlidir çünkü maksimum kaybın önceden bellidir.`,
+        quiz: {
+          question: "Spread'in en büyük avantajı nedir?",
+          options: [
+            { text: "Sınırsız kazanç sağlar", correct: false },
+            { text: "Maksimum kaybı önceden tanımlar", correct: true },
+            { text: "Hiç risk içermez", correct: false },
+          ],
+          explain: "Spread'de hem kazanç hem kayıp tavanlıdır — maksimum kaybın baştan bellidir, bu yüzden tek opsiyondan daha kontrollüdür.",
+        },
+        applyHint: "What-If Stüdyosu'nda bir senaryoyu kâr/zarar tavanıyla düşün.",
+      },
+      {
+        slug: "opsiyon-risk",
+        title: "Opsiyonlarda risk yönetimi",
+        minutes: 4,
+        xp: 90,
+        body: `Opsiyonlar güçlü ama acımasız olabilir. En sık yapılan hata, **kaldıracı** anlamadan büyük pozisyon açmaktır.
+
+## Altın kurallar
+- **Küçük başla:** Portföyünün yalnızca küçük bir kısmını opsiyona ayır.
+- **Vadeyi hesaba kat:** Opsiyon her gün **zaman değeri** kaybeder; haklı olsan bile geç kalırsan kaybedebilirsin.
+- **Tanımlı risk:** Mümkünse spread gibi maksimum kaybı belli stratejileri tercih et.
+
+## Paper'da prova
+Finovela'nın sanal portföyünde opsiyon stratejilerini **gerçek para riski olmadan** dene. Bir kez kaldıracın iki yönlü çalıştığını paper'da gördüğünde, gerçek kararların çok daha sağlam olur.`,
+        quiz: {
+          question: "Opsiyonlarda en sık yapılan hata hangisidir?",
+          options: [
+            { text: "Küçük pozisyon açmak", correct: false },
+            { text: "Kaldıracı anlamadan büyük pozisyon açmak", correct: true },
+            { text: "Spread kullanmak", correct: false },
+          ],
+          explain: "Kaldıraç kazancı da kaybı da büyütür; anlamadan büyük pozisyon açmak hızlı kayıplara yol açar. Küçük başla, paper'da prova yap.",
+        },
+        applyHint: "Opsiyonlar sayfasında küçük bir paper denemesi yap.",
       },
     ],
   },
@@ -304,6 +406,59 @@ Kripto yüksek riskli bir varlık sınıfıdır. Birçok yatırımcı portföyü
           explain: "Kripto, merkezi bir otorite olmadan dağıtık blok zinciri üzerinde çalışır ve genellikle yüksek oynaklığa sahiptir.",
         },
         applyHint: "Piyasalar'da BTC'yi ara, fiyat grafiğine bak.",
+      },
+      {
+        slug: "kripto-guvenlik",
+        title: "Kriptoyu güvenle tutmak",
+        minutes: 5,
+        xp: 80,
+        body: `Kriptoda en büyük risk fiyat değil, **güvenliktir**. "Anahtarın değilse, kripton değil" sözü buradan gelir.
+
+## Temel kavramlar
+- **Cüzdan:** Kriptonu tuttuğun yer. Borsada (kolay ama borsaya bağımlı) veya kendi cüzdanında (tam kontrol ama sorumluluk sende) tutabilirsin.
+- **Özel anahtar / seed:** Cüzdanına erişim sağlayan gizli dizi. **Kimseyle paylaşma**, kaybedersen kripton da gider.
+
+## Güvenli alışkanlıklar
+- Seed'ini **çevrimdışı** ve güvenli sakla
+- **Resmi olmayan** linklere, "ücretsiz kripto" vaatlerine kanma (dolandırıcılık)
+- Büyük tutarları soğuk (offline) cüzdanda tut
+
+Finovela'da kripto **paper** olarak izlenir — güvenlik kavramlarını risksiz öğrenir, sonra gerçek cüzdan kararını bilinçli verirsin.`,
+        quiz: {
+          question: "'Anahtarın değilse, kripton değil' ne anlama gelir?",
+          options: [
+            { text: "Kripto her zaman borsada tutulmalı", correct: false },
+            { text: "Özel anahtarı kontrol etmiyorsan, varlık tam senin kontrolünde değildir", correct: true },
+            { text: "Kripto tutmak yasadışıdır", correct: false },
+          ],
+          explain: "Özel anahtar/seed cüzdana erişimi sağlar; onu kontrol etmiyorsan (örn. tamamen borsaya bağımlıysan) varlık üzerinde tam hakimiyetin yoktur.",
+        },
+        applyHint: "Watchlist'e BTC ekle, fiyat hareketini paper'da izle.",
+      },
+      {
+        slug: "kripto-portfoy",
+        title: "Kripto portföye nasıl uyar?",
+        minutes: 4,
+        xp: 80,
+        body: `Kripto yüksek getiri potansiyeli kadar yüksek **oynaklık** taşır. Doğru soru "almalı mıyım?" değil, "**ne kadar**?" olmalı.
+
+## Konumlandırma
+- Birçok yatırımcı kriptoyu portföyünün **küçük bir yüzdesiyle** sınırlar.
+- Kripto, hisse senedi gibi geleneksel varlıklarla her zaman aynı yönde hareket etmez — bu **çeşitlendirme** sağlayabilir.
+- Ama sert düşüşlere hazır ol: %50+ değer kaybı kriptoda olağandır.
+
+## Disiplin
+Heyecanla "hepsini kriptoya" demek en sık görülen hatadır. Önce hedefini ve risk toleransını belirle, sonra kriptoyu o çerçeveye **küçük bir parça** olarak yerleştir. What-If Stüdyosu'nda farklı kripto ağırlıklarını risksiz dene.`,
+        quiz: {
+          question: "Kriptoyu portföye eklerken doğru yaklaşım nedir?",
+          options: [
+            { text: "Tüm portföyü kriptoya çevirmek", correct: false },
+            { text: "Risk toleransına göre küçük bir parça ayırmak", correct: true },
+            { text: "Hiç kripto tutmamak şart", correct: false },
+          ],
+          explain: "Kripto yüksek oynaklık taşır; çoğu yatırımcı onu portföyün küçük bir yüzdesiyle sınırlar ve risk toleransına göre konumlandırır.",
+        },
+        applyHint: "What-If Stüdyosu'nda farklı kripto ağırlıklarını karşılaştır.",
       },
     ],
   },
@@ -340,6 +495,57 @@ Finovela Vergi Merkezi bu kavramları görselleştirir, ama nihai vergi planlama
           explain: "Gerçekleşen zararlar, gerçekleşen kârları dengeleyerek vergiye esas kazancı düşürebilir — kurallar ülkeye göre değişir.",
         },
         applyHint: "Vergi Merkezi'nde mahsup senaryolarını incele.",
+      },
+      {
+        slug: "vade-vergi",
+        title: "Uzun vade ve vergi",
+        minutes: 4,
+        xp: 90,
+        body: `Ne zaman sattığın, ne kadar vergi ödeyeceğini etkileyebilir. Birçok sistemde **uzun vadeli** tutulan varlıklar daha avantajlı vergilenir.
+
+## Genel mantık
+- **Kısa vade:** Hızlı al-sat genellikle daha yüksek oranda vergilenir.
+- **Uzun vade:** Daha uzun tutmak bazı ülkelerde indirimli oran veya istisna sağlayabilir.
+
+## Yatırıma etkisi
+Vergi tek başına karar sebebi olmamalı ama **bilmek** önemlidir: aynı kazanç, satış zamanlamasına göre cebinde farklı kalır. Sık al-sat eden biri, kazancının önemli bir kısmını vergiye ve işlem maliyetine kaptırabilir.
+
+Kurallar ülkeye göre çok değişir — bu **genel bilgidir**, kesin uygulama için mali müşavire danış. Finovela bunu eğitim amaçlı görselleştirir, vergi tavsiyesi vermez.`,
+        quiz: {
+          question: "Birçok vergi sisteminde uzun vadeli tutulan varlıklar için genellikle ne geçerlidir?",
+          options: [
+            { text: "Daha yüksek vergi oranı", correct: false },
+            { text: "Çoğu zaman daha avantajlı vergileme", correct: true },
+            { text: "Vergi hiç alınmaz", correct: false },
+          ],
+          explain: "Birçok sistemde uzun vadeli tutuş indirimli oran/istisna sağlayabilir; yine de kurallar ülkeye göre değişir — kesin bilgi için mali müşavir gerekir.",
+        },
+        applyHint: "Hedefler'de uzun vadeli bir hedef tanımla.",
+      },
+      {
+        slug: "maliyeti-dusurmek",
+        title: "Görünmez düşman: maliyetler",
+        minutes: 4,
+        xp: 90,
+        body: `Getirini sessizce yiyen şey çoğu zaman piyasa değil, **maliyetlerdir**: işlem ücretleri, yüksek fon giderleri, gereksiz sık al-sat.
+
+## Nereye dikkat
+- **İşlem sıklığı:** Her al-sat ücret ve vergi doğurur. Aşırı işlem (overtrading) getiriyi eritir.
+- **Fon giderleri:** Bazı fonların yıllık gideri yüksektir; uzun vadede büyük fark yaratır.
+- **Spread/komisyon:** Küçük görünen farklar, çok işlemde toplanır.
+
+## Akıllı yaklaşım
+Bileşik getirinin gücü, **maliyetleri düşük tutmakla** katlanır. Az ama bilinçli işlem, çok ve dürtüsel işlemden genelde daha iyidir. Finovela Coach, paper işlemlerinde aşırı işlem gibi maliyet-artıran davranışları sana gösterir.`,
+        quiz: {
+          question: "Uzun vadede getiriyi en çok eriten gizli faktörlerden biri nedir?",
+          options: [
+            { text: "Çeşitlendirme", correct: false },
+            { text: "Yüksek maliyetler ve aşırı işlem", correct: true },
+            { text: "Uzun vadeli tutuş", correct: false },
+          ],
+          explain: "İşlem ücretleri, fon giderleri ve aşırı al-sat getiriyi sessizce eritir; maliyetleri düşük tutmak bileşik getiriyi güçlendirir.",
+        },
+        applyHint: "Geçmiş İşlemler'de Coach'a işlem sıklığını analiz ettir.",
       },
     ],
   },
