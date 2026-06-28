@@ -114,14 +114,22 @@ export function VelaAiMark({
   );
 }
 
-/** Claude'daki gibi "düşünüyor" shimmer metni. */
-export function ThinkingShimmer({ label = "Finovela düşünüyor" }: { label?: string }) {
+/** Claude'daki gibi "düşünüyor" shimmer metni. tone="light" → koyu metin (açık zemin). */
+export function ThinkingShimmer({
+  label = "Finovela düşünüyor",
+  tone = "dark",
+}: {
+  label?: string;
+  tone?: "dark" | "light";
+}) {
   return (
     <span
       className="bg-clip-text text-sm font-medium text-transparent"
       style={{
         backgroundImage:
-          "linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.35) 100%)",
+          tone === "light"
+            ? "linear-gradient(90deg, rgba(26,26,26,0.35) 0%, rgba(26,26,26,0.95) 50%, rgba(26,26,26,0.35) 100%)"
+            : "linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.35) 100%)",
         backgroundSize: "200% 100%",
         animation: "vela-shimmer 1.6s linear infinite",
       }}

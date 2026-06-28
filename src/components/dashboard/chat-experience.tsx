@@ -4,28 +4,27 @@ import { useRef, useState, useEffect, useCallback, memo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  Sparkle,
+  Sparkles,
   ArrowUp,
-  Microphone,
-  ChartLineUp,
-  Scales,
-  Lightning,
-  CheckCircle,
+  Mic,
+  TrendingUp,
+  Scale,
+  Zap,
+  CheckCircle2,
   Copy,
-  ArrowsClockwise,
-  Wrench,
+  RotateCw,
   SlidersHorizontal,
   Brain,
   ShieldCheck,
-  ChatCircleDots,
+  MessageCircle,
   Power,
-  ArrowSquareOut,
+  ExternalLink,
   X,
-  CaretDown,
+  ChevronDown,
   Check,
   Paperclip,
-  FilePdf,
-} from "@phosphor-icons/react";
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
 import { useBrain, brainStore, checkBudget, AUTHORITY_LABELS, type Authority } from "@/lib/dashboard/use-brain";
 import {
@@ -115,10 +114,10 @@ type Msg = {
 };
 
 const SUGGESTIONS = [
-  { icon: ChartLineUp, label: "Portföyüm nasıl gidiyor? En büyük risklerim neler?" },
-  { icon: Lightning, label: "Nvidia'dan 500 dolarlık al ve stop koy" },
-  { icon: Scales, label: "Kriptodaki riskim fazla mı?" },
-  { icon: Sparkle, label: "NVDA, AMD ve AVGO'yu karşılaştır" },
+  { icon: TrendingUp, label: "Portföyüm nasıl gidiyor? En büyük risklerim neler?" },
+  { icon: Zap, label: "Nvidia'dan 500 dolarlık al ve stop koy" },
+  { icon: Scale, label: "Kriptodaki riskim fazla mı?" },
+  { icon: Sparkles, label: "NVDA, AMD ve AVGO'yu karşılaştır" },
 ];
 
 const TOOL_LABELS: Record<string, string> = {
@@ -799,23 +798,27 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
   const empty = messages.length === 0;
 
   return (
-    <div className="relative flex h-[calc(100vh-64px)] flex-col">
+    <div className="relative flex h-[calc(100vh-64px)] flex-col bg-[var(--ais-bg)]">
       {/* sohbet başlığı — Vela Brain ayar düğmesi */}
-      <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-3">
+      <div
+        className="flex items-center justify-between border-b px-6 py-3"
+        style={{ borderColor: "var(--ais-line)" }}
+      >
         <div className="flex items-center gap-2">
           <Image src="/vela-mark.png" alt="" width={22} height={22} className="shrink-0" />
-          <span className="text-sm font-semibold text-white">Finovela Sohbet</span>
+          <span className="text-sm font-semibold text-[var(--ais-fg)]">Finovela Sohbet</span>
         </div>
         <button
           onClick={() => setSettingsOpen((v) => !v)}
           title="Finovela Brain ayarları"
           className={
             settingsOpen
-              ? "flex items-center gap-1.5 rounded-full bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white"
-              : "flex items-center gap-1.5 rounded-full border border-white/12 px-3 py-1.5 text-xs font-medium text-white/60 transition hover:text-white"
+              ? "flex items-center gap-1.5 rounded-full bg-[var(--ais-accent-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--ais-accent)]"
+              : "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
           }
+          style={settingsOpen ? undefined : { borderColor: "var(--ais-line-strong)" }}
         >
-          <SlidersHorizontal size={14} weight="bold" />
+          <SlidersHorizontal size={14} />
           Ayarlar
         </button>
       </div>
@@ -826,23 +829,25 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
         <div className="mx-auto max-w-3xl">
           {empty ? (
             <div className="flex flex-col items-center pt-16 text-center">
-              <VelaAiMark size={104} state="idle" video />
-              <h2 className="font-display mt-6 text-3xl font-bold text-white">
+              {/* Açık zeminde 'screen' blend video kaybolur → statik PNG marka kullan. */}
+              <VelaAiMark size={84} state="idle" />
+              <h2 className="font-display mt-6 text-[28px] font-bold tracking-tight text-[var(--ais-fg)]">
                 Sana nasıl yardımcı olabilirim?
               </h2>
-              <p className="mt-3 max-w-md text-white/55">
+              <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[var(--ais-fg-muted)]">
                 Portföyünü analiz et, hisse araştır, işlem yap, otomasyon kur — düz
                 konuşma diliyle. Senin sağ kolun.
               </p>
-              <div className="mt-9 grid w-full max-w-xl gap-3 sm:grid-cols-2">
+              <div className="mt-10 grid w-full max-w-xl gap-3 sm:grid-cols-2">
                 {SUGGESTIONS.map((s) => (
                   <button
                     key={s.label}
                     onClick={() => send(s.label)}
-                    className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-left text-sm text-white/80 transition hover:border-white/15 hover:bg-white/[0.06]"
+                    className="flex items-center gap-3 rounded-2xl border bg-[var(--ais-surface)] px-4 py-3.5 text-left text-sm text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
+                    style={{ borderColor: "var(--ais-line)" }}
                   >
-                    <s.icon size={20} className="shrink-0 text-white/70" />
-                    {s.label}
+                    <s.icon size={18} className="shrink-0 text-[var(--ais-accent)]" />
+                    <span className="leading-snug">{s.label}</span>
                   </button>
                 ))}
               </div>
@@ -862,7 +867,10 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
         </div>
       </div>
 
-      <div className="border-t border-white/[0.08] bg-[#0a0a0a]/80 px-6 py-4 backdrop-blur-xl">
+      <div
+        className="border-t bg-[var(--ais-bg)] px-6 py-4"
+        style={{ borderColor: "var(--ais-line)" }}
+      >
         <div className="mx-auto max-w-3xl">
           {/* gizli dosya seçici — paperclip ile tetiklenir */}
           <input
@@ -880,9 +888,8 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
             }}
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
-            className={`rounded-3xl border bg-white/[0.04] p-2 pl-5 transition focus-within:border-white/30 ${
-              dragOver ? "border-white/40 bg-white/[0.07]" : "border-white/[0.1]"
-            }`}
+            className="rounded-3xl border bg-[var(--ais-surface)] p-2 pl-5 shadow-sm transition focus-within:border-[var(--ais-accent)]"
+            style={{ borderColor: dragOver ? "var(--ais-accent)" : "var(--ais-line-strong)" }}
           >
             {/* ek küçük resim chip'leri — textarea'nın üstünde */}
             {attachments.length > 0 && (
@@ -890,7 +897,8 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
                 {attachments.map((a) => (
                   <div
                     key={a.id}
-                    className="group/att relative flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] py-1.5 pl-1.5 pr-2"
+                    className="group/att relative flex items-center gap-2 rounded-xl border bg-[var(--ais-surface-2)] py-1.5 pl-1.5 pr-2"
+                    style={{ borderColor: "var(--ais-line)" }}
                   >
                     {a.kind === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -900,18 +908,18 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
                         className="h-9 w-9 rounded-lg object-cover"
                       />
                     ) : (
-                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.06] text-[#ff8a8a]">
-                        <FilePdf size={18} weight="fill" />
+                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-[var(--ais-accent-bg)] text-[var(--ais-accent)]">
+                        <FileText size={18} />
                       </span>
                     )}
-                    <span className="max-w-[120px] truncate text-xs text-white/70">{a.name}</span>
+                    <span className="max-w-[120px] truncate text-xs text-[var(--ais-fg-muted)]">{a.name}</span>
                     <button
                       type="button"
                       onClick={() => removeAttachment(a.id)}
                       aria-label={`${a.name} ekini kaldır`}
-                      className="grid h-5 w-5 place-items-center rounded-full bg-black/40 text-white/60 transition hover:bg-black/60 hover:text-white"
+                      className="grid h-5 w-5 place-items-center rounded-full bg-[var(--ais-overlay-strong)] text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
                     >
-                      <X size={12} weight="bold" />
+                      <X size={12} strokeWidth={2.5} />
                     </button>
                   </div>
                 ))}
@@ -931,7 +939,7 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
               }}
               rows={1}
               placeholder="Finovela'ya yaz…"
-              className="max-h-32 flex-1 resize-none bg-transparent py-2.5 text-[15px] text-white placeholder:text-white/35 focus:outline-none"
+              className="max-h-32 flex-1 resize-none bg-transparent py-2.5 text-[15px] text-[var(--ais-fg)] placeholder:text-[var(--ais-fg-faint)] focus:outline-none"
             />
             <ModelPicker />
             <button
@@ -944,9 +952,9 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
                   ? `En fazla ${ATTACH_MAX_COUNT} dosya`
                   : "Dosya veya görsel ekle (resim, PDF)"
               }
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-white/45 transition hover:text-white disabled:cursor-not-allowed disabled:text-white/20"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Paperclip size={20} />
+              <Paperclip size={19} />
             </button>
             <button
               type="button"
@@ -969,24 +977,24 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
               }
               className={
                 !voiceSupported
-                  ? "grid h-10 w-10 shrink-0 cursor-not-allowed place-items-center rounded-full text-white/20"
+                  ? "grid h-10 w-10 shrink-0 cursor-not-allowed place-items-center rounded-full text-[var(--ais-fg-faint)] opacity-40"
                   : listening
-                    ? "grid h-10 w-10 shrink-0 animate-pulse place-items-center rounded-full bg-[#ff5c5c]/20 text-[#ff5c5c] ring-2 ring-[#ff5c5c]/40 transition"
-                    : "grid h-10 w-10 shrink-0 place-items-center rounded-full text-white/45 transition hover:text-white"
+                    ? "grid h-10 w-10 shrink-0 animate-pulse place-items-center rounded-full bg-[#d93025]/12 text-[#d93025] ring-2 ring-[#d93025]/30 transition"
+                    : "grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
               }
             >
-              <Microphone size={20} weight={listening ? "fill" : "regular"} />
+              <Mic size={19} fill={listening ? "currentColor" : "none"} />
             </button>
             <button
               onClick={() => send(input)}
               disabled={(!input.trim() && attachments.length === 0) || busy}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-black transition hover:bg-white/90 disabled:opacity-30"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--ais-accent)] text-white transition hover:opacity-90 disabled:opacity-30"
             >
-              <ArrowUp size={20} weight="bold" />
+              <ArrowUp size={20} strokeWidth={2.5} />
             </button>
           </div>
           </div>
-          <p className="mt-2 text-center text-xs text-white/30">
+          <p className="mt-2 text-center text-xs text-[var(--ais-fg-faint)]">
             Finovela canlı veri kullanır ve hata yapabilir. Paper-trading demo — yatırım tavsiyesi değildir.
           </p>
         </div>
@@ -1016,13 +1024,16 @@ function ModelPicker() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         title="Finovela modelini seç"
-        className="flex items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-medium text-white/55 transition hover:bg-white/[0.06] hover:text-white"
+        className="flex items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-medium text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
       >
         {TIER_LABELS[prefs.tier]}
-        <CaretDown size={11} weight="bold" className={open ? "rotate-180 transition" : "transition"} />
+        <ChevronDown size={12} strokeWidth={2.5} className={open ? "rotate-180 transition" : "transition"} />
       </button>
       {open && (
-        <div className="absolute bottom-full left-0 z-20 mb-2 w-52 overflow-hidden rounded-2xl border border-white/[0.1] bg-[#141416] p-1 shadow-xl shadow-black/40">
+        <div
+          className="absolute bottom-full left-0 z-20 mb-2 w-52 overflow-hidden rounded-2xl border bg-[var(--ais-surface)] p-1 shadow-xl shadow-black/10"
+          style={{ borderColor: "var(--ais-line)" }}
+        >
           {(["vela-1.2", "vela-1.1", "vela-1"] as ModelTier[]).map((t) => {
             const on = prefs.tier === t;
             return (
@@ -1034,14 +1045,14 @@ function ModelPicker() {
                   setOpen(false);
                 }}
                 className={`flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition ${
-                  on ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"
+                  on ? "bg-[var(--ais-surface-2)]" : "hover:bg-[var(--ais-surface-2)]"
                 }`}
               >
                 <span>
-                  <span className="block text-sm font-semibold text-white">{TIER_LABELS[t]}</span>
-                  <span className="block text-[11px] text-white/45">{TIER_DESC[t]}</span>
+                  <span className="block text-sm font-semibold text-[var(--ais-fg)]">{TIER_LABELS[t]}</span>
+                  <span className="block text-[11px] text-[var(--ais-fg-faint)]">{TIER_DESC[t]}</span>
                 </span>
-                {on && <Check size={14} weight="bold" style={{ color: "#8ab4f8" }} />}
+                {on && <Check size={14} strokeWidth={2.5} style={{ color: "var(--ais-accent)" }} />}
               </button>
             );
           })}
@@ -1051,10 +1062,10 @@ function ModelPicker() {
   );
 }
 
-const QS_META: Record<Authority, { icon: typeof Lightning; color: string }> = {
-  full: { icon: Lightning, color: "#3ecf8e" },
-  semi: { icon: ShieldCheck, color: "#a9b4ff" },
-  advisory: { icon: ChatCircleDots, color: "#9aa0aa" },
+const QS_META: Record<Authority, { icon: typeof Zap; color: string }> = {
+  full: { icon: Zap, color: "var(--ais-green)" },
+  semi: { icon: ShieldCheck, color: "var(--ais-accent)" },
+  advisory: { icon: MessageCircle, color: "var(--ais-fg-faint)" },
 };
 
 /** Sohbet içi hızlı Vela Brain ayarları — yetki seviyesi + kill switch. */
@@ -1062,21 +1073,24 @@ function BrainQuickSettings({ onClose }: { onClose: () => void }) {
   const { settings, setAuthority, toggleKillSwitch } = useBrain();
   const { prefs, setTone } = useAiPrefs();
   return (
-    <div className="border-b border-white/[0.08] bg-[#0f0f10]/95 px-6 py-4 backdrop-blur-xl">
+    <div
+      className="border-b bg-[var(--ais-surface)] px-6 py-4"
+      style={{ borderColor: "var(--ais-line)" }}
+    >
       <div className="mx-auto max-w-3xl">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Brain size={16} weight="fill" style={{ color: "#a9b4ff" }} />
-            <span className="text-sm font-semibold text-white">Finovela Brain — yetki</span>
+            <Brain size={16} style={{ color: "var(--ais-accent)" }} />
+            <span className="text-sm font-semibold text-[var(--ais-fg)]">Finovela Brain — yetki</span>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/brain"
-              className="flex items-center gap-1 text-xs font-medium text-white/50 transition hover:text-white"
+              className="flex items-center gap-1 text-xs font-medium text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
             >
-              Tüm ayarlar <ArrowSquareOut size={12} />
+              Tüm ayarlar <ExternalLink size={12} />
             </Link>
-            <button onClick={onClose} className="text-white/40 transition hover:text-white">
+            <button onClick={onClose} className="text-[var(--ais-fg-faint)] transition hover:text-[var(--ais-fg)]">
               <X size={16} />
             </button>
           </div>
@@ -1092,13 +1106,15 @@ function BrainQuickSettings({ onClose }: { onClose: () => void }) {
                 key={a}
                 onClick={() => setAuthority(a)}
                 disabled={settings.killSwitch}
-                className={`rounded-xl border p-3 text-left transition disabled:opacity-40 ${
-                  on ? "border-white/25 bg-white/[0.06]" : "border-white/[0.08] bg-white/[0.02] hover:border-white/15"
-                }`}
+                className="rounded-xl border p-3 text-left transition disabled:opacity-40"
+                style={{
+                  borderColor: on ? "var(--ais-accent)" : "var(--ais-line)",
+                  background: on ? "var(--ais-accent-bg)" : "var(--ais-surface)",
+                }}
               >
                 <div className="flex items-center gap-2">
-                  <Icon size={15} weight="fill" style={{ color: meta.color }} />
-                  <span className="text-sm font-semibold text-white">{AUTHORITY_LABELS[a].title}</span>
+                  <Icon size={15} style={{ color: meta.color }} />
+                  <span className="text-sm font-semibold text-[var(--ais-fg)]">{AUTHORITY_LABELS[a].title}</span>
                 </div>
               </button>
             );
@@ -1109,18 +1125,18 @@ function BrainQuickSettings({ onClose }: { onClose: () => void }) {
           onClick={toggleKillSwitch}
           className={
             settings.killSwitch
-              ? "mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2 text-sm font-semibold text-black transition hover:bg-white/90"
-              : "mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#ff5c5c]/30 bg-[#ff5c5c]/10 py-2 text-sm font-semibold text-[#ff5c5c] transition hover:bg-[#ff5c5c]/20"
+              ? "mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--ais-accent)] py-2 text-sm font-semibold text-white transition hover:opacity-90"
+              : "mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#d93025]/30 bg-[#d93025]/10 py-2 text-sm font-semibold text-[#d93025] transition hover:bg-[#d93025]/15"
           }
         >
-          <Power size={15} weight="fill" />
+          <Power size={15} />
           {settings.killSwitch ? "Otonomu tekrar başlat" : "Acil durdurma (tüm otonomu durdur)"}
         </button>
 
         {/* Yanıt tonu — sohbetin üslubu */}
         <div className="mt-4 flex items-center gap-2">
-          <ChatCircleDots size={15} weight="fill" style={{ color: "#8ab4f8" }} />
-          <span className="text-sm font-semibold text-white">Yanıt tonu</span>
+          <MessageCircle size={15} style={{ color: "var(--ais-accent)" }} />
+          <span className="text-sm font-semibold text-[var(--ais-fg)]">Yanıt tonu</span>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
           {(["balanced", "concise", "professional", "warm"] as Tone[]).map((t) => {
@@ -1130,11 +1146,12 @@ function BrainQuickSettings({ onClose }: { onClose: () => void }) {
                 key={t}
                 type="button"
                 onClick={() => setTone(t)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                  on
-                    ? "border-white/25 bg-white/[0.08] text-white"
-                    : "border-white/[0.08] bg-white/[0.02] text-white/55 hover:border-white/15 hover:text-white"
-                }`}
+                className="rounded-full border px-3 py-1.5 text-xs font-medium transition"
+                style={{
+                  borderColor: on ? "var(--ais-accent)" : "var(--ais-line)",
+                  background: on ? "var(--ais-accent-bg)" : "var(--ais-surface)",
+                  color: on ? "var(--ais-accent)" : "var(--ais-fg-muted)",
+                }}
               >
                 {TONE_LABELS[t]}
               </button>
@@ -1167,22 +1184,24 @@ const MessageRow = memo(function MessageRow({
                   key={i}
                   src={a.previewUrl}
                   alt={a.name}
-                  className="h-24 w-24 rounded-2xl border border-white/[0.12] object-cover"
+                  className="h-24 w-24 rounded-2xl border object-cover"
+                  style={{ borderColor: "var(--ais-line)" }}
                 />
               ) : (
                 <div
                   key={i}
-                  className="flex items-center gap-2 rounded-2xl border border-white/[0.12] bg-white/[0.06] px-3 py-2.5"
+                  className="flex items-center gap-2 rounded-2xl border bg-[var(--ais-surface-2)] px-3 py-2.5"
+                  style={{ borderColor: "var(--ais-line)" }}
                 >
-                  <FilePdf size={20} weight="fill" className="text-[#ff8a8a]" />
-                  <span className="max-w-[160px] truncate text-xs text-white/75">{a.name}</span>
+                  <FileText size={20} className="text-[var(--ais-accent)]" />
+                  <span className="max-w-[160px] truncate text-xs text-[var(--ais-fg-muted)]">{a.name}</span>
                 </div>
               ),
             )}
           </div>
         )}
         {m.text && (
-          <div className="max-w-[80%] rounded-3xl rounded-tr-md bg-white/[0.1] px-4 py-3 text-[15px] leading-relaxed text-white">
+          <div className="max-w-[80%] rounded-3xl rounded-tr-md bg-[var(--ais-accent)] px-4 py-3 text-[15px] leading-relaxed text-white">
             {m.text}
           </div>
         )}
@@ -1202,26 +1221,26 @@ const MessageRow = memo(function MessageRow({
       <div className="min-w-0 flex-1 space-y-3">
         {m.tool && (
           <div className="flex items-center gap-2 text-sm">
-            <ThinkingShimmer label={TOOL_LABELS[m.tool] ?? "Çalışıyor"} />
+            <ThinkingShimmer label={TOOL_LABELS[m.tool] ?? "Çalışıyor"} tone="light" />
           </div>
         )}
         {m.streaming && !m.tool && !m.writing ? (
           // İlk harf gelmeden: düşünme shimmer'ı
-          <div className="rounded-3xl rounded-tl-md bg-white/[0.05] px-4 py-3 ring-1 ring-white/[0.06]">
-            <ThinkingShimmer />
+          <div className="rounded-2xl rounded-tl-md bg-[var(--ais-surface-2)] px-4 py-3">
+            <ThinkingShimmer tone="light" />
           </div>
         ) : m.streaming && !m.tool ? (
           // YAZARKEN: React/Markdown YOK — drip doğrudan bu node'a textContent yazar.
-          <div className="rounded-3xl rounded-tl-md bg-white/[0.05] px-4 py-3 ring-1 ring-white/[0.06]">
+          <div className="rounded-2xl rounded-tl-md bg-[var(--ais-surface-2)] px-4 py-3">
             <span
               data-stream={m.id}
-              className="whitespace-pre-wrap text-[15px] leading-relaxed text-white/90"
+              className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--ais-fg)]"
             />
-            <span className="ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[3px] animate-pulse bg-white/70 align-middle" />
+            <span className="ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[3px] animate-pulse bg-[var(--ais-fg-muted)] align-middle" />
           </div>
         ) : m.text ? (
-          <div className="rounded-3xl rounded-tl-md bg-white/[0.05] px-4 py-3 ring-1 ring-white/[0.06]">
-            <Markdown text={m.text} />
+          <div className="rounded-2xl rounded-tl-md bg-[var(--ais-surface-2)] px-4 py-3">
+            <Markdown text={m.text} tone="light" />
           </div>
         ) : null}
         {m.quotes && m.quotes.length > 0 && <QuoteCards quotes={m.quotes} />}
@@ -1238,13 +1257,13 @@ const MessageRow = memo(function MessageRow({
         {!m.streaming && m.text && (
           <>
             {/* Her mesaj altında sabit, tek satır feragat — konuşmaya yansımaz */}
-            <p className="text-[11px] leading-relaxed text-white/30">
+            <p className="text-[11px] leading-relaxed text-[var(--ais-fg-faint)]">
               Finovela bir paper-trading (demo) asistanıdır; yatırım tavsiyesi değildir, getiri garanti edilmez.
             </p>
             <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
               <button
                 onClick={() => navigator.clipboard?.writeText(m.text)}
-                className="grid h-7 w-7 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white"
+                className="grid h-7 w-7 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
                 aria-label="Kopyala"
               >
                 <Copy size={14} />
@@ -1252,10 +1271,10 @@ const MessageRow = memo(function MessageRow({
               {onRegenerate && (
                 <button
                   onClick={onRegenerate}
-                  className="grid h-7 w-7 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white"
+                  className="grid h-7 w-7 place-items-center rounded-lg text-[var(--ais-fg-faint)] transition hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
                   aria-label="Yeniden oluştur"
                 >
-                  <ArrowsClockwise size={14} />
+                  <RotateCw size={14} />
                 </button>
               )}
             </div>
@@ -1272,14 +1291,18 @@ function QuoteCards({ quotes }: { quotes: QuoteCard[] }) {
       {quotes.map((q) => {
         const up = q.changePct >= 0;
         return (
-          <div key={q.symbol} className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3">
+          <div
+            key={q.symbol}
+            className="flex items-center justify-between rounded-2xl border bg-[var(--ais-surface)] px-4 py-3"
+            style={{ borderColor: "var(--ais-line)" }}
+          >
             <div>
-              <p className="font-semibold text-white">{q.symbol}</p>
-              <p className="truncate text-xs text-white/45">{q.name}</p>
+              <p className="font-semibold text-[var(--ais-fg)]">{q.symbol}</p>
+              <p className="truncate text-xs text-[var(--ais-fg-faint)]">{q.name}</p>
             </div>
             <div className="text-right">
-              <p className="font-medium text-white tabular-nums">{fmtUsd(q.price)}</p>
-              <p className="text-xs font-medium tabular-nums" style={{ color: up ? "#3ecf8e" : "#ff5c5c" }}>
+              <p className="font-medium text-[var(--ais-fg)] tabular-nums">{fmtUsd(q.price)}</p>
+              <p className="text-xs font-medium tabular-nums" style={{ color: up ? "var(--ais-green)" : "#d93025" }}>
                 {up ? "▲" : "▼"} {Math.abs(q.changePct).toFixed(2)}%
               </p>
             </div>
@@ -1379,40 +1402,43 @@ function OrderCardView({ order }: { order: OrderProposal }) {
     } else { setStatus("error"); setError(r.error ?? "Order failed"); toast.error("İşlem başarısız", r.error ?? undefined); }
   }
   return (
-    <div className="max-w-sm rounded-3xl border border-white/[0.1] bg-white/[0.04] p-4">
+    <div className="max-w-sm rounded-3xl border bg-[var(--ais-surface)] p-4" style={{ borderColor: "var(--ais-line)" }}>
       <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/15 bg-white/[0.06] text-sm font-bold text-white">
+        <span
+          className="grid h-10 w-10 place-items-center rounded-xl border bg-[var(--ais-surface-2)] text-sm font-bold text-[var(--ais-fg)]"
+          style={{ borderColor: "var(--ais-line)" }}
+        >
           {order.symbol[0]}
         </span>
         <div className="flex-1">
-          <p className="font-bold text-white">
+          <p className="font-bold text-[var(--ais-fg)]">
             {order.side} {order.shares < 1 ? order.shares.toFixed(4) : order.shares} {order.symbol}
           </p>
-          <p className="text-xs text-white/45">Piyasa emri · demo işlem</p>
+          <p className="text-xs text-[var(--ais-fg-faint)]">Piyasa emri · demo işlem</p>
         </div>
-        <p className="font-display text-lg font-bold text-white tabular-nums">{fmtUsd(order.price)}</p>
+        <p className="font-display text-lg font-bold text-[var(--ais-fg)] tabular-nums">{fmtUsd(order.price)}</p>
       </div>
       <div className="mt-3 space-y-1.5 text-xs">
-        <div className="flex items-center justify-between rounded-lg bg-white/[0.04] px-3 py-2">
-          <span className="text-white/45">Tahmini toplam</span>
-          <span className="font-semibold text-white tabular-nums">{fmtUsd(total)}</span>
+        <div className="flex items-center justify-between rounded-lg bg-[var(--ais-surface-2)] px-3 py-2">
+          <span className="text-[var(--ais-fg-faint)]">Tahmini toplam</span>
+          <span className="font-semibold text-[var(--ais-fg)] tabular-nums">{fmtUsd(total)}</span>
         </div>
         {order.stop && (
-          <div className="flex items-center justify-between rounded-lg bg-white/[0.04] px-3 py-2">
-            <span className="text-white/45">Zarar durdur</span>
-            <span className="font-semibold tabular-nums" style={{ color: "#ff5c5c" }}>{fmtUsd(order.stop)}</span>
+          <div className="flex items-center justify-between rounded-lg bg-[var(--ais-surface-2)] px-3 py-2">
+            <span className="text-[var(--ais-fg-faint)]">Zarar durdur</span>
+            <span className="font-semibold tabular-nums" style={{ color: "#d93025" }}>{fmtUsd(order.stop)}</span>
           </div>
         )}
       </div>
       {status === "done" ? (
-        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#3ecf8e]/15 py-2.5 text-sm font-semibold text-[#3ecf8e]">
-          <CheckCircle size={16} weight="fill" /> Emir gerçekleşti
+        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[var(--ais-green-bg)] py-2.5 text-sm font-semibold text-[var(--ais-green)]">
+          <CheckCircle2 size={16} /> Emir gerçekleşti
         </div>
       ) : status === "error" && !pinPrompt ? (
-        <div className="mt-3 rounded-xl bg-[#ff5c5c]/15 py-2.5 text-center text-sm font-semibold text-[#ff5c5c]">{error}</div>
+        <div className="mt-3 rounded-xl bg-[#d93025]/12 py-2.5 text-center text-sm font-semibold text-[#d93025]">{error}</div>
       ) : pinPrompt ? (
         <div className="mt-3 space-y-2">
-          <p className="text-center text-xs text-white/55">Yüksek tutarlı işlem — PIN gir</p>
+          <p className="text-center text-xs text-[var(--ais-fg-muted)]">Yüksek tutarlı işlem — PIN gir</p>
           <input
             value={pinVal}
             onChange={(e) => { setPinVal(e.target.value.replace(/\D/g, "").slice(0, 8)); setError(""); }}
@@ -1421,20 +1447,21 @@ function OrderCardView({ order }: { order: OrderProposal }) {
             inputMode="numeric"
             autoFocus
             placeholder="PIN"
-            className="w-full rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2.5 text-center text-lg tracking-[0.4em] text-white focus:border-white/25 focus:outline-none"
+            className="w-full rounded-xl border bg-[var(--ais-surface)] px-3 py-2.5 text-center text-lg tracking-[0.4em] text-[var(--ais-fg)] focus:border-[var(--ais-accent)] focus:outline-none"
+            style={{ borderColor: "var(--ais-line-strong)" }}
           />
-          {error && <p className="text-center text-xs text-[#ff5c5c]">{error}</p>}
+          {error && <p className="text-center text-xs text-[#d93025]">{error}</p>}
           <div className="flex gap-2">
-            <button onClick={() => { setPinPrompt(false); setPinVal(""); setError(""); }} className="flex-1 rounded-xl border border-white/12 py-2 text-sm font-medium text-white/70 transition hover:bg-white/[0.06]">
+            <button onClick={() => { setPinPrompt(false); setPinVal(""); setError(""); }} className="flex-1 rounded-xl border py-2 text-sm font-medium text-[var(--ais-fg-muted)] transition hover:bg-[var(--ais-surface-2)]" style={{ borderColor: "var(--ais-line-strong)" }}>
               Vazgeç
             </button>
-            <button onClick={submitPin} className="flex-1 rounded-xl bg-white py-2 text-sm font-bold text-black transition hover:bg-white/90">
+            <button onClick={submitPin} className="flex-1 rounded-xl bg-[var(--ais-accent)] py-2 text-sm font-bold text-white transition hover:opacity-90">
               Onayla
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={attemptConfirm} className="mt-3 w-full rounded-xl bg-white py-2.5 text-sm font-bold text-black transition hover:bg-white/90">
+        <button onClick={attemptConfirm} className="mt-3 w-full rounded-xl bg-[var(--ais-accent)] py-2.5 text-sm font-bold text-white transition hover:opacity-90">
           {order.side === "BUY" ? "Alımı onayla" : "Satışı onayla"}
         </button>
       )}
@@ -1471,43 +1498,43 @@ function RebalanceCardView({ r }: { r: RebalanceProposal }) {
   }
 
   return (
-    <div className="max-w-md rounded-3xl border border-white/[0.1] bg-white/[0.04] p-4">
-      <p className="text-xs uppercase tracking-wide text-white/40">Rebalance planı</p>
-      {r.summary && <p className="mt-1.5 text-sm text-white/70">{r.summary}</p>}
+    <div className="max-w-md rounded-3xl border bg-[var(--ais-surface)] p-4" style={{ borderColor: "var(--ais-line)" }}>
+      <p className="text-xs uppercase tracking-wide text-[var(--ais-fg-faint)]">Rebalance planı</p>
+      {r.summary && <p className="mt-1.5 text-sm text-[var(--ais-fg-muted)]">{r.summary}</p>}
       <div className="mt-3 space-y-1.5">
         {r.orders.map((o, i) => (
-          <div key={i} className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-2 text-sm">
+          <div key={i} className="flex items-center gap-3 rounded-xl bg-[var(--ais-surface-2)] px-3 py-2 text-sm">
             <span
               className="rounded-md px-2 py-0.5 text-[11px] font-bold"
               style={{
-                background: o.side === "BUY" ? "rgba(62,207,142,0.15)" : "rgba(255,92,92,0.15)",
-                color: o.side === "BUY" ? "#3ecf8e" : "#ff5c5c",
+                background: o.side === "BUY" ? "var(--ais-green-bg)" : "rgba(217,48,37,0.12)",
+                color: o.side === "BUY" ? "var(--ais-green)" : "#d93025",
               }}
             >
               {o.side}
             </span>
-            <span className="font-semibold text-white">{o.symbol}</span>
-            <span className="text-white/55 tabular-nums">
+            <span className="font-semibold text-[var(--ais-fg)]">{o.symbol}</span>
+            <span className="text-[var(--ais-fg-muted)] tabular-nums">
               {o.shares < 1 ? o.shares.toFixed(4) : o.shares} @ {fmtUsd(o.price)}
             </span>
-            <span className="ml-auto font-medium text-white tabular-nums">{fmtUsd(o.shares * o.price)}</span>
+            <span className="ml-auto font-medium text-[var(--ais-fg)] tabular-nums">{fmtUsd(o.shares * o.price)}</span>
           </div>
         ))}
       </div>
-      <div className="mt-3 flex items-center justify-between rounded-lg bg-white/[0.04] px-3 py-2 text-xs">
-        <span className="text-white/45">Net nakit etkisi</span>
-        <span className="font-semibold tabular-nums" style={{ color: net >= 0 ? "#3ecf8e" : "#ff5c5c" }}>
+      <div className="mt-3 flex items-center justify-between rounded-lg bg-[var(--ais-surface-2)] px-3 py-2 text-xs">
+        <span className="text-[var(--ais-fg-faint)]">Net nakit etkisi</span>
+        <span className="font-semibold tabular-nums" style={{ color: net >= 0 ? "var(--ais-green)" : "#d93025" }}>
           {net >= 0 ? "+" : ""}{fmtUsd(net)}
         </span>
       </div>
       {status === "done" ? (
-        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#3ecf8e]/15 py-2.5 text-sm font-semibold text-[#3ecf8e]">
-          <CheckCircle size={16} weight="fill" /> Dengeleme uygulandı
+        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[var(--ais-green-bg)] py-2.5 text-sm font-semibold text-[var(--ais-green)]">
+          <CheckCircle2 size={16} /> Dengeleme uygulandı
         </div>
       ) : status === "error" ? (
-        <div className="mt-3 rounded-xl bg-[#ff5c5c]/15 py-2.5 text-center text-sm font-semibold text-[#ff5c5c]">{error}</div>
+        <div className="mt-3 rounded-xl bg-[#d93025]/12 py-2.5 text-center text-sm font-semibold text-[#d93025]">{error}</div>
       ) : (
-        <button onClick={confirmAll} className="mt-3 w-full rounded-xl bg-white py-2.5 text-sm font-bold text-black transition hover:bg-white/90">
+        <button onClick={confirmAll} className="mt-3 w-full rounded-xl bg-[var(--ais-accent)] py-2.5 text-sm font-bold text-white transition hover:opacity-90">
           Tümünü onayla ({r.orders.length})
         </button>
       )}
@@ -1518,17 +1545,17 @@ function RebalanceCardView({ r }: { r: RebalanceProposal }) {
 function AutomationCardView({ a, onConfirm }: { a: AutomationProposal; onConfirm: (rule: string, name?: string) => void }) {
   const [done, setDone] = useState(false);
   return (
-    <div className="max-w-sm rounded-3xl border border-white/[0.1] bg-white/[0.04] p-4">
-      <p className="text-xs uppercase tracking-wide text-white/40">Yeni otomasyon</p>
-      <p className="mt-1.5 font-medium text-white">&ldquo;{a.rule}&rdquo;</p>
+    <div className="max-w-sm rounded-3xl border bg-[var(--ais-surface)] p-4" style={{ borderColor: "var(--ais-line)" }}>
+      <p className="text-xs uppercase tracking-wide text-[var(--ais-fg-faint)]">Yeni otomasyon</p>
+      <p className="mt-1.5 font-medium text-[var(--ais-fg)]">&ldquo;{a.rule}&rdquo;</p>
       {done ? (
-        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#3ecf8e]/15 py-2.5 text-sm font-semibold text-[#3ecf8e]">
-          <CheckCircle size={16} weight="fill" /> Otomasyon kuruldu
+        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[var(--ais-green-bg)] py-2.5 text-sm font-semibold text-[var(--ais-green)]">
+          <CheckCircle2 size={16} /> Otomasyon kuruldu
         </div>
       ) : (
         <button
           onClick={() => { onConfirm(a.rule, a.name); setDone(true); }}
-          className="mt-3 w-full rounded-xl bg-white py-2.5 text-sm font-bold text-black transition hover:bg-white/90"
+          className="mt-3 w-full rounded-xl bg-[var(--ais-accent)] py-2.5 text-sm font-bold text-white transition hover:opacity-90"
         >
           Otomasyonu kur
         </button>
