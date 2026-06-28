@@ -5,6 +5,7 @@ import { useState } from "react";
 import { VelaLogo, VelaMark } from "@/components/brand/logo";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { CLERK_ENABLED } from "@/lib/auth";
+import { appUrl } from "@/lib/app-url";
 import { SquaresFour } from "@phosphor-icons/react";
 import {
   CaretDown,
@@ -263,9 +264,9 @@ function ClerkMobileAuthAction({ onNavigate }: { onNavigate: () => void }) {
   }
   return (
     <div className="flex items-center justify-between gap-3 p-1">
-      <Link href="/dashboard" onClick={onNavigate} className="flex flex-1 items-center gap-3 rounded-xl bg-[#2b5cf0] p-3 text-sm font-semibold text-white">
+      <a href={appUrl()} onClick={onNavigate} className="flex flex-1 items-center gap-3 rounded-xl bg-[#2b5cf0] p-3 text-sm font-semibold text-white">
         <SquaresFour size={18} weight="regular" /> Panele git
-      </Link>
+      </a>
       <UserButton appearance={{ elements: { avatarBox: "h-9 w-9" } }} />
     </div>
   );
@@ -280,13 +281,13 @@ function ClerkAuthActions() {
   if (!isSignedIn) return <SignUpPill />;
   return (
     <div className="flex items-center gap-3">
-      <Link
-        href="/dashboard"
+      <a
+        href={appUrl()}
         className="hidden h-12 items-center gap-2 rounded-full bg-[#2b5cf0] pl-5 pr-6 text-base font-semibold text-white transition hover:bg-[#3b6dff] sm:inline-flex"
       >
         <SquaresFour size={19} weight="regular" />
         Panele git
-      </Link>
+      </a>
       <UserButton
         appearance={{ elements: { avatarBox: "h-10 w-10 ring-2 ring-white/20" } }}
       />

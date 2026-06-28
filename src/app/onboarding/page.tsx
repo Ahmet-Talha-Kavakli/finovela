@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { profileStore } from "@/lib/dashboard/use-profile";
 import { brainStore } from "@/lib/dashboard/use-brain";
+import { appUrl } from "@/lib/app-url";
 import { VelaLogo } from "@/components/brand/logo";
 import {
   ChartLineUp,
@@ -317,7 +318,9 @@ export default function OnboardingPage() {
 
   const amountNum = Number(amount) || 0;
 
-  const finish = (dest: string) => {
+  // dest: dashboard-altı yol ("" → kök, "chat"). appUrl() ortama göre
+  // app.finovela.com'a (mutlak) ya da /dashboard'a (göreli) çözer.
+  const finish = (dest = "") => {
     profileStore.complete({
       name: name.trim(),
       email: email.trim(),
@@ -336,7 +339,10 @@ export default function OnboardingPage() {
         body: JSON.stringify({ riskProfile: risk }),
       }).catch(() => {});
     }
-    router.push(dest);
+    const target = appUrl(dest);
+    // Mutlak URL (farklı alt alan) ise tam sayfa geçişi; göreli ise SPA push.
+    if (/^https?:\/\//.test(target)) window.location.href = target;
+    else router.push(target);
   };
 
   const t = STEP_TITLE[step];
@@ -802,13 +808,13 @@ export default function OnboardingPage() {
 
                 <div className="flex flex-col gap-2.5 sm:flex-row">
                   <button
-                    onClick={() => finish("/dashboard")}
+                    onClick={() => finish()}
                     className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#5b8cff] to-[#3b6dff] py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
                   >
                     Panele git <ArrowRight size={16} weight="regular" />
                   </button>
                   <button
-                    onClick={() => finish("/dashboard/chat")}
+                    onClick={() => finish("chat")}
                     className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/15 py-3 text-[14px] font-semibold text-white transition hover:bg-white/10"
                   >
                     <Sparkle size={16} weight="fill" /> Finovela ile başla
@@ -825,9 +831,9 @@ export default function OnboardingPage() {
                     <ArrowLeft size={16} weight="regular" /> Geri
                   </button>
                 ) : (
-                  <Link href="/dashboard" className="text-[13px] text-white/40 transition hover:text-white">
+                  <a href={appUrl()} className="text-[13px] text-white/40 transition hover:text-white">
                     Şimdilik atla
-                  </Link>
+                  </a>
                 )}
                 <button
                   onClick={next}

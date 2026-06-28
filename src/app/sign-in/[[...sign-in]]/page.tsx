@@ -2,6 +2,7 @@ import { SignIn } from "@clerk/nextjs";
 import { VelaLogo } from "@/components/brand/logo";
 import { CLERK_ENABLED } from "@/lib/auth";
 import { finovelaClerkAppearance } from "@/lib/clerk-appearance";
+import { appUrl } from "@/lib/app-url";
 import Link from "next/link";
 
 export default function SignInPage() {
@@ -14,7 +15,7 @@ export default function SignInPage() {
         {CLERK_ENABLED ? (
           <SignIn
             appearance={finovelaClerkAppearance}
-            forceRedirectUrl="/dashboard"
+            forceRedirectUrl={appUrl()}
             signUpUrl="/sign-up"
           />
         ) : (
