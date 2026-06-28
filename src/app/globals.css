@@ -628,6 +628,90 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 /* PIN gibi geniş harf-aralıklı inputlarda placeholder dağılmasın (girilen rakamlar geniş kalır). */
 .ais .ais-input::placeholder { letter-spacing: normal; }
 
+/* ============================================================
+   MİKRO ANİMASYONLAR (madde 19) — ince, göze çarpmayan, kaliteyi yükselten.
+   "Fark ettirmeyecek ama bilinçaltına etki edecek." prefers-reduced-motion saygılı.
+   ============================================================ */
+
+/* Sayfa/bölüm yumuşak giriş (aşağıdan hafif kayarak belir). */
+@keyframes vela-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.vela-rise { animation: vela-rise .4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* sıralı gecikme (liste/grid stagger) */
+.vela-rise-1 { animation: vela-rise .4s cubic-bezier(0.22,1,0.36,1) both; animation-delay: .04s; }
+.vela-rise-2 { animation: vela-rise .4s cubic-bezier(0.22,1,0.36,1) both; animation-delay: .08s; }
+.vela-rise-3 { animation: vela-rise .4s cubic-bezier(0.22,1,0.36,1) both; animation-delay: .12s; }
+
+/* Açık-tema dashboard içeriği yüklenince yumuşak belir (her sayfa). */
+.ais.ais-light > .mx-auto,
+.ais.ais-light > div > .mx-auto {
+  animation: vela-rise .42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Kart/satır hover — çok hafif yukarı kalkma + gölge (Didit kartlarına yayılır). */
+.ais.ais-light .ais-card,
+.ais.ais-light [class*="rounded-xl"][style*="--ais-surface"],
+.conn-card {
+  transition: transform .18s cubic-bezier(0.22,1,0.36,1), box-shadow .18s ease, border-color .18s ease;
+}
+
+/* Tüm butonlar/linkler — basıldığında minik geri-çekilme (tactile his). */
+.ais.ais-light button:active,
+.ais.ais-light a:active { transform: translateY(0.5px); }
+
+/* Buton/etkileşimli öğelerde geçiş yoksa ekle (yumuşak renk/opaklık). */
+.ais.ais-light button,
+.ais.ais-light a[class*="rounded"],
+.ais.ais-light [role="button"] {
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, opacity .15s ease, transform .12s ease;
+}
+
+/* Sayı/değer güncellenince ince vurgu (count-up bileşeni zaten var; bu yedek). */
+@keyframes vela-pop-soft {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.vela-pop { animation: vela-pop-soft .3s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vela-rise, .vela-rise-1, .vela-rise-2, .vela-rise-3,
+  .ais.ais-light > .mx-auto, .ais.ais-light > div > .mx-auto,
+  .vela-pop { animation: none !important; }
+  .ais.ais-light .ais-card, .conn-card { transition: none; }
+}
+
+/* Tooltip (madde 22) — hover/focus'ta beliren ince bilgi kutusu. Salt-CSS. */
+.vela-tt-bubble {
+  opacity: 0;
+  transform: translateY(2px) scale(0.97);
+  transition: opacity .14s ease, transform .14s ease;
+  min-width: max-content;
+  max-width: 240px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 450;
+  letter-spacing: -0.005em;
+  background: #1a1a1f;
+  color: #f4f4f5;
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
+  will-change: opacity, transform;
+}
+.vela-tt:hover > .vela-tt-bubble,
+.vela-tt:focus-visible > .vela-tt-bubble,
+.vela-tt:focus-within > .vela-tt-bubble {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.vela-tt { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .vela-tt-bubble { transition: opacity .1s ease; }
+}
+
 /* Sidebar Pro/Ultra etiketi — cam (glass) his, koyu sidebar üstünde (madde 5). */
 .vela-plan-pill {
   display: inline-flex;
