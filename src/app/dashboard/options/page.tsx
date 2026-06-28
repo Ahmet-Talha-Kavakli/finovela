@@ -16,6 +16,7 @@ import { notifStore } from "@/lib/dashboard/use-notifications";
 import { optionsStore, markPosition } from "@/lib/dashboard/options-store";
 import { useOptions } from "@/lib/dashboard/use-options";
 import { useConfirm } from "@/components/dashboard/confirm";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import {
   TrendingUp,
   TrendingDown,
@@ -415,6 +416,7 @@ export default function OptionsPage() {
   return (
     <>
       <Topbar title="Opsiyonlar" />
+      <PlanGate feature="optionsAndBonds">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -850,6 +852,7 @@ export default function OptionsPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

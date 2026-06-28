@@ -26,6 +26,7 @@ import { useAutomations } from "@/lib/dashboard/use-automations";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import { decisionStore } from "@/lib/dashboard/use-decisions";
 import { brainStore } from "@/lib/dashboard/use-brain";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import { Sparkles, Play, Layers, Check } from "lucide-react";
 
 // Didit açık-tema renkleri — beyaz zeminde okunur.
@@ -128,6 +129,7 @@ export default function StrategyPage() {
   return (
     <>
       <Topbar title="Strateji Oluşturucu" />
+      <PlanGate feature="strategyBuilder">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -347,6 +349,7 @@ export default function StrategyPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

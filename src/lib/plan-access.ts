@@ -21,7 +21,17 @@ export async function getUserPlan(userId: string | null): Promise<{ id: PlanId; 
 /** Belirli bir özelliğe (boolean limit) erişim var mı? */
 export async function hasFeature(
   userId: string | null,
-  feature: "webResearch" | "fileUpload" | "bestModel" | "copyTrading" | "taxCenter",
+  feature:
+    | "webResearch"
+    | "fileUpload"
+    | "bestModel"
+    | "copyTrading"
+    | "taxCenter"
+    | "advancedAnalytics"
+    | "aiPortfolios"
+    | "strategyBuilder"
+    | "optionsAndBonds"
+    | "pulse",
 ): Promise<boolean> {
   const { plan } = await getUserPlan(userId);
   return !!plan.limits[feature];

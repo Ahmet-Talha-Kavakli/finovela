@@ -13,6 +13,7 @@ import { TickerBadge } from "@/components/dashboard/ticker-badge";
 import { useLivePortfolio } from "@/lib/dashboard/use-portfolio";
 import { useWatchlist } from "@/lib/dashboard/use-watchlist";
 import { newsSentiment } from "@/lib/dashboard/sentiment";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import { Activity, TrendingUp, TrendingDown, Newspaper, Star, RefreshCw } from "lucide-react";
 
 // Didit açık-tema renkleri — beyaz zeminde okunur.
@@ -128,6 +129,7 @@ export default function PulsePage() {
   return (
     <>
       <Topbar title="Finovela Pulse" />
+      <PlanGate feature="pulse">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -210,6 +212,7 @@ export default function PulsePage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

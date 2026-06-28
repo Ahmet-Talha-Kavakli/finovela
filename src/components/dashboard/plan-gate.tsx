@@ -11,12 +11,23 @@
  * Plan parametresi verilmezse useUsage ile istemcide çekilir.
  */
 
+import { useEffect } from "react";
 import { PLANS, type PlanId } from "@/lib/plans";
 import { useUsage } from "@/lib/dashboard/use-usage";
 import { openUpgrade } from "@/components/dashboard/upgrade-modal";
 import { Lock, Sparkles } from "lucide-react";
 
-type Feature = "webResearch" | "copyTrading" | "taxCenter" | "bestModel" | "fileUpload";
+type Feature =
+  | "webResearch"
+  | "copyTrading"
+  | "taxCenter"
+  | "bestModel"
+  | "fileUpload"
+  | "advancedAnalytics"
+  | "aiPortfolios"
+  | "strategyBuilder"
+  | "optionsAndBonds"
+  | "pulse";
 
 const FEATURE_LABEL: Record<Feature, string> = {
   webResearch: "Web araştırması",
@@ -24,6 +35,11 @@ const FEATURE_LABEL: Record<Feature, string> = {
   taxCenter: "Vergi Merkezi",
   bestModel: "En güçlü model",
   fileUpload: "Dosya yükleme",
+  advancedAnalytics: "Gelişmiş Analizler",
+  aiPortfolios: "Yapay Zeka Portföyleri",
+  strategyBuilder: "Strateji Kurucu",
+  optionsAndBonds: "Opsiyon & Tahvil",
+  pulse: "Finovela Pulse",
 };
 
 /** Bu özelliği açan en düşük planın adını bul (UI metni için). */
@@ -52,6 +68,18 @@ export function PlanGate({
   // kısa süreliğine kilitli içerik açıkta görünmesin; ama overlay'i gizle.
   const resolving = !plan && usage.loading;
 
+  // Kilitliyken sayfa scroll'unu kapat — modal sabit ortada, aşağı/yukarı kaydırılamaz
+  // (kullanıcı isteği, madde 12). Açılınca/unmount'ta geri aç.
+  const locked = !unlocked && !resolving;
+  useEffect(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [locked]);
+
   if (unlocked) return <>{children}</>;
 
   const reqPlan = requiredPlanLabel(feature);
@@ -68,12 +96,20 @@ export function PlanGate({
         {children}
       </div>
 
-      {/* Üstte kilit overlay (Didit açık tema) */}
+      {/* Kilit overlay — FIXED, viewport ortasında sabit, kapatılamaz (madde 12).
+          Arka plan blur + hafif karartma; kart ortada asılı kalır, scroll kilitli. */}
       {!resolving && (
-        <div className="ais ais-light absolute inset-0 z-10 grid place-items-center px-6 py-16">
+        <div
+          className="ais ais-light fixed inset-0 z-[70] grid place-items-center px-6"
+          style={{
+            background: "rgba(17,17,20,0.22)",
+            backdropFilter: "blur(3px)",
+            WebkitBackdropFilter: "blur(3px)",
+          }}
+        >
           <div
-            className="max-w-sm rounded-2xl border bg-[var(--ais-surface)] p-7 text-center shadow-[0_24px_64px_-24px_rgba(0,0,0,0.35)]"
-            style={{ borderColor: "var(--ais-line)" }}
+            className="max-w-sm rounded-2xl border bg-[var(--ais-surface)] p-7 text-center shadow-[0_32px_80px_-24px_rgba(0,0,0,0.45)]"
+            style={{ borderColor: "var(--ais-line)", animation: "support-pop 0.2s ease-out" }}
           >
             <span
               className="mx-auto grid h-12 w-12 place-items-center rounded-xl"

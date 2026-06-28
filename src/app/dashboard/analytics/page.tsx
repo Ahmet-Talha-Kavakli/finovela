@@ -22,6 +22,7 @@ import {
   type Position,
 } from "@/lib/dashboard/analytics";
 import { AnimatedNumber } from "@/components/dashboard/animated-number";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import {
   Cpu,
   ShoppingCart,
@@ -154,6 +155,7 @@ export default function AnalyticsPage() {
   return (
     <>
       <Topbar title="Analizler" />
+      <PlanGate feature="advancedAnalytics">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -391,6 +393,7 @@ export default function AnalyticsPage() {
           )}
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

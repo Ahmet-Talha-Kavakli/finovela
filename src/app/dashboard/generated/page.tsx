@@ -26,6 +26,7 @@ import {
 import { paperStore } from "@/lib/dashboard/paper-store";
 import { notifStore } from "@/lib/dashboard/use-notifications";
 import { getUniverseEntry } from "@/lib/market/universe";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import { Sparkles, Bookmark, Trash2, LineChart } from "lucide-react";
 
 type Candle = { time: number; close: number };
@@ -171,6 +172,7 @@ export default function GeneratedAssetsPage() {
   return (
     <>
       <Topbar title="Üretilen Varlıklar" />
+      <PlanGate feature="aiPortfolios">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -451,6 +453,7 @@ export default function GeneratedAssetsPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }

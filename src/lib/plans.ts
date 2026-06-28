@@ -20,6 +20,12 @@ export type Plan = {
     bestModel: boolean; // en güçlü AI modeline erişim (Finovela 1.2)
     copyTrading: boolean;
     taxCenter: boolean;
+    // Yeni kademeli kilitler — "her şey herkese ücretsiz olmamalı" (kullanıcı).
+    advancedAnalytics: boolean; // derin analiz sayfası (risk/atıf/ısı haritası)
+    aiPortfolios: boolean; // yapay zeka üretimi portföyler
+    strategyBuilder: boolean; // strateji kurucu + backtest
+    optionsAndBonds: boolean; // opsiyon zinciri + tahviller
+    pulse: boolean; // Finovela Pulse (canlı sinyal akışı)
   };
 };
 
@@ -30,7 +36,7 @@ export const PLANS: Record<PlanId, Plan> = {
     priceMonthly: 0,
     blurb: "Başlamak için — günlük yapay zeka ve temel araçlar",
     limits: {
-      aiChatsPerDay: 20,
+      aiChatsPerDay: 15,
       priceAlerts: 3,
       goals: 1,
       automations: 1,
@@ -40,33 +46,45 @@ export const PLANS: Record<PlanId, Plan> = {
       bestModel: false,
       copyTrading: false,
       taxCenter: false,
+      advancedAnalytics: false,
+      aiPortfolios: false,
+      strategyBuilder: false,
+      optionsAndBonds: false,
+      pulse: false,
     },
   },
   pro: {
     id: "pro",
     name: "Pro",
     priceMonthly: 12,
-    blurb: "Sınırsız yapay zeka, otomasyon ve veri",
+    blurb: "Günde 200 yapay zeka mesajı, otomasyon ve gelişmiş analiz",
     limits: {
-      aiChatsPerDay: "unlimited",
+      // "Unlimited değil" — gerçekçi yüksek limit (maliyet kontrolü, kullanıcı isteği).
+      aiChatsPerDay: 200,
       priceAlerts: "unlimited",
       goals: "unlimited",
-      automations: "unlimited",
+      automations: 20,
       connectedAccounts: 5,
       webResearch: true,
       fileUpload: true,
       bestModel: false,
       copyTrading: true,
       taxCenter: false,
+      advancedAnalytics: true,
+      aiPortfolios: true,
+      strategyBuilder: true,
+      optionsAndBonds: true,
+      pulse: true,
     },
   },
   unlimited: {
     id: "unlimited",
-    name: "Unlimited",
+    name: "Ultra",
     priceMonthly: 39,
-    blurb: "En güçlü model, derin araştırma ve vergi merkezi",
+    blurb: "Günde 1000 mesaj, en güçlü model, derin araştırma ve vergi merkezi",
     limits: {
-      aiChatsPerDay: "unlimited",
+      // Ultra da sınırsız DEĞİL — çok yüksek günlük tavan (Opus maliyeti korunur).
+      aiChatsPerDay: 1000,
       priceAlerts: "unlimited",
       goals: "unlimited",
       automations: "unlimited",
@@ -76,6 +94,11 @@ export const PLANS: Record<PlanId, Plan> = {
       bestModel: true,
       copyTrading: true,
       taxCenter: true,
+      advancedAnalytics: true,
+      aiPortfolios: true,
+      strategyBuilder: true,
+      optionsAndBonds: true,
+      pulse: true,
     },
   },
 };

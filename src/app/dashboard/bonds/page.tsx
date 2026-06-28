@@ -21,6 +21,7 @@ import {
   type BondType,
   type Rating,
 } from "@/lib/dashboard/fixed-income";
+import { PlanGate } from "@/components/dashboard/plan-gate";
 import { Layers } from "lucide-react";
 
 // Didit açık-tema renkleri.
@@ -123,6 +124,7 @@ export default function BondsPage() {
   return (
     <>
       <Topbar title="Tahviller & Hazine" />
+      <PlanGate feature="optionsAndBonds">
       <div className="ais ais-light min-h-[calc(100vh-64px)]">
         <div className="mx-auto max-w-5xl px-8 py-10">
           {/* ───────── Başlık ───────── */}
@@ -359,6 +361,7 @@ export default function BondsPage() {
           </section>
         </div>
       </div>
+      </PlanGate>
     </>
   );
 }
