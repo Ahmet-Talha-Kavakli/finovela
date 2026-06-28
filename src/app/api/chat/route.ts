@@ -33,15 +33,18 @@ const ALL_TOOLS: Anthropic.ToolUnion[] = [...VELA_TOOLS, WEB_SEARCH_TOOL];
  * GÜVENLİK: istemci yalnızca kademe anahtarı (vela-1 vb.) gönderir; ASLA ham model
  * adı değil. Bu allowlist dışındaki/eksik her değer varsayılana (Vela 1.2 / opus) düşer.
  */
-const TIER_MAP: Record<string, { model: string; maxTokens: number }> = {
-  "vela-1": { model: "claude-haiku-4-5-20251001", maxTokens: 3072 },
-  "vela-1.1": { model: "claude-sonnet-4-6", maxTokens: 6144 },
-  "vela-1.2": { model: MODEL, maxTokens: 8192 },
+// thinkBudget: 0 = extended thinking KAPALI (hızlı tier). >0 = derin düşünme bütçesi
+// (token). thinking açıkken max_tokens > thinkBudget olmalı; ilk-token biraz gecikir
+// ama analiz kalitesi ZIPLAR — "sektör #1" için bu fark kritik.
+const TIER_MAP: Record<string, { model: string; maxTokens: number; thinkBudget: number }> = {
+  "vela-1": { model: "claude-haiku-4-5-20251001", maxTokens: 3072, thinkBudget: 0 },
+  "vela-1.1": { model: "claude-sonnet-4-6", maxTokens: 8192, thinkBudget: 2048 },
+  "vela-1.2": { model: MODEL, maxTokens: 12000, thinkBudget: 4096 },
 };
 // Dengeli (Sonnet) varsayılan: Opus ilk-token gecikmesi "donma" gibi algılanıyordu.
 const DEFAULT_TIER = "vela-1.1";
 
-function resolveModel(tier: unknown): { model: string; maxTokens: number } {
+function resolveModel(tier: unknown): { model: string; maxTokens: number; thinkBudget: number } {
   if (typeof tier === "string" && tier in TIER_MAP) return TIER_MAP[tier];
   return TIER_MAP[DEFAULT_TIER];
 }
@@ -252,7 +255,7 @@ export async function POST(req: NextRequest) {
     const canBest = await hasFeature(userId, "bestModel");
     if (!canBest) requestedModel = "vela-1.1";
   }
-  const { model: resolvedModel, maxTokens } = resolveModel(requestedModel);
+  const { model: resolvedModel, maxTokens, thinkBudget } = resolveModel(requestedModel);
   const toneInstruction = resolveTone(tone);
 
   // PLAN UYGULAMASI: web araştırma yalnızca Pro+ planlarda. Free kullanıcıda
@@ -381,6 +384,11 @@ export async function POST(req: NextRequest) {
             {
               model: resolvedModel,
               max_tokens: maxTokens,
+              // Extended thinking — derin analiz için (vela-1.1/1.2). Haiku'da kapalı (hız).
+              // Açıkken AI cevaptan önce adım adım muhakeme eder → çok daha doğru analiz.
+              ...(thinkBudget > 0
+                ? { thinking: { type: "enabled" as const, budget_tokens: thinkBudget } }
+                : {}),
               system: [
                 {
                   type: "text",
@@ -411,6 +419,9 @@ export async function POST(req: NextRequest) {
           let stoppedForTools = false;
 
           msgStream.on("text", (delta) => send("text", { delta }));
+          // Extended thinking sürerken UI'a "derin analiz" sinyali (uzun sessizlik
+          // yerine kullanıcı düşünüldüğünü görsün). thinking delta içeriğini SIZDIRMAYIZ.
+          msgStream.on("thinking", () => send("reasoning", { active: true }));
 
           let final: Anthropic.Message;
           try {
