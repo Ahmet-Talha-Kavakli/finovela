@@ -224,6 +224,39 @@ export const VELA_TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: "compare_assets",
+    description:
+      "Compare 2-4 instruments SIDE BY SIDE on price, momentum (RSI/trend), Finovela Score, analyst sentiment & upside, and volatility — so the user can pick. Use for 'NVDA mı AMD mi', 'hangisi daha iyi', 'bunları kıyasla', or when choosing between candidates. Returns a structured comparison; reason on it and give a clear pick tied to their goal.",
+    input_schema: {
+      type: "object",
+      properties: {
+        symbols: { type: "array", items: { type: "string" }, description: "2-4 symbols to compare" },
+      },
+      required: ["symbols"],
+    },
+  },
+  {
+    name: "analyze_portfolio_risk",
+    description:
+      "Deep PM-level risk X-ray of the user's CURRENT portfolio: concentration (largest position, top-3 weight, HHI), sector/asset-class mix, crypto exposure, estimated portfolio volatility, and diversification grade — with concrete de-risking suggestions. Use for 'portföyüm ne kadar riskli', 'çeşitlendirme', 'konsantrasyon', 'risk analizi', or before recommending a rebalance. Reads their real holdings from live context.",
+    input_schema: {
+      type: "object",
+      properties: {
+        note: { type: "string", description: "Optional focus, e.g. 'crypto' or 'tech concentration'" },
+      },
+    },
+  },
+  {
+    name: "get_fundamentals",
+    description:
+      "Get valuation & fundamentals for a stock: P/E, P/B, P/S, market cap, dividend yield, profit margin, revenue/earnings growth, and a plain-English read of whether it looks cheap/fair/expensive vs its growth. Use for value questions: 'pahalı mı', 'değerleme', 'P/E', 'temettü', 'kâr marjı', long-term/value investing decisions. (Crypto/forex have no fundamentals — say so.)",
+    input_schema: {
+      type: "object",
+      properties: { symbol: { type: "string", description: "Stock symbol, e.g. AAPL" } },
+      required: ["symbol"],
+    },
+  },
+  {
     name: "navigate",
     description:
       "Take the user to a page in the Finovela app. Use when they ask to open/go to a section. Valid pages: overview, chat, portfolio, analytics, markets, portfolios, generated, options, bonds, earn, tax, strategy, automation, alerts, copy, feed, research, earnings, settings, or a stock page via stock:SYMBOL.",
@@ -465,6 +498,133 @@ export async function runTool(
         text: `Saved to memory: "${fact}".`,
         data: { type: "action", action: "remember", fact },
       };
+    }
+    case "compare_assets": {
+      const symbols = ((input.symbols as string[]) ?? [])
+        .map((s) => String(s).toUpperCase())
+        .slice(0, 4);
+      const now = Math.floor(Date.now() / 1000);
+      const from = now - 60 * 60 * 24 * 400; // ~400 gün (200-SMA için yeterli)
+
+      const rows = await Promise.all(
+        symbols.map(async (symbol) => {
+          try {
+            // Fiyat + candle'ları paralel topla.
+            const [quotes, candles] = await Promise.all([
+              provider.getQuotes([symbol]).catch(() => []),
+              provider.getCandles(symbol, "D", from, now).catch(() => []),
+            ]);
+            const quote = quotes[0];
+            const closes = candles.map((c) => c.close);
+            const basePrice = getUniverseEntry(symbol).basePrice;
+
+            const score = computeVelaScore(symbol, { closes, basePrice });
+            const sent = sentimentScore(symbol);
+            const cons = analystConsensus(symbol, basePrice);
+            const rsiVal = closes.length >= 30 ? rsi(closes) : null;
+
+            return {
+              symbol,
+              price: quote?.price ?? null,
+              changePct: quote?.changePct ?? null,
+              currency: quote?.currency ?? getUniverseEntry(symbol).currency ?? "USD",
+              velaScore: score.score,
+              grade: score.grade,
+              rsi: rsiVal,
+              sentiment: sent.label,
+              sentimentScore: sent.score,
+              analystUpside: cons.upsidePct,
+              analystRating: cons.rating,
+            };
+          } catch {
+            return { symbol, error: "Bu sembol için veri alınamadı." };
+          }
+        }),
+      );
+
+      return {
+        text: JSON.stringify({ comparison: rows }),
+        data: { type: "compare", rows },
+      };
+    }
+    case "analyze_portfolio_risk": {
+      const note = input.note ? String(input.note) : "";
+      const instruction =
+        "Kullanıcının live-context'teki holdings'ini kullan. Şunları hesapla:" +
+        (note ? ` (Özel odak: ${note})` : "");
+      return {
+        text: JSON.stringify({
+          instruction,
+          metrics: [
+            "En büyük pozisyon ağırlığı %",
+            "Top-3 yoğunlaşma %",
+            "HHI (Σ ağırlık²)",
+            "Sektör dağılımı",
+            "Kripto maruziyeti %",
+            "Tahmini portföy volatilitesi",
+          ],
+          grading:
+            "HHI<0.15 iyi çeşitlenmiş, 0.15-0.25 orta, >0.25 yoğun. Tek pozisyon >%25 = riskli.",
+          suggestions:
+            "Yoğunlaşma yüksekse trim öner, eksik sektör varsa ekle.",
+        }),
+        data: { type: "risk_guide" },
+      };
+    }
+    case "get_fundamentals": {
+      const symbol = String(input.symbol).toUpperCase();
+      const entry = getUniverseEntry(symbol);
+
+      // Kripto/forex/metal/emtia için klasik fundamentals yoktur.
+      if (
+        entry.type === "crypto" ||
+        entry.type === "forex" ||
+        entry.type === "metal" ||
+        entry.type === "commodity"
+      ) {
+        const payload = {
+          symbol,
+          name: entry.name,
+          assetType: entry.type,
+          note: "Kripto/forex/emtia için klasik fundamentals (P/E, marj, temettü) yoktur. Teknik analiz, momentum ve Finovela Skoru ile değerlendir.",
+        };
+        return { text: JSON.stringify(payload), data: { type: "fundamentals", ...payload } };
+      }
+
+      // Hisse/ETF: sağlayıcı profilini çek (P/E gibi değerleri sağlamaz).
+      let profile: Awaited<ReturnType<typeof provider.getProfile>> | null = null;
+      try {
+        profile = await provider.getProfile(symbol);
+      } catch {
+        profile = null;
+      }
+
+      // Finovela Skoru'nun değerleme faktörünü ekle.
+      const now = Math.floor(Date.now() / 1000);
+      const from = now - 60 * 60 * 24 * 400;
+      let closes: number[] = [];
+      try {
+        const candles = await provider.getCandles(symbol, "D", from, now);
+        closes = candles.map((c) => c.close);
+      } catch {
+        closes = [];
+      }
+      const score = computeVelaScore(symbol, { closes, basePrice: entry.basePrice });
+      const valuationFactor = score.factors.find((f) => f.key === "valuation");
+
+      const payload = {
+        symbol,
+        name: profile?.name ?? entry.name,
+        sector: profile?.sector ?? entry.sector,
+        industry: profile?.industry,
+        marketCap: profile?.marketCap ?? entry.marketCap,
+        currency: entry.currency ?? "USD",
+        velaScore: score.score,
+        grade: score.grade,
+        valuation: valuationFactor ? valuationFactor.value : null,
+        note: "Detaylı değerleme (P/E, P/B, marj, temettü) bu sembol için sağlayıcıda yok — temel profil (market cap, sektör) + Finovela Skoru'nun değerleme faktörü ile değerlendir.",
+      };
+      return { text: JSON.stringify(payload), data: { type: "fundamentals", ...payload } };
     }
     case "navigate": {
       return {
