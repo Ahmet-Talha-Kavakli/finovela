@@ -71,39 +71,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  /*
-    Host-bazlı rewrite — app.finovela.com alt alanı dashboard'u sunar.
-    Kullanıcı app.finovela.com açtığında URL aynı kalır ama altta /dashboard
-    route'ları render edilir (gizli rewrite, redirect değil). finovela.com landing
-    olarak kalır. Eski finovela.com/dashboard linkleri de çalışmaya devam eder
-    (route fiziksel olarak taşınmadı).
-      - app.finovela.com/            → /dashboard
-      - app.finovela.com/chat        → /dashboard/chat
-    /api, /_next, /sign-in, /sign-up rewrite DIŞINDA tutulur (Clerk + API + statik
-    varlıklar subdomain'de de doğrudan çalışsın). Bunlar zaten dashboard altında değil.
-  */
-  async rewrites() {
-    const APP_HOST = "app.finovela.com";
-    return {
-      beforeFiles: [
-        // app.finovela.com kökü → dashboard ana sayfası
-        {
-          source: "/",
-          has: [{ type: "host", value: APP_HOST }],
-          destination: "/dashboard",
-        },
-        // app.finovela.com/<path> → /dashboard/<path>
-        // (API/Next-internal/auth yolları zaten /dashboard altında değil; onlara
-        //  dokunmadan olduğu gibi sunulur çünkü destination eşleşmesi /dashboard/* ile
-        //  çakışmaz — Next bu kaynakları doğrudan host'tan servis eder.)
-        {
-          source: "/:path((?!api/|_next/|dashboard/|sign-in|sign-up|onboarding|monitoring).*)",
-          has: [{ type: "host", value: APP_HOST }],
-          destination: "/dashboard/:path",
-        },
-      ],
-    };
-  },
+  // Not: app.finovela.com → /dashboard host-bazlı rewrite'ı src/middleware.ts'te
+  // yapılır (edge'de her istekte çalışır; statik landing prerender'ını gölgeleyebilir).
+  // next.config rewrites statik "/" sayfasını yakalayamadığı için (404) oraya taşındı.
 };
 
 export default nextConfig;
