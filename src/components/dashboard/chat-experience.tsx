@@ -511,7 +511,7 @@ export function ChatExperience({ chatId }: { chatId?: string }) {
           if (res.status === 402 || err?.code === "usage_limit") {
             window.dispatchEvent(new Event("vela:usage-changed"));
             window.dispatchEvent(
-              new CustomEvent("vela:open-upgrade", { detail: { reason: "limit" } }),
+              new CustomEvent("vela:open-plan-picker", { detail: { reason: "limit" } }),
             );
             patch((m) => ({
               ...m,

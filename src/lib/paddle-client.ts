@@ -78,11 +78,28 @@ export type CheckoutConfig = {
  * @returns hata mesajı (string) veya null (başarı/akış başladı).
  */
 export async function startPaddleCheckout(plan: "pro" | "unlimited"): Promise<string | null> {
+  return openCheckout({ plan });
+}
+
+/**
+ * Kredi paketi için sunucudan checkout bilgisi al ve Paddle overlay'ini aç.
+ * @returns hata mesajı (string) veya null (başarı/akış başladı).
+ */
+export async function startCreditCheckout(
+  packId: "small" | "medium" | "large",
+): Promise<string | null> {
+  return openCheckout({ creditPack: packId });
+}
+
+/** Ortak checkout açıcı — abonelik veya kredi paketi gövdesiyle. */
+async function openCheckout(
+  body: { plan: "pro" | "unlimited" } | { creditPack: "small" | "medium" | "large" },
+): Promise<string | null> {
   try {
     const res = await fetch("/api/billing/checkout", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify(body),
     });
     const data = (await res.json()) as
       | ({ ok: true } & CheckoutConfig)

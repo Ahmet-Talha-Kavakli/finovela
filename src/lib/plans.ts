@@ -105,6 +105,27 @@ export const PLANS: Record<PlanId, Plan> = {
 
 export const DEFAULT_PLAN: PlanId = "free";
 
+/**
+ * Kredi paketleri — abonelik İSTEMEYEN kullanıcılar için tek-seferlik kredi alımı
+ * (kullanıcı isteği: "sadece abonelik değil, kredi de alabilsin"). Krediler AI
+ * sohbet/araç kullanımında harcanır; aboneliğin günlük limitine EK havuzdur.
+ * Paddle price ID'leri env'den okunur (PADDLE_PRICE_CREDITS_*).
+ */
+export type CreditPack = {
+  id: "small" | "medium" | "large";
+  name: string;
+  credits: number;
+  price: number; // USD
+  priceEnvKey: string; // checkout route bu env'den price id çeker
+  popular?: boolean;
+};
+
+export const CREDIT_PACKS: CreditPack[] = [
+  { id: "small", name: "Başlangıç", credits: 500, price: 5, priceEnvKey: "PADDLE_PRICE_CREDITS_SMALL" },
+  { id: "medium", name: "Standart", credits: 1500, price: 12, priceEnvKey: "PADDLE_PRICE_CREDITS_MEDIUM", popular: true },
+  { id: "large", name: "Büyük", credits: 5000, price: 35, priceEnvKey: "PADDLE_PRICE_CREDITS_LARGE" },
+];
+
 /** "free"/"Pro"/"UNLIMITED" gibi serbest girdiyi güvenli PlanId'ye çevir. */
 export function normalizePlan(raw: string | null | undefined): PlanId {
   const k = (raw ?? "").toLowerCase();

@@ -4,13 +4,23 @@
 //
 // POST { plan: "pro" | "unlimited" }
 //   → { ok, priceId, clientToken, env, customData: { userId, plan } }
+// POST { creditPack: "small" | "medium" | "large" }
+//   → { ok, priceId, clientToken, env, customData: { userId, kind: "credits", pack } }
 // Paddle yapılandırılmamışsa graceful 503 döner (uygulama çökmez).
 
 import { NextResponse } from "next/server";
 import { requireUserId, getCurrentUser } from "@/lib/current-user";
-import { PADDLE_ENABLED, PADDLE_ENV, PADDLE_CLIENT_TOKEN, priceIdForPlan } from "@/lib/paddle";
+import {
+  PADDLE_ENABLED,
+  PADDLE_ENV,
+  PADDLE_CLIENT_TOKEN,
+  priceIdForPlan,
+  priceIdForCreditPack,
+} from "@/lib/paddle";
 import { upsertUser } from "@/lib/db/repo";
 import type { PlanId } from "@/lib/plans";
+
+type CreditPackId = "small" | "medium" | "large";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,14 +37,41 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = (await req.json().catch(() => ({}))) as { plan?: string };
-    const plan = body.plan as PlanId;
-    if (plan !== "pro" && plan !== "unlimited") {
-      return NextResponse.json({ ok: false, error: "Geçersiz plan" }, { status: 400 });
-    }
-    const priceId = priceIdForPlan(plan);
-    if (!priceId) {
-      return NextResponse.json({ ok: false, error: "Bu plan için fiyat tanımlı değil." }, { status: 400 });
+    const body = (await req.json().catch(() => ({}))) as {
+      plan?: string;
+      creditPack?: string;
+    };
+
+    // İki mod: kredi paketi VEYA abonelik. creditPack öncelikli.
+    let priceId: string | null;
+    let customData: Record<string, unknown>;
+
+    if (body.creditPack !== undefined) {
+      const pack = body.creditPack as CreditPackId;
+      if (pack !== "small" && pack !== "medium" && pack !== "large") {
+        return NextResponse.json({ ok: false, error: "Geçersiz kredi paketi" }, { status: 400 });
+      }
+      priceId = priceIdForCreditPack(pack);
+      if (!priceId) {
+        return NextResponse.json(
+          { ok: false, error: "Bu kredi paketi için fiyat tanımlı değil." },
+          { status: 400 },
+        );
+      }
+      customData = { userId, kind: "credits", pack };
+    } else {
+      const plan = body.plan as PlanId;
+      if (plan !== "pro" && plan !== "unlimited") {
+        return NextResponse.json({ ok: false, error: "Geçersiz plan" }, { status: 400 });
+      }
+      priceId = priceIdForPlan(plan);
+      if (!priceId) {
+        return NextResponse.json(
+          { ok: false, error: "Bu plan için fiyat tanımlı değil." },
+          { status: 400 },
+        );
+      }
+      customData = { userId, plan };
     }
 
     // Kullanıcı DB'de var olsun (webhook customData.userId ile eşleşecek).
@@ -47,7 +84,7 @@ export async function POST(req: Request) {
       clientToken: PADDLE_CLIENT_TOKEN,
       env: PADDLE_ENV,
       email: u.email || undefined,
-      customData: { userId, plan },
+      customData,
     });
   } catch (e) {
     console.error("[api/billing/checkout] failed:", e);

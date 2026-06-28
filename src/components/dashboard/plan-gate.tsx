@@ -15,8 +15,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { PLANS, type PlanId } from "@/lib/plans";
 import { useUsage } from "@/lib/dashboard/use-usage";
-import { PlanCta } from "@/components/site/plan-cta";
-import { Lock } from "lucide-react";
+import { openPlanPicker } from "@/components/dashboard/plan-picker";
+import { Lock, Sparkles } from "lucide-react";
 
 type Feature =
   | "webResearch"
@@ -130,13 +130,16 @@ export function PlanGate({
             <p className="mx-auto mt-2 max-w-xs text-[13.5px] leading-relaxed text-[var(--ais-fg-muted)]">
               Bu özelliği kullanmak için Finovela {reqPlan} planına yükselt. İçerik önizleme amaçlı bulanıklaştırıldı.
             </p>
-            {/* pricing'deki GlassButton + Paddle checkout (tutarlı, tek akış). */}
+            {/* Didit accent buton → genel Plan Seç modalı (açık-kartta okunur). */}
             <div className="mt-6">
-              <PlanCta
-                planId={requiredPlanId(feature)}
-                label={`${reqPlan}'a yükselt`}
-                highlight
-              />
+              <button
+                onClick={() => openPlanPicker({ reason: "feature", feature })}
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition hover:opacity-90"
+                style={{ background: "var(--ais-accent)" }}
+              >
+                <Sparkles size={15} />
+                {reqPlan}&apos;a yükselt
+              </button>
             </div>
             {/* Geri dön — kullanıcı kilitli sayfada kapana kısılmasın. */}
             <Link

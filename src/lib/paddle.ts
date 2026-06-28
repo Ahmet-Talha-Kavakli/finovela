@@ -12,6 +12,7 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { PlanId } from "@/lib/plans";
+import { CREDIT_PACKS } from "@/lib/plans";
 
 const API_KEY = process.env.PADDLE_API_KEY?.trim();
 
@@ -35,6 +36,16 @@ export function priceIdForPlan(plan: PlanId): string | null {
   if (plan === "pro") return process.env.PADDLE_PRICE_PRO?.trim() || null;
   if (plan === "unlimited") return process.env.PADDLE_PRICE_UNLIMITED?.trim() || null;
   return null;
+}
+
+/**
+ * Kredi paketi → Paddle Price ID (env'den, CREDIT_PACKS.priceEnvKey üzerinden).
+ * Tanımsız/boşsa null.
+ */
+export function priceIdForCreditPack(packId: "small" | "medium" | "large"): string | null {
+  const pack = CREDIT_PACKS.find((p) => p.id === packId);
+  if (!pack) return null;
+  return process.env[pack.priceEnvKey]?.trim() || null;
 }
 
 /** Paddle Price ID → PlanId (webhook'ta plan saptamak için). */
