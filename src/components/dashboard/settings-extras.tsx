@@ -17,7 +17,6 @@ import { useClerk } from "@clerk/nextjs";
 import {
   Languages,
   Coins,
-  Palette,
   Download,
   Trash2,
   Newspaper,
@@ -173,16 +172,6 @@ export function PreferencesPanel() {
         label="Günlük haber özeti"
         desc="Portföyünle ilgili haberlerin sabah özetini al."
         control={<Toggle on={prefs.newsDigest} onClick={() => update({ newsDigest: !prefs.newsDigest })} />}
-      />
-      <PrefRow
-        icon={Palette}
-        label="Tema"
-        desc="Dashboard koyu, sayfalar açık tema kullanır. Tema seçimi yakında."
-        control={
-          <span className="rounded-full px-2.5 py-1 text-[11px] font-medium" style={{ background: "var(--ais-surface-2)", color: "var(--ais-fg-muted)" }}>
-            Otomatik
-          </span>
-        }
       />
     </div>
   );
