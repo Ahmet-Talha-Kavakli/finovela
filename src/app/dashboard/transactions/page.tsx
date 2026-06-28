@@ -16,6 +16,7 @@ import { useDecisions } from "@/lib/dashboard/use-decisions";
 import { getUniverseEntry } from "@/lib/market/universe";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { History, ArrowUpRight, ArrowDownRight, User, Sparkles, Bot } from "lucide-react";
+import { CoachCard } from "@/components/dashboard/coach-card";
 
 const GREEN = "var(--ais-green)";
 const RED = "#d93025";
@@ -151,6 +152,9 @@ export default function TransactionsPage() {
             <Metric label="Toplam satım hacmi" value={fmtMoney(metrics.sellVol, "USD")} tone={RED} />
             <Metric label="Bu ay" value={String(metrics.thisMonth)} />
           </div>
+
+          {/* ───────── Finovela Coach (AI işlem analizi) ───────── */}
+          <CoachCard />
 
           {/* ───────── İşlemler tablosu ───────── */}
           <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
