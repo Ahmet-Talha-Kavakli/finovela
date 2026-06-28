@@ -19,13 +19,21 @@ const BLUE = "var(--ais-accent)";
 
 type FilterKey = "all" | "unread" | Notif["kind"];
 
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "all", label: "Tümü" },
-  { key: "unread", label: "Okunmamış" },
-  { key: "alert", label: "Alarm" },
-  { key: "order", label: "İşlem" },
-  { key: "earnings", label: "Bilanço" },
-  { key: "info", label: "Bilgi" },
+// Seçili çip rengi türe göre (KIND_META ile uyumlu): alarm=amber, işlem=yeşil, bilanço/bilgi/genel=mavi.
+type Tone = "blue" | "green" | "amber";
+const TONE: Record<Tone, { fg: string; bg: string }> = {
+  blue: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },
+  green: { fg: "var(--ais-green)", bg: "var(--ais-green-bg)" },
+  amber: { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" },
+};
+
+const FILTERS: { key: FilterKey; label: string; tone: Tone }[] = [
+  { key: "all", label: "Tümü", tone: "blue" },
+  { key: "unread", label: "Okunmamış", tone: "blue" },
+  { key: "alert", label: "Alarm", tone: "amber" },
+  { key: "order", label: "İşlem", tone: "green" },
+  { key: "earnings", label: "Bilanço", tone: "blue" },
+  { key: "info", label: "Bilgi", tone: "blue" },
 ];
 
 // Bildirim türü → ikon + renk (görev şartnamesi).
@@ -112,6 +120,7 @@ export default function NotificationsPage() {
           <div className="mt-6 flex flex-wrap gap-1.5">
             {FILTERS.map((f) => {
               const on = filter === f.key;
+              const t = TONE[f.tone];
               const count =
                 f.key === "all"
                   ? notifs.length
@@ -125,8 +134,8 @@ export default function NotificationsPage() {
                   className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
                   style={{
                     borderColor: on ? "transparent" : "var(--ais-line)",
-                    background: on ? "var(--ais-accent-bg)" : "transparent",
-                    color: on ? BLUE : "var(--ais-fg-muted)",
+                    background: on ? t.bg : "transparent",
+                    color: on ? t.fg : "var(--ais-fg-muted)",
                   }}
                 >
                   {f.label}

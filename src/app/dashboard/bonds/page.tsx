@@ -28,11 +28,20 @@ const ACCENT = "var(--ais-accent)";
 const UP = "var(--ais-green)";
 const DOWN = "#d93025";
 
-const TYPES: { label: string; value: BondType | "all" }[] = [
-  { label: "Tümü", value: "all" },
-  { label: "Kurumsal", value: "corporate" },
-  { label: "Hazine", value: "treasury" },
-  { label: "Belediye", value: "muni" },
+// Tahvil türü → seçili çip tonu (her tür farklı, hep mavi değil).
+type Tone = "blue" | "green" | "teal" | "amber";
+const TONE: Record<Tone, { fg: string; bg: string }> = {
+  blue: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },
+  green: { fg: "var(--ais-green)", bg: "var(--ais-green-bg)" },
+  teal: { fg: "#0f8a8a", bg: "rgba(15,138,138,0.12)" },
+  amber: { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" },
+};
+
+const TYPES: { label: string; value: BondType | "all"; tone: Tone }[] = [
+  { label: "Tümü", value: "all", tone: "blue" },
+  { label: "Kurumsal", value: "corporate", tone: "blue" },   // şirket tahvili → mavi
+  { label: "Hazine", value: "treasury", tone: "green" },     // devlet → güvenli yeşil
+  { label: "Belediye", value: "muni", tone: "teal" },        // belediye → teal
 ];
 
 const RATINGS: { label: string; value: Rating | "all" }[] = [
@@ -262,15 +271,16 @@ export default function BondsPage() {
               <div className="flex flex-wrap gap-1.5">
                 {TYPES.map((t) => {
                   const on = type === t.value;
+                  const tc = TONE[t.tone];
                   return (
                     <button
                       key={t.value}
                       onClick={() => setType(t.value)}
                       className="rounded-lg border px-3 py-1.5 text-[12.5px] transition"
                       style={{
-                        borderColor: on ? "var(--ais-accent)" : "var(--ais-line-strong)",
-                        background: on ? "var(--ais-accent-bg)" : "transparent",
-                        color: on ? ACCENT : "var(--ais-fg-muted)",
+                        borderColor: on ? "transparent" : "var(--ais-line-strong)",
+                        background: on ? tc.bg : "transparent",
+                        color: on ? tc.fg : "var(--ais-fg-muted)",
                       }}
                     >
                       {t.label}

@@ -15,13 +15,12 @@ import { Sparkline } from "@/components/dashboard/area-chart";
 import { useSparklines } from "@/lib/dashboard/use-sparklines";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { UNIVERSE, type AssetType } from "@/lib/market/universe";
+import { categoryTone } from "@/components/dashboard/ais-kit";
 import { Search, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 
 // Didit açık-tema renkleri — beyaz zeminde okunur.
 const UP = "var(--ais-green)";
 const DOWN = "#d93025";
-const ACCENT = "var(--ais-accent)";
-
 type Q = { symbol: string; name: string; sector: string; price: number; changePct: number; currency: string; type: AssetType };
 type SearchHit = { symbol: string; name: string; type: string };
 
@@ -245,6 +244,7 @@ export default function MarketsPage() {
             <div className="mb-4 flex flex-wrap gap-1.5">
               {CLASSES.map((c) => {
                 const on = cls === c.key;
+                const t = categoryTone(c.key);
                 return (
                   <button
                     key={c.key}
@@ -252,8 +252,8 @@ export default function MarketsPage() {
                     className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
                     style={{
                       borderColor: on ? "transparent" : "var(--ais-line)",
-                      background: on ? "var(--ais-accent-bg)" : "transparent",
-                      color: on ? ACCENT : "var(--ais-fg-muted)",
+                      background: on ? t.bg : "transparent",
+                      color: on ? t.fg : "var(--ais-fg-muted)",
                     }}
                   >
                     {c.label}

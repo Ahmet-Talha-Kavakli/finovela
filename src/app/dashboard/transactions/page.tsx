@@ -35,11 +35,19 @@ type Tx = {
 
 type FilterKey = "all" | "buy" | "sell" | "ai";
 
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "all", label: "Tümü" },
-  { key: "buy", label: "Alımlar" },
-  { key: "sell", label: "Satımlar" },
-  { key: "ai", label: "AI kararları" },
+// Seçili çip rengi etikete göre: alım=yeşil, satım=kırmızı, AI/tümü=mavi.
+type Tone = "blue" | "green" | "red";
+const TONE: Record<Tone, { fg: string; bg: string }> = {
+  blue: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },
+  green: { fg: "var(--ais-green)", bg: "var(--ais-green-bg)" },
+  red: { fg: "#d93025", bg: "rgba(217,48,37,0.10)" },
+};
+
+const FILTERS: { key: FilterKey; label: string; tone: Tone }[] = [
+  { key: "all", label: "Tümü", tone: "blue" },
+  { key: "buy", label: "Alımlar", tone: "green" },
+  { key: "sell", label: "Satımlar", tone: "red" },
+  { key: "ai", label: "AI kararları", tone: "blue" },
 ];
 
 const SOURCE_META: Record<Source, { icon: typeof User; label: string; color: string }> = {
@@ -152,6 +160,7 @@ export default function TransactionsPage() {
             <div className="mb-4 flex flex-wrap gap-1.5">
               {FILTERS.map((f) => {
                 const on = filter === f.key;
+                const t = TONE[f.tone];
                 return (
                   <button
                     key={f.key}
@@ -159,8 +168,8 @@ export default function TransactionsPage() {
                     className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
                     style={{
                       borderColor: on ? "transparent" : "var(--ais-line)",
-                      background: on ? "var(--ais-accent-bg)" : "transparent",
-                      color: on ? BLUE : "var(--ais-fg-muted)",
+                      background: on ? t.bg : "transparent",
+                      color: on ? t.fg : "var(--ais-fg-muted)",
                     }}
                   >
                     {f.label}

@@ -103,8 +103,9 @@ export default function AlertsPage() {
                 style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
               >
                 {([
-                  { value: "above", label: "Üzerinde", Icon: TrendingUp },
-                  { value: "below", label: "Altında", Icon: TrendingDown },
+                  // Üzerinde=yeşil (yükseliş), Altında=kırmızı (düşüş).
+                  { value: "above", label: "Üzerinde", Icon: TrendingUp, fg: "var(--ais-green)", bg: "var(--ais-green-bg)" },
+                  { value: "below", label: "Altında", Icon: TrendingDown, fg: "#d93025", bg: "rgba(217,48,37,0.10)" },
                 ] as const).map((o) => {
                   const on = condition === o.value;
                   return (
@@ -114,8 +115,8 @@ export default function AlertsPage() {
                       onClick={() => setCondition(o.value)}
                       className="inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors"
                       style={{
-                        background: on ? "var(--ais-accent-bg)" : "transparent",
-                        color: on ? ACCENT : "var(--ais-fg-muted)",
+                        background: on ? o.bg : "transparent",
+                        color: on ? o.fg : "var(--ais-fg-muted)",
                       }}
                     >
                       <o.Icon size={14} />

@@ -177,6 +177,8 @@ export type Preset = {
   key: string;
   label: string;
   criteria: ScreenerCriteria;
+  /** Seçili çip tonu — şablonun temsil ettiği şeye göre (madde 2). */
+  tone?: "blue" | "green" | "red" | "orange";
 };
 
 /** Hızlı şablonlar — tek tıkla yaygın taramalar. */
@@ -184,6 +186,7 @@ export const PRESETS: Preset[] = [
   {
     key: "todays-gainers",
     label: "Bugünün yükselenleri",
+    tone: "green", // yükseliş → yeşil
     criteria: {
       ...DEFAULT_CRITERIA,
       changeMode: "big-gainers",
@@ -193,6 +196,7 @@ export const PRESETS: Preset[] = [
   {
     key: "bist-deals",
     label: "BIST fırsatları",
+    tone: "red", // BIST kategorisi → kırmızımsı
     criteria: {
       ...DEFAULT_CRITERIA,
       assetClass: "bist",
@@ -203,6 +207,7 @@ export const PRESETS: Preset[] = [
   {
     key: "cheap-crypto",
     label: "Ucuz kripto",
+    tone: "orange", // kripto → turuncu
     criteria: {
       ...DEFAULT_CRITERIA,
       assetClass: "crypto",
@@ -213,6 +218,7 @@ export const PRESETS: Preset[] = [
   {
     key: "mega-stocks",
     label: "Mega-cap hisseler",
+    tone: "blue", // hisse → mavi
     criteria: {
       ...DEFAULT_CRITERIA,
       assetClass: "stock",

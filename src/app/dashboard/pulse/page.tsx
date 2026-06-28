@@ -151,12 +151,13 @@ export default function PulsePage() {
               <div className="flex flex-wrap gap-1.5">
                 {(
                   [
-                    ["all", "Tümü"],
-                    ["held", "Sahip olduklarım"],
-                    ["moves", "Fiyat hareketleri"],
-                    ["news", "Haberler"],
+                    // Her kategori farklı ton: holdings=mavi, hareketler=amber (dikkat), haberler=teal.
+                    ["all", "Tümü", { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" }],
+                    ["held", "Sahip olduklarım", { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" }],
+                    ["moves", "Fiyat hareketleri", { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" }],
+                    ["news", "Haberler", { fg: "#0f8a8a", bg: "rgba(15,138,138,0.12)" }],
                   ] as const
-                ).map(([k, label]) => {
+                ).map(([k, label, c]) => {
                   const on = filter === k;
                   return (
                     <button
@@ -165,8 +166,8 @@ export default function PulsePage() {
                       className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
                       style={{
                         borderColor: on ? "transparent" : "var(--ais-line)",
-                        background: on ? "var(--ais-accent-bg)" : "transparent",
-                        color: on ? ACCENT : "var(--ais-fg-muted)",
+                        background: on ? c.bg : "transparent",
+                        color: on ? c.fg : "var(--ais-fg-muted)",
                       }}
                     >
                       {label}

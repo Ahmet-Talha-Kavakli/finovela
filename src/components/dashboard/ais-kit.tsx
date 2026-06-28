@@ -23,6 +23,43 @@ export const AIS_UP = "#3ecf8e";     // yükseliş yeşili
 export const AIS_DOWN = "#ff6b6b";   // düşüş kırmızısı
 export const AIS_WARN = "#fbbf24";   // uyarı sarısı
 
+/* ──────────────────────────────────────────────────────────
+   ANLAMLI ÇİP RENKLERİ (.ais-light) — seçili filtre vurgusu
+   etiketin TEMSİL ETTİĞİ şeye göre değişir, hep mavi değil.
+   Kullanım: const c = TONE[f.tone]; ... background: c.bg, color: c.fg
+   ────────────────────────────────────────────────────────── */
+export type AisTone = "blue" | "green" | "red" | "amber" | "neutral";
+
+/** Anlam tonu → seçili çip {fg, bg}. Açık tema token renkleri. */
+export const TONE: Record<AisTone, { fg: string; bg: string }> = {
+  blue: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },
+  green: { fg: "var(--ais-green)", bg: "var(--ais-green-bg)" },
+  red: { fg: "#d93025", bg: "rgba(217,48,37,0.10)" },
+  amber: { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" },
+  neutral: { fg: "var(--ais-fg)", bg: "var(--ais-line)" },
+};
+
+/**
+ * Varlık/kategori filtreleri için tutarlı renk haritası — her sınıf
+ * sabit ama farklı tonda (ör. kripto=turuncu, BIST=kırmızımsı, döviz=teal).
+ * Anahtarlar AssetType + yaygın eş anlamlılar; bulunamazsa mavi accent döner.
+ */
+export const CATEGORY_TONE: Record<string, { fg: string; bg: string }> = {
+  all: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },
+  stock: { fg: "var(--ais-accent)", bg: "var(--ais-accent-bg)" },   // ABD Hisse → mavi
+  bist: { fg: "#d93025", bg: "rgba(217,48,37,0.10)" },              // BIST → kırmızımsı
+  crypto: { fg: "#f7931a", bg: "rgba(247,147,26,0.12)" },           // Kripto → turuncu
+  forex: { fg: "#0f8a8a", bg: "rgba(15,138,138,0.12)" },            // Döviz → teal
+  metal: { fg: "var(--ais-amber)", bg: "var(--ais-amber-bg)" },     // Metal → amber
+  commodity: { fg: "#7c5e10", bg: "rgba(124,94,16,0.12)" },         // Emtia → koyu amber
+  etf: { fg: "#6d4aff", bg: "rgba(109,74,255,0.12)" },              // ETF → mor
+};
+
+/** Kategori anahtarı → renk (bulunamazsa mavi accent). */
+export function categoryTone(key: string): { fg: string; bg: string } {
+  return CATEGORY_TONE[key] ?? CATEGORY_TONE.all;
+}
+
 /** Sayfa başlığı — "Başlık • durum etiketi" deseni (AI Studio "Gemini API Usage • Free tier"). */
 export function PageTitle({
   title,

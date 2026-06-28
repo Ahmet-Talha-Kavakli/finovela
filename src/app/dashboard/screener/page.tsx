@@ -12,6 +12,7 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { TickerBadge } from "@/components/dashboard/ui";
 import { fmtMoney } from "@/lib/dashboard/data";
 import { UNIVERSE } from "@/lib/market/universe";
+import { categoryTone, TONE } from "@/components/dashboard/ais-kit";
 import {
   applyScreener,
   capTierOf,
@@ -30,7 +31,6 @@ import {
 // Didit açık-tema renkleri — beyaz zeminde okunur.
 const UP = "var(--ais-green)";
 const DOWN = "#d93025";
-const ACCENT = "var(--ais-accent)";
 
 /** İnce yüzde göstergesi — Didit yeşil/kırmızı. */
 function Delta({ value }: { value: number }) {
@@ -112,6 +112,11 @@ export default function ScreenerPage() {
           <div className="mt-6 flex flex-wrap items-center gap-1.5">
             {PRESETS.map((p) => {
               const on = activePreset === p.key;
+              // Şablon tonu: orange→kripto turuncusu, diğerleri ortak TONE haritası.
+              const t =
+                p.tone === "orange"
+                  ? { fg: "#f7931a", bg: "rgba(247,147,26,0.12)" }
+                  : TONE[p.tone ?? "blue"];
               return (
                 <button
                   key={p.key}
@@ -119,8 +124,8 @@ export default function ScreenerPage() {
                   className="rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition"
                   style={{
                     borderColor: on ? "transparent" : "var(--ais-line)",
-                    background: on ? "var(--ais-accent-bg)" : "transparent",
-                    color: on ? ACCENT : "var(--ais-fg-muted)",
+                    background: on ? t.bg : "transparent",
+                    color: on ? t.fg : "var(--ais-fg-muted)",
                   }}
                 >
                   {p.label}
@@ -143,6 +148,7 @@ export default function ScreenerPage() {
             <div className="mb-5 flex flex-wrap gap-1.5">
               {FILTERS.assetClasses.map((c) => {
                 const on = criteria.assetClass === c.key;
+                const t = categoryTone(c.key);
                 return (
                   <button
                     key={c.key}
@@ -150,8 +156,8 @@ export default function ScreenerPage() {
                     className="rounded-full border px-3 py-1.5 text-[12px] font-medium transition"
                     style={{
                       borderColor: on ? "transparent" : "var(--ais-line)",
-                      background: on ? "var(--ais-accent-bg)" : "transparent",
-                      color: on ? ACCENT : "var(--ais-fg-muted)",
+                      background: on ? t.bg : "transparent",
+                      color: on ? t.fg : "var(--ais-fg-muted)",
                     }}
                   >
                     {c.label}
