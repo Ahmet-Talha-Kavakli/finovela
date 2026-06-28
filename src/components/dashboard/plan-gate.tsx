@@ -15,7 +15,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { PLANS, type PlanId } from "@/lib/plans";
 import { useUsage } from "@/lib/dashboard/use-usage";
-import { Lock, Sparkles } from "lucide-react";
+import { PlanCta } from "@/components/site/plan-cta";
+import { Lock } from "lucide-react";
 
 type Feature =
   | "webResearch"
@@ -42,13 +43,18 @@ const FEATURE_LABEL: Record<Feature, string> = {
   pulse: "Finovela Pulse",
 };
 
-/** Bu özelliği açan en düşük planın adını bul (UI metni için). */
-function requiredPlanLabel(feature: Feature): string {
+/** Bu özelliği açan en düşük planın ID'sini bul. */
+function requiredPlanId(feature: Feature): PlanId {
   const order: PlanId[] = ["pro", "unlimited"];
   for (const id of order) {
-    if (PLANS[id].limits[feature]) return PLANS[id].name;
+    if (PLANS[id].limits[feature]) return id;
   }
-  return "Unlimited";
+  return "unlimited";
+}
+
+/** Bu özelliği açan en düşük planın adını bul (UI metni için). */
+function requiredPlanLabel(feature: Feature): string {
+  return PLANS[requiredPlanId(feature)].name;
 }
 
 export function PlanGate({
@@ -124,19 +130,18 @@ export function PlanGate({
             <p className="mx-auto mt-2 max-w-xs text-[13.5px] leading-relaxed text-[var(--ais-fg-muted)]">
               Bu özelliği kullanmak için Finovela {reqPlan} planına yükselt. İçerik önizleme amaçlı bulanıklaştırıldı.
             </p>
-            {/* Doğrudan billing'e — upgrade-modal AÇMA (yoksa iki kart üst üste biniyordu). */}
-            <Link
-              href="/dashboard/billing"
-              className="mx-auto mt-6 flex w-full items-center justify-center gap-1.5 rounded-xl px-5 py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
-              style={{ background: "var(--ais-accent)" }}
-            >
-              <Sparkles size={16} />
-              {reqPlan}&apos;a yükselt
-            </Link>
+            {/* pricing'deki GlassButton + Paddle checkout (tutarlı, tek akış). */}
+            <div className="mt-6">
+              <PlanCta
+                planId={requiredPlanId(feature)}
+                label={`${reqPlan}'a yükselt`}
+                highlight
+              />
+            </div>
             {/* Geri dön — kullanıcı kilitli sayfada kapana kısılmasın. */}
             <Link
               href="/dashboard"
-              className="mt-3 inline-block text-[12.5px] font-medium text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
+              className="mt-4 inline-block text-[12.5px] font-medium text-[var(--ais-fg-muted)] transition hover:text-[var(--ais-fg)]"
             >
               ← Panele dön
             </Link>

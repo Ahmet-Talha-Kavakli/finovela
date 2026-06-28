@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { VelaLogo } from "@/components/brand/logo";
+import { VelaLogo, VelaMark } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
 import { useMobileNav, mobileNav } from "@/lib/dashboard/use-mobile-nav";
 import { useSidebarCollapsed } from "@/lib/dashboard/use-sidebar";
@@ -168,7 +167,8 @@ export function Sidebar() {
             isCollapsed ? "h-11 w-11 mx-auto p-0" : "gap-2.5 px-4 py-3 text-sm",
           )}
         >
-          <Image src="/vela-mark.png" alt="" width={26} height={26} className="block shrink-0" />
+          {/* Şeffaf SVG mark (PNG beyaz kare yerine) — küçük modda daha büyük + ortalı */}
+          <VelaMark className={cn("shrink-0 text-[#2567ff]", isCollapsed ? "h-7 w-7" : "h-5 w-5")} />
           {!isCollapsed && "Finovela'ya sor"}
         </Link>
 
