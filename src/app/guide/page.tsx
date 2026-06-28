@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { PageShell } from "@/components/site/page-shell";
 import { PageHero, Section, SectionHeading } from "@/components/site/page-parts";
 import {
@@ -26,6 +27,7 @@ const STEPS = [
     body: "Web'den ya da uygulamadan saniyeler içinde kaydol. Kısa bir başlangıç akışıyla risk profilini (temkinli / dengeli / agresif) ve hedeflerini seç — Finovela tüm önerilerini buna göre kişiselleştirir.",
     href: "/app",
     cta: "Hemen başla",
+    image: "/gen/guide-step-portfolio.png",
   },
   {
     n: 2,
@@ -33,6 +35,7 @@ const STEPS = [
     body: "Kâğıt-portföyünle sıfır riskle başla: hisse, ETF, kripto ekle, pozisyon aç-kapat. Gerçek para gerekmez — her şey simülasyondur. Hazır olduğunda kendi borsa hesabını API anahtarıyla bağlayabilirsin.",
     href: "/dashboard/portfolio",
     cta: "Portföyü gör",
+    image: "/gen/guide-step-chat.png",
   },
   {
     n: 3,
@@ -40,6 +43,7 @@ const STEPS = [
     body: "\"NVDA'yı analiz et\", \"portföyümün riskini değerlendir\", \"AAPL 5 yılda ne olur?\" gibi sor. Yapay zekâ canlı fiyat çeker, teknik/duyarlılık analizi yapar, what-if senaryosu kurar — hepsi tek sohbette.",
     href: "/dashboard/chat",
     cta: "Sohbeti aç",
+    image: "/gen/guide-step-automation.png",
   },
   {
     n: 4,
@@ -47,6 +51,7 @@ const STEPS = [
     body: "Doğal dille kural yaz: \"Her Cuma 200$ QQQ al\" ya da \"TSLA %8 düşerse haber ver\". Finovela Brain güven bütçesiyle yapay zekânın ne kadar serbest hareket edeceğini sen belirlersin.",
     href: "/dashboard/automation",
     cta: "Otomasyonu keşfet",
+    image: "/gen/guide-hero.png",
   },
 ];
 
@@ -89,6 +94,7 @@ export default function GuidePage() {
     <PageShell>
       <PageHero
         eyebrow="Kullanım Rehberi"
+        image="/gen/guide-hero.png"
         title="Finovela'yı dakikalar içinde öğren"
         subtitle="Kaydolmaktan ilk otomasyonuna kadar her adım. Finovela bir yazılım (SaaS) ve eğitim/araştırma aracıdır — fonlarını tutmaz, yatırım tavsiyesi vermez; kararlar sana aittir."
       >
@@ -111,21 +117,35 @@ export default function GuidePage() {
           {STEPS.map((s) => (
             <div
               key={s.n}
-              className="flex flex-col gap-4 rounded-3xl border border-white/[0.08] bg-white/[0.03] p-7 sm:flex-row sm:items-start"
+              className="flex flex-col gap-5 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.03] p-7 sm:flex-row sm:items-center"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b5cf0] text-lg font-bold text-white">
-                {s.n}
-              </span>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-display text-xl font-bold text-white">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-white/60">{s.body}</p>
-                <Link
-                  href={s.href}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#7fb0ff] transition hover:text-white"
-                >
-                  {s.cta} <ArrowRight size={14} weight="bold" />
-                </Link>
+              <div className="flex min-w-0 flex-1 items-start gap-4">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#2b5cf0] text-lg font-bold text-white">
+                  {s.n}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="font-display text-xl font-bold text-white">{s.title}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-white/60">{s.body}</p>
+                  <Link
+                    href={s.href}
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#7fb0ff] transition hover:text-white"
+                  >
+                    {s.cta} <ArrowRight size={14} weight="bold" />
+                  </Link>
+                </div>
               </div>
+              {s.image && (
+                <div className="w-full shrink-0 overflow-hidden rounded-2xl border border-white/[0.06] sm:w-[220px]">
+                  <Image
+                    src={s.image}
+                    alt=""
+                    width={440}
+                    height={248}
+                    className="h-full w-full object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
