@@ -29,6 +29,9 @@ const CYCLE = 3.5; // saniye — bir ışık akış döngüsü
 export function AIBeam() {
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[520px]">
+      {/* DÖNEN katman: kablolar + çevre logoları birlikte ana logonun etrafında döner.
+          Logolar kendi içinde ters döner (dik kalır). Merkez logo dönmez. */}
+      <div className="beam-spin absolute inset-0">
       <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible" aria-hidden>
         <defs>
           {/* kablo boyunca akan ışık — gradient stroke */}
@@ -71,8 +74,35 @@ export function AIBeam() {
         })}
       </svg>
 
-      {/* Merkez: Finovela logosu */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      {/* Çevre logoları — DÖNEN katmanda (kablolarla birlikte yörüngede). */}
+      {NODES.map((n) => (
+        <div
+          key={n.id}
+          className="beam-node absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${n.x}%`, top: `${n.y}%`, animationDelay: `${n.delay}s`, ["--cycle" as string]: `${CYCLE}s` }}
+          title={n.name}
+        >
+          {/* iç sarmalayıcı ters döner → logo dik kalır (yan yatmaz). */}
+          <div className="beam-node-counter">
+            <div className="beam-node-chip grid h-12 w-12 place-items-center rounded-xl">
+              {/* GERÇEK RENKLİ marka logosu — ŞEFFAF zemin (kutu yok). */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://cdn.simpleicons.org/${n.slug}`}
+                alt={n.name}
+                width={30}
+                height={30}
+                className="h-[30px] w-[30px]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+      </div>{/* /beam-spin */}
+
+      {/* Merkez: Finovela logosu — DÖNMEZ, sabit ortada. */}
+      <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
         <div className="grid h-16 w-16 place-items-center rounded-2xl bg-[#0a1838] shadow-[0_0_40px_-4px_rgba(59,109,255,0.7)] ring-1 ring-[#2567ff]/40">
           {/* yelken mark — beyaz */}
           <svg viewBox="0 0 32 32" className="h-9 w-9 text-white" fill="none" aria-hidden>
@@ -82,30 +112,6 @@ export function AIBeam() {
           </svg>
         </div>
       </div>
-
-      {/* Çevre logoları — ışık ulaşınca parlar (staggered) */}
-      {NODES.map((n) => (
-        <div
-          key={n.id}
-          className="beam-node absolute -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${n.x}%`, top: `${n.y}%`, animationDelay: `${n.delay}s`, ["--cycle" as string]: `${CYCLE}s` }}
-          title={n.name}
-        >
-          <div className="beam-node-chip grid h-11 w-11 place-items-center rounded-xl bg-white/95 ring-1 ring-white/15 backdrop-blur-sm">
-            {/* GERÇEK RENKLİ marka logosu (simple-icons varsayılan marka rengi). Beyaz
-                çip zemininde net dursun; renk parametresi YOK → markanın kendi rengi. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://cdn.simpleicons.org/${n.slug}`}
-              alt={n.name}
-              width={22}
-              height={22}
-              className="h-[22px] w-[22px]"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
