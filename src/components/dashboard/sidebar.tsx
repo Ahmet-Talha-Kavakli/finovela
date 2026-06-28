@@ -15,6 +15,7 @@ import {
   TrendUp,
   StackSimple,
   Robot,
+  GraduationCap,
   UsersThree,
   MagnifyingGlass,
   Gear,
@@ -94,6 +95,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "Topluluk",
     items: [
+      { href: "/dashboard/academy", label: "Akademi", icon: GraduationCap },
       { href: "/dashboard/copy", label: "Kopya İşlem", icon: UsersThree, plan: "pro" },
       { href: "/dashboard/feed", label: "Akış", icon: UsersFour },
       { href: "/dashboard/research", label: "Araştırma", icon: MagnifyingGlass },
