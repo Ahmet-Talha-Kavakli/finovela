@@ -58,9 +58,24 @@ const PALETTES: Record<MarkdownTone, Palette> = {
   },
 };
 
+/**
+ * Yapışık markdown onarımı — AI bazen cümle sonuna boşluk koymadan başlığa/liste/
+ * tabloya geçiyor ("...çekiyorum.### Bitcoin"). Bunları satır başına ayırır ki
+ * parseBlocks doğru bölsün. (Sistem-prompt da bunu engellemeye çalışır; bu son savunma.)
+ */
+function normalizeMd(text: string): string {
+  return (
+    text
+      // "...cümle.### Başlık" veya "...cümle.## Başlık" → başlık yeni satıra
+      .replace(/([^\n])(\s*)(#{1,6}\s)/g, "$1\n\n$3")
+      // "...cümle:---" yatay çizgi yapışması
+      .replace(/([^\n])(\s*)(---+)(\s|$)/g, "$1\n\n$3$4")
+  );
+}
+
 export function Markdown({ text, tone = "dark" }: { text: string; tone?: MarkdownTone }) {
   const p = PALETTES[tone];
-  const blocks = parseBlocks(text, p);
+  const blocks = parseBlocks(normalizeMd(text), p);
   return <div className={`space-y-3 text-[15px] leading-relaxed ${p.root}`}>{blocks}</div>;
 }
 
