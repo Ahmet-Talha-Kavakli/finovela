@@ -307,6 +307,12 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
 /* Sidebar genişliğine göre içerik padding'i (yalnız masaüstü).
    Tailwind utility'sini ezmek için !important; collapsed=76px, expanded=248px. */
 .vela-content { transition: padding-left 0.3s ease; }
+/* PlanGate kilit overlay'i sidebar genişliğini takip etsin (collapsed=76, expanded=248).
+   Aksi halde küçük modda overlay 248px'ten başlayıp solda beyaz boşluk bırakıyordu. */
+@media (min-width: 1024px) {
+  html[data-sidebar="expanded"] .vela-gate-overlay { left: 248px !important; }
+  html[data-sidebar="collapsed"] .vela-gate-overlay { left: 76px !important; }
+}
 @media (min-width: 1024px) {
   html[data-sidebar="expanded"] .vela-content { padding-left: 248px !important; }
   html[data-sidebar="collapsed"] .vela-content { padding-left: 76px !important; }

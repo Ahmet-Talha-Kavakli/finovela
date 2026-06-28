@@ -107,7 +107,7 @@ export function PlanGate({
           overlay sol kenarı sidebar genişliği kadar içeride başlar (lg). */}
       {!resolving && (
         <div
-          className="ais ais-light fixed inset-x-0 bottom-0 top-16 z-[55] grid place-items-center px-6 lg:left-[var(--vela-sidebar-w,248px)]"
+          className="vela-gate-overlay ais ais-light fixed inset-x-0 bottom-0 top-16 z-[55] grid place-items-center px-6"
           style={{
             background: "rgba(17,17,20,0.20)",
             backdropFilter: "blur(3px)",

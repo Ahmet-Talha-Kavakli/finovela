@@ -24,7 +24,8 @@ import { toast } from "@/components/dashboard/toast";
 import { PLANS, CREDIT_PACKS, type PlanId } from "@/lib/plans";
 import { startPaddleCheckout, startCreditCheckout } from "@/lib/paddle-client";
 import { useUsage } from "@/lib/dashboard/use-usage";
-import { Sparkles, Check, X, Crown, Coins, Zap } from "lucide-react";
+import { GlassButton } from "@/components/ui/glass-button";
+import { Check, X, Crown, Coins, Wallet, Zap, Sparkles } from "lucide-react";
 
 const ACCENT = "var(--ais-accent)";
 
@@ -201,7 +202,7 @@ export function PlanPicker() {
               <TabButton
                 active={tab === "credits"}
                 onClick={() => setTab("credits")}
-                icon={<Coins size={14} />}
+                icon={<Wallet size={14} />}
                 label="Kredi Paketi"
               />
             </div>
@@ -347,23 +348,29 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      <button
-        onClick={onClick}
-        disabled={owned || busy}
-        className="mt-4 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition disabled:cursor-not-allowed"
-        style={
-          owned
-            ? {
-                background: "var(--ais-surface-2)",
-                color: "var(--ais-fg-muted)",
-                border: "1px solid var(--ais-line)",
-              }
-            : { background: ACCENT, color: "#fff", opacity: busy ? 0.7 : 1 }
-        }
-      >
-        {!owned && <Sparkles size={14} />}
-        {busy ? "Açılıyor…" : ctaLabel}
-      </button>
+      {owned ? (
+        <button
+          disabled
+          className="mt-4 cursor-not-allowed rounded-full py-2.5 text-[13px] font-semibold"
+          style={{
+            background: "var(--ais-surface-2)",
+            color: "var(--ais-fg-muted)",
+            border: "1px solid var(--ais-line)",
+          }}
+        >
+          {ctaLabel}
+        </button>
+      ) : (
+        <GlassButton
+          onClick={onClick}
+          tone="brand"
+          size="md"
+          disabled={busy}
+          className="mt-4 w-full"
+        >
+          {busy ? "Açılıyor…" : ctaLabel}
+        </GlassButton>
+      )}
     </div>
   );
 }
@@ -410,14 +417,15 @@ function CreditCard({
         {credits.toLocaleString("en-US")} kredi
       </p>
       <p className="num mt-2 text-[20px] font-semibold text-[var(--ais-fg)]">{price}</p>
-      <button
+      <GlassButton
         onClick={onClick}
+        tone="brand"
+        size="md"
         disabled={busy}
-        className="mt-3 rounded-lg py-2 text-[13px] font-semibold text-white transition disabled:cursor-not-allowed"
-        style={{ background: ACCENT, opacity: busy ? 0.7 : 1 }}
+        className="mt-3 w-full"
       >
         {busy ? "Açılıyor…" : "Satın al"}
-      </button>
+      </GlassButton>
     </div>
   );
 }
