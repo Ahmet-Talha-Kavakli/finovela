@@ -378,6 +378,22 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
     0 32px 70px -26px rgba(0,0,0,0.8);
 }
 
+/* DIDIT AÇIK TEMA: cam kartlar koyu/blur kalmasın — açık token yüzeyine çevir.
+   (DailyBrief / WatchlistCard / EarlyWarning bu primitifi kullanıyor.) */
+.ais.ais-light .vela-glass {
+  background: var(--ais-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--ais-line);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -24px rgba(0,0,0,0.18);
+}
+.ais.ais-light .vela-glass-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--ais-line-strong);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 18px 40px -22px rgba(0,0,0,0.22);
+}
+.ais.ais-light .vela-edge-glow::before { display: none; }
+
 /* Hero için üstte gezinen ince ışık çizgisi (cam kenar parlaması). */
 .vela-edge-glow::before {
   content: "";

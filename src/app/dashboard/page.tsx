@@ -206,6 +206,11 @@ export default function OverviewPage() {
                   className="rounded-xl border p-5"
                   style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
                 >
+                  {allocation.length === 0 ? (
+                    <p className="py-6 text-center text-[12.5px] text-[var(--ais-fg-faint)]">
+                      Henüz varlık yok. İlk işlemini yapınca dağılım burada görünür.
+                    </p>
+                  ) : (
                   <div className="space-y-3.5">
                     {allocation.map((a, i) => (
                       <div key={a.sector}>
@@ -225,6 +230,7 @@ export default function OverviewPage() {
                       </div>
                     ))}
                   </div>
+                  )}
                 </div>
               </div>
             </div>

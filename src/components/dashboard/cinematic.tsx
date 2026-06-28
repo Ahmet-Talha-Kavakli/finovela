@@ -96,7 +96,7 @@ export function SectionLabel({
 }) {
   return (
     <div className={cn("mb-5 flex items-center justify-between", className)}>
-      <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+      <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ais-fg-faint)]">
         {children}
       </h2>
       {action}
