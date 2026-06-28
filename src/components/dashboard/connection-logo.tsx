@@ -1,78 +1,118 @@
 "use client";
 
-import { siBinance, siCoinbase, type SimpleIcon } from "simple-icons";
+import { useState } from "react";
 
 /**
- * Bağlantı platformu marka logoları. simple-icons'ta SVG'si olanlar (Binance,
- * Coinbase) gerçek marka path'iyle; pakette olmayanlar (MetaMask) elle çizilmiş
- * sade marka SVG'siyle çizilir. Logosu olmayanlar (Alpaca, Interactive Brokers,
- * Midas, banka, Finnhub, TwelveData) null döndürür → çağıran taraf zarif
- * tipografik baş-harf rozetine düşer. Asla kırık resim göstermez.
+ * Bağlantı platformu marka logoları — çok-kaynaklı gerçek logo.
+ *
+ * Kaynak zinciri (ticker-badge.tsx deseni): simple-icons CDN → Clearbit →
+ * markaya tonlu baş-harf rozeti. <img onError> ile bir sonraki kaynağa düşülür;
+ * tüm kaynaklar başarısız olursa asla kırık resim göstermez — zarif tipografik
+ * rozete iner. Açık tema (Didit): logo zemini açık-gri, fallback token renkli.
  */
 
-// simple-icons'tan gelen marka SVG'leri.
-const SI_BRANDS: Record<string, SimpleIcon> = {
-  binance: siBinance,
-  coinbase: siCoinbase,
+// Her platform için marka rengi (fallback rozet tonu + bağlı vurgusu).
+export const CONNECTION_BRAND: Record<string, string> = {
+  alpaca: "#ffd400",
+  ibkr: "#d81222",
+  midas: "#7c5cff",
+  binance: "#f0b90b",
+  coinbase: "#0052ff",
+  metamask: "#f6851b",
+  ziraat: "#e30613",
+  finnhub: "#1db954",
+  twelvedata: "#0a66c2",
 };
 
-// simple-icons'ta bulunmayan markalar için elle çizilmiş sade marka SVG'leri.
-// (viewBox 0 0 24 24)
-const CUSTOM_SVG: Record<string, { title: string; path: string }> = {
-  // MetaMask tilki başı sadeleştirilmiş silüet.
-  metamask: {
-    title: "MetaMask",
-    path: "M21.1 2.4 13.5 8l1.4-3.3 6.2-2.3ZM2.9 2.4 10.4 8 9.1 4.7 2.9 2.4Zm14.7 12.6-2 3.1 4.3 1.2 1.2-4.2-3.5-.1ZM3 15.1l1.2 4.2 4.3-1.2-2-3.1-3.5.1Zm5.3-4.5L7.1 12.4l4.2.2-.1-4.6-2.9 2.6Zm7.4 0-3-2.6-.1 4.6 4.3-.2-1.2-1.8ZM8.6 18.1l2.6-1.2-2.2-1.7-.4 2.9Zm4.2-1.2 2.6 1.2-.4-2.9-2.2 1.7Z",
-  },
-};
-
-/** Bu id için gerçek marka logosu (SVG) var mı? */
-export function hasBrandGlyph(id: string): boolean {
-  return id in SI_BRANDS || id in CUSTOM_SVG;
+/**
+ * Logo kaynak zinciri — id başına denenecek URL'ler (sırayla).
+ * - simple-icons CDN: https://cdn.simpleicons.org/{slug}  (renkli marka SVG)
+ * - Clearbit:        https://logo.clearbit.com/{domain}   (şirket logosu)
+ */
+function logoSources(id: string): string[] {
+  const si = (slug: string) => `https://cdn.simpleicons.org/${slug}`;
+  const cb = (domain: string) => `https://logo.clearbit.com/${domain}`;
+  switch (id) {
+    case "binance":
+      return [si("binance"), cb("binance.com")];
+    case "coinbase":
+      return [si("coinbase"), cb("coinbase.com")];
+    case "metamask":
+      return [si("metamask"), cb("metamask.io")];
+    case "alpaca":
+      return [si("alpaca"), cb("alpaca.markets")];
+    case "ibkr":
+      return [cb("interactivebrokers.com")];
+    case "midas":
+      return [cb("midas.com.tr")];
+    case "ziraat":
+      return [cb("ziraatbank.com.tr")];
+    case "finnhub":
+      return [cb("finnhub.io")];
+    case "twelvedata":
+      return [cb("twelvedata.com")];
+    default:
+      return [];
+  }
 }
 
 /**
- * Marka logosu SVG'si — varsa <svg> path, yoksa null.
- * `color` verilirse path o renge boyanır (bağlı/bağlı-değil tonlaması için).
+ * Çok-kaynaklı gerçek logo. `name` baş harfi son-çare rozet için kullanılır.
+ * `on` (bağlı) ise rozet markaya tonlanır; `size` kutu boyutu (px).
  */
-export function BrandGlyph({
+export function ConnectionLogo({
   id,
-  size,
-  color,
+  name,
+  size = 44,
+  on = false,
 }: {
   id: string;
-  size: number;
-  color?: string;
-}): React.ReactElement | null {
-  const si = SI_BRANDS[id];
-  if (si) {
-    return (
-      <svg
-        role="img"
-        aria-label={si.title}
-        viewBox="0 0 24 24"
-        width={size}
-        height={size}
-        fill={color ?? `#${si.hex}`}
-      >
-        <path d={si.path} />
-      </svg>
-    );
-  }
-  const c = CUSTOM_SVG[id];
-  if (c) {
-    return (
-      <svg
-        role="img"
-        aria-label={c.title}
-        viewBox="0 0 24 24"
-        width={size}
-        height={size}
-        fill={color ?? "currentColor"}
-      >
-        <path d={c.path} />
-      </svg>
-    );
-  }
-  return null;
+  name: string;
+  size?: number;
+  on?: boolean;
+}) {
+  const sources = logoSources(id);
+  const [idx, setIdx] = useState(0);
+  const color = CONNECTION_BRAND[id] ?? "var(--ais-accent)";
+  const url = idx < sources.length ? sources[idx] : null;
+  const radius = Math.round(size * 0.27); // ~12px @ 44
+
+  return (
+    <span
+      className="relative grid shrink-0 place-items-center overflow-hidden font-semibold transition"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size * 0.34,
+        borderRadius: radius,
+        // Logo varken: açık-gri zemin (beyaz/şeffaf logolar kaybolmasın) + ince halka.
+        // Logo yokken: markaya tonlu fallback (bağlıysa daha belirgin).
+        background: url
+          ? "#f4f4f5"
+          : on
+            ? `${color}1f`
+            : "var(--ais-surface-2)",
+        color: url ? "#000" : on ? color : "var(--ais-fg-muted)",
+        boxShadow: url
+          ? "inset 0 0 0 1px rgba(0,0,0,0.06)"
+          : `inset 0 0 0 1px ${on ? `${color}40` : "var(--ais-line)"}`,
+      }}
+    >
+      {url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={url}
+          src={url}
+          alt={name}
+          width={size}
+          height={size}
+          className="h-full w-full object-contain p-[20%]"
+          loading="lazy"
+          onError={() => setIdx((i) => i + 1)}
+        />
+      ) : (
+        name[0]
+      )}
+    </span>
+  );
 }

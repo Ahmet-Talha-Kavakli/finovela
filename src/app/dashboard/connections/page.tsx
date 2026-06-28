@@ -4,6 +4,7 @@
  * Finovela Bağlantılar — aracı kurum / borsa / cüzdan / banka entegrasyonları.
  * Tasarım dili: Didit (business.didit.me) — açık tema, kutusuz, border-t ayraçlı
  * bölümler, ızgara-ayraçlı metrik şeridi, token renkleri, Lucide ikonlar.
+ * Logolar: çok-kaynaklı gerçek marka logosu (simple-icons CDN → Clearbit → rozet).
  */
 
 import { Topbar } from "@/components/dashboard/topbar";
@@ -17,47 +18,37 @@ import {
   type ConnectionCategory,
   type ConnectionDef,
 } from "@/lib/dashboard/use-connections";
-import { BrandGlyph, hasBrandGlyph } from "@/components/dashboard/connection-logo";
+import { ConnectionLogo } from "@/components/dashboard/connection-logo";
 import {
   Landmark,
   Wallet,
   LineChart,
   Bitcoin,
   Building2,
-  Check,
   ShieldCheck,
   RefreshCw,
   Plus,
-  Unplug,
+  X,
   Database,
+  Dot,
 } from "lucide-react";
 
 // Didit açık-tema renkleri — beyaz zeminde okunur.
 const UP = "var(--ais-green)";
 const ACCENT = "var(--ais-accent)";
 
-const CAT_META: Record<ConnectionCategory, { label: string; icon: typeof Landmark }> = {
-  broker: { label: "Aracı Kurumlar", icon: Building2 },
-  exchange: { label: "Kripto Borsaları", icon: Bitcoin },
-  wallet: { label: "Cüzdanlar", icon: Wallet },
-  bank: { label: "Bankalar", icon: Landmark },
-  data: { label: "Veri Sağlayıcılar", icon: LineChart },
+const CAT_META: Record<
+  ConnectionCategory,
+  { label: string; icon: typeof Landmark; hint: string }
+> = {
+  broker: { label: "Aracı Kurumlar", icon: Building2, hint: "Hisse & ETF hesapları" },
+  exchange: { label: "Kripto Borsaları", icon: Bitcoin, hint: "Spot kripto & bakiye" },
+  wallet: { label: "Cüzdanlar", icon: Wallet, hint: "On-chain salt-okunur" },
+  bank: { label: "Bankalar", icon: Landmark, hint: "Open Banking nakit" },
+  data: { label: "Veri Sağlayıcılar", icon: LineChart, hint: "Canlı piyasa akışı" },
 };
 
 const ORDER: ConnectionCategory[] = ["broker", "exchange", "wallet", "bank", "data"];
-
-/* Marka renkleri — logo gelene kadar baş-harf rozetini markaya tonla. */
-const BRAND: Record<string, string> = {
-  alpaca: "#ffd400",
-  ibkr: "#d81222",
-  midas: "#7c5cff",
-  binance: "#f0b90b",
-  coinbase: "#0052ff",
-  metamask: "#f6851b",
-  ziraat: "#e30613",
-  finnhub: "#1db954",
-  twelvedata: "#3b82f6",
-};
 
 /* Bağlı bir entegrasyonun mock olarak içe aktardığı varlık sayısı. */
 function mockAssets(c: ConnectionDef): number {
@@ -83,29 +74,6 @@ function relTime(since: number): string {
   const h = Math.round(m / 60);
   if (h < 24) return `${h} sa önce`;
   return `${Math.round(h / 24)} gün önce`;
-}
-
-function ConnLogo({ c, on }: { c: ConnectionDef; on: boolean }) {
-  const color = BRAND[c.id] ?? ACCENT;
-  const brand = hasBrandGlyph(c.id);
-  return (
-    <span
-      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[15px] font-semibold transition"
-      style={{
-        background: on ? `${color}1f` : "var(--ais-surface-2)",
-        color: on ? color : "var(--ais-fg-muted)",
-        boxShadow: `inset 0 0 0 1px ${on ? `${color}40` : "var(--ais-line)"}`,
-      }}
-    >
-      {brand ? (
-        <span style={{ opacity: on ? 1 : 0.85 }}>
-          <BrandGlyph id={c.id} size={22} color={color} />
-        </span>
-      ) : (
-        c.name[0]
-      )}
-    </span>
-  );
 }
 
 // Gerçek API-anahtarı akışı gerektiren borsalar (modal ile bağlanır).
@@ -181,7 +149,7 @@ export default function ConnectionsPage() {
 
           {/* ───────── Özet (kutusuz ızgara-ayraçlı şerit) ───────── */}
           <div
-            className="mt-9 grid grid-cols-2 gap-px overflow-hidden rounded-xl border lg:grid-cols-4"
+            className="mt-9 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border lg:grid-cols-4"
             style={{ borderColor: "var(--ais-line)", background: "var(--ais-line)" }}
           >
             <Stat
@@ -217,18 +185,28 @@ export default function ConnectionsPage() {
             const items = CONNECTIONS.filter((c) => c.category === cat);
             if (!items.length) return null;
             const Meta = CAT_META[cat];
-            const liveInCat = items.filter((c) => isConnected(c.id)).length;
+            const connectedInCat = items.filter((c) => isConnected(c.id)).length;
             return (
-              <section key={cat} className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
-                <div className="mb-5 flex items-end justify-between gap-3">
-                  <h2 className="d-section">{Meta.label}</h2>
-                  <span className="flex items-center gap-2 text-[12px] text-[var(--ais-fg-faint)]">
-                    {liveInCat > 0 && (
-                      <span className="text-[var(--ais-fg-muted)]">
-                        {liveInCat}/{items.length} bağlı
-                      </span>
+              <section key={cat} className="mt-12 border-t pt-9" style={{ borderColor: "var(--ais-line)" }}>
+                <div className="mb-6 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
+                      style={{ background: "var(--ais-surface-2)", color: "var(--ais-fg-muted)" }}
+                    >
+                      <Meta.icon size={16} />
+                    </span>
+                    <div>
+                      <h2 className="d-section leading-tight">{Meta.label}</h2>
+                      <p className="text-[12px] leading-tight text-[var(--ais-fg-faint)]">{Meta.hint}</p>
+                    </div>
+                  </div>
+                  <span className="text-[12px] text-[var(--ais-fg-faint)]">
+                    {connectedInCat > 0 ? (
+                      <span style={{ color: UP }}>{connectedInCat} bağlı</span>
+                    ) : (
+                      `${items.length} platform`
                     )}
-                    <Meta.icon size={16} />
                   </span>
                 </div>
 
@@ -239,26 +217,32 @@ export default function ConnectionsPage() {
                     return (
                       <div
                         key={c.id}
-                        className="flex flex-col gap-3 rounded-xl border p-4 transition"
+                        className="conn-card group flex flex-col gap-4 rounded-2xl border p-5"
                         style={{
-                          borderColor: on ? "rgba(37,103,255,0.3)" : "var(--ais-line)",
+                          borderColor: on ? "rgba(15,125,74,0.28)" : "var(--ais-line)",
                           background: "var(--ais-surface)",
                         }}
                       >
-                        <div className="flex items-start gap-3">
-                          <ConnLogo c={c} on={on} />
+                        <div className="flex items-start gap-3.5">
+                          <ConnectionLogo id={c.id} name={c.name} size={48} on={on} />
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-[14px] font-medium text-[var(--ais-fg)]">{c.name}</p>
+                              <p className="text-[14.5px] font-medium text-[var(--ais-fg)]">{c.name}</p>
                               {on ? (
-                                <span className="badge-soft badge-green">Bağlı</span>
+                                <span className="badge-soft badge-green">
+                                  <span
+                                    className="inline-block h-1.5 w-1.5 rounded-full"
+                                    style={{ background: "currentColor" }}
+                                  />
+                                  Senkron
+                                </span>
                               ) : c.live ? (
                                 <span className="badge-soft badge-green">Canlı</span>
                               ) : (
                                 <span className="badge-soft badge-amber">Demo</span>
                               )}
                             </div>
-                            <p className="mt-1 text-[12px] leading-relaxed text-[var(--ais-fg-muted)]">
+                            <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--ais-fg-muted)]">
                               {c.desc}
                             </p>
                           </div>
@@ -266,35 +250,35 @@ export default function ConnectionsPage() {
 
                         {/* alt satır: durum + aksiyon */}
                         <div
-                          className="mt-auto flex items-center justify-between gap-2 border-t pt-3"
+                          className="mt-auto flex items-center justify-between gap-2 border-t pt-3.5"
                           style={{ borderColor: "var(--ais-line)" }}
                         >
                           {on ? (
                             <span className="flex min-w-0 items-center gap-1.5 text-[11.5px] text-[var(--ais-fg-muted)]">
                               <RefreshCw size={12} className="shrink-0" style={{ color: UP }} />
                               <span className="truncate">
-                                Senkron · {since ? relTime(since) : "az önce"}
+                                {since ? relTime(since) : "az önce"}
                                 {mockAssets(c) > 0 ? ` · ${mockAssets(c)} varlık` : ""}
                               </span>
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1.5 text-[11.5px] text-[var(--ais-fg-faint)]">
-                              <Unplug size={12} /> Bağlı değil
+                            <span className="flex items-center gap-1 text-[11.5px] text-[var(--ais-fg-faint)]">
+                              <Dot size={16} className="-mx-1.5" /> Bağlı değil
                             </span>
                           )}
 
                           {on ? (
                             <button
                               onClick={() => onToggle(c)}
-                              className="inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-[12px] font-medium text-[var(--ais-fg)] transition hover:bg-[var(--ais-surface-2)]"
-                              style={{ borderColor: "var(--ais-line-strong)" }}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-[12px] font-medium text-[var(--ais-fg-muted)] transition hover:border-[var(--ais-line-strong)] hover:bg-[var(--ais-surface-2)] hover:text-[var(--ais-fg)]"
+                              style={{ borderColor: "var(--ais-line)" }}
                             >
-                              <Check size={12} /> Kaldır
+                              <X size={12} /> Kaldır
                             </button>
                           ) : (
                             <button
                               onClick={() => onToggle(c)}
-                              className="inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-medium text-white transition hover:brightness-[1.06]"
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[12px] font-medium text-white transition hover:brightness-[1.06]"
                               style={{ background: ACCENT }}
                             >
                               <Plus size={12} /> Bağla
@@ -310,10 +294,10 @@ export default function ConnectionsPage() {
           })}
 
           {/* ───────── Güvenlik notu ───────── */}
-          <section className="mt-10 border-t pt-8" style={{ borderColor: "var(--ais-line)" }}>
+          <section className="mt-12 border-t pt-9" style={{ borderColor: "var(--ais-line)" }}>
             <div className="grid gap-3 sm:grid-cols-2">
               <div
-                className="flex items-start gap-3 rounded-xl border p-5"
+                className="flex items-start gap-3 rounded-2xl border p-5"
                 style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
               >
                 <span
@@ -331,7 +315,7 @@ export default function ConnectionsPage() {
                 </div>
               </div>
               <div
-                className="flex items-start gap-3 rounded-xl border p-5"
+                className="flex items-start gap-3 rounded-2xl border p-5"
                 style={{ borderColor: "var(--ais-line)", background: "var(--ais-surface)" }}
               >
                 <span

@@ -472,6 +472,16 @@ html:has(.vela-dashboard-root) body { background: #fefefe; overscroll-behavior: 
   transform: translateY(-1px);
 }
 
+/* Bağlantı kartı — Didit hover mikro-etkileşimi: hafif kalkma + accent kenar. */
+.ais.ais-light .conn-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.ais.ais-light .conn-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -10px rgba(26,26,26,0.14);
+  border-color: var(--ais-line-strong);
+}
+
 /* Didit pill butonu — primary mavi (999px, Inter 14/500). */
 .ais.ais-light .pill-primary {
   display: inline-flex; align-items: center; gap: 8px;
